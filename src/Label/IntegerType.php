@@ -13,29 +13,32 @@ namespace Bakame\Period\Visualizer\Label;
 
 use League\Period\Sequence;
 use function count;
-use function trim;
 
-final class LetterLabel implements GeneratorInterface
+final class IntegerType implements LabelGenerator
 {
     /**
-     * @var string
+     * @var int
      */
-    private $str;
+    private $int;
 
     /**
      * New instance.
      */
-    public function __construct(string $str = 'A')
+    public function __construct(int $int = 1)
     {
-        $this->str = $this->filter($str);
+        if (0 >= $int) {
+            $int = 1;
+        }
+
+        $this->int = $int;
     }
 
     /**
      * Returns the starting Letter.
      */
-    public function getStartingString(): string
+    public function getStartingAt(): int
     {
-        return $this->str;
+        return $this->int;
     }
 
     /**
@@ -44,30 +47,20 @@ final class LetterLabel implements GeneratorInterface
      * This method MUST retain the state of the current instance, and return
      * an instance that contains the starting Letter.
      */
-    public function startWith(string $str): self
+    public function startWith(int $int): self
     {
-        $str = $this->filter($str);
-        if ($str === $this->str) {
+        if (0 >= $int) {
+            $int = 1;
+        }
+
+        if ($int === $this->int) {
             return $this;
         }
 
         $clone = clone $this;
-        $clone->str = $str;
+        $clone->int = $int;
 
         return $clone;
-    }
-
-    /**
-     * Format the starting string.
-     */
-    private function filter(string $letter): string
-    {
-        $letter = trim($letter);
-        if ('' === $letter) {
-            return '0';
-        }
-
-        return $letter;
     }
 
     /**
@@ -79,14 +72,7 @@ final class LetterLabel implements GeneratorInterface
         if ($sequence->isEmpty()) {
             return $letters;
         }
-        $nbItems = count($sequence);
-        $count = 0;
-        $letter = $this->str;
-        while ($count < $nbItems) {
-            $letters[] = $letter++;
-            ++$count;
-        }
 
-        return $letters;
+        return array_map('sprintf', range($this->int, $this->int + count($sequence) - 1));
     }
 }

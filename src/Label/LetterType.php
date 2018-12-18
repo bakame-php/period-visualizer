@@ -13,28 +13,29 @@ namespace Bakame\Period\Visualizer\Label;
 
 use League\Period\Sequence;
 use function count;
+use function trim;
 
-final class IntegerLabel implements GeneratorInterface
+final class LetterType implements LabelGenerator
 {
     /**
-     * @var int
+     * @var string
      */
-    private $int;
+    private $str;
 
     /**
      * New instance.
      */
-    public function __construct(int $int = 1)
+    public function __construct(string $str = 'A')
     {
-        $this->int = $int;
+        $this->str = $this->filter($str);
     }
 
     /**
      * Returns the starting Letter.
      */
-    public function getStartingAt(): int
+    public function getStartingString(): string
     {
-        return $this->int;
+        return $this->str;
     }
 
     /**
@@ -43,16 +44,30 @@ final class IntegerLabel implements GeneratorInterface
      * This method MUST retain the state of the current instance, and return
      * an instance that contains the starting Letter.
      */
-    public function startWith(int $int): self
+    public function startWith(string $str): self
     {
-        if ($int === $this->int) {
+        $str = $this->filter($str);
+        if ($str === $this->str) {
             return $this;
         }
 
         $clone = clone $this;
-        $clone->int = $int;
+        $clone->str = $str;
 
         return $clone;
+    }
+
+    /**
+     * Format the starting string.
+     */
+    private function filter(string $letter): string
+    {
+        $letter = trim($letter);
+        if ('' === $letter) {
+            return '0';
+        }
+
+        return $letter;
     }
 
     /**
@@ -64,7 +79,14 @@ final class IntegerLabel implements GeneratorInterface
         if ($sequence->isEmpty()) {
             return $letters;
         }
+        $nbItems = count($sequence);
+        $count = 0;
+        $letter = $this->str;
+        while ($count < $nbItems) {
+            $letters[] = $letter++;
+            ++$count;
+        }
 
-        range($this->int, $this->int + count($sequence) - 1);
+        return $letters;
     }
 }

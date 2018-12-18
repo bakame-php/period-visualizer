@@ -11,8 +11,8 @@
 
 namespace Bakame\Period\Visualizer;
 
-use Bakame\Period\Visualizer\Label\GeneratorInterface;
-use Bakame\Period\Visualizer\Label\LetterLabel;
+use Bakame\Period\Visualizer\Label\LabelGenerator;
+use Bakame\Period\Visualizer\Label\LetterType;
 use League\Period\Period;
 use League\Period\Sequence;
 
@@ -24,7 +24,7 @@ final class SequenceViewer
     private $visualizer;
 
     /**
-     * @var GeneratorInterface
+     * @var LabelGenerator
      */
     private $labelGenerator;
 
@@ -32,12 +32,12 @@ final class SequenceViewer
      * Create a new visualizer.
      *
      * @param ?VisualizerInterface $visualizer
-     * @param ?GeneratorInterface  $label
+     * @param ?LabelGenerator      $label
      */
-    public function __construct(?VisualizerInterface $visualizer = null, ?GeneratorInterface $label = null)
+    public function __construct(?VisualizerInterface $visualizer = null, ?LabelGenerator $label = null)
     {
         $this->setVisualizer($visualizer ?? new Visualizer());
-        $this->setLabelGenerator($label ?? new LetterLabel());
+        $this->setLabelGenerator($label ?? new LetterType());
     }
 
     /**
@@ -51,7 +51,7 @@ final class SequenceViewer
     /**
      * Returns the Label Generator.
      */
-    public function getLabelGenerator(): GeneratorInterface
+    public function getLabelGenerator(): LabelGenerator
     {
         return $this->labelGenerator;
     }
@@ -67,7 +67,7 @@ final class SequenceViewer
     /**
      * Sets the Label Generator.
      */
-    public function setLabelGenerator(GeneratorInterface $label): void
+    public function setLabelGenerator(LabelGenerator $label): void
     {
         $this->labelGenerator = $label;
     }
@@ -100,6 +100,23 @@ final class SequenceViewer
     {
         $input = $this->getInputData($sequence);
         $input['GAPS'] = $sequence->getGaps();
+
+        return $this->visualizer->display($input);
+    }
+
+    public function diff(Period $interval1, Period $interval2): string
+    {
+        $res = $interval1->diff($interval2);
+        $sequence = new Sequence($interval1, $interval2);
+        $diff = new Sequence();
+        foreach ($res as $part) {
+            if (null !== $part) {
+                $diff->push($part);
+            }
+        }
+
+        $input = $this->getInputData($sequence);
+        $input['DIFF'] = $diff;
 
         return $this->visualizer->display($input);
     }

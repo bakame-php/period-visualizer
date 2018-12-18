@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace BakameTest\Period\Visualizer;
 
 use Bakame\Period\Visualizer\Configuration;
-use Bakame\Period\Visualizer\Label\LetterLabel;
+use Bakame\Period\Visualizer\Label\LetterType;
 use Bakame\Period\Visualizer\SequenceViewer;
 use Bakame\Period\Visualizer\Visualizer;
 use League\Period\Period;
@@ -39,8 +39,8 @@ final class SequenceViewerTest extends TestCase
     public function testLabelGeneratorAccess(): void
     {
         $labelGenerator = $this->view->getLabelGenerator();
-        self::assertInstanceOf(LetterLabel::class, $labelGenerator);
-        $this->view->setLabelGenerator(new LetterLabel('bb'));
+        self::assertInstanceOf(LetterType::class, $labelGenerator);
+        $this->view->setLabelGenerator(new LetterType('bb'));
         self::assertNotSame($labelGenerator, $this->view->getLabelGenerator());
     }
 

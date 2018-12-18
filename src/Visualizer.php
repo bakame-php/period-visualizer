@@ -14,6 +14,11 @@ namespace Bakame\Period\Visualizer;
 use League\Period\Period;
 use League\Period\Sequence;
 
+/**
+ * This class is heavily influence by the work of
+ * https://github.com/thecrypticace on the Visualizer class
+ * for Spatie/Period package.
+ */
 final class Visualizer implements VisualizerInterface
 {
     /**
@@ -35,7 +40,6 @@ final class Visualizer implements VisualizerInterface
      * Returns the Configuration object.
      *
      * This method is not part of the VisualizerInterface interface
-     *
      */
     public function getConfiguration(): Configuration
     {
@@ -99,8 +103,8 @@ final class Visualizer implements VisualizerInterface
      */
     private function matrix(array $blocks): array
     {
-        $bounds = $this->getBoundaries($blocks);
-        if (null === $bounds) {
+        $boundaries = $this->getBoundaries($blocks);
+        if (null === $boundaries) {
             return [];
         }
 
@@ -114,52 +118,11 @@ final class Visualizer implements VisualizerInterface
             }
 
             foreach ($block as $period) {
-                $matrix[$name] = $this->populateRow($matrix[$name], $period, $bounds);
+                $matrix[$name] = $this->populateRow($matrix[$name], $period, $boundaries);
             }
         }
 
         return $matrix;
-    }
-
-    /**
-     * Get the start / end coordinates for a given period.
-     */
-    private function coords(Period $period, Period $bounds, int $width): array
-    {
-        $boundsStart = $bounds->getStartDate()->getTimestamp();
-
-        // Get the bounds
-        $start = $period->getStartDate()->getTimestamp() - $boundsStart;
-        $end = $period->getEndDate()->getTimestamp() - $boundsStart;
-
-        // Rescale from timestamps to width units
-        $boundsLength = $bounds->getTimestampInterval();
-        $start *= $width / $boundsLength;
-        $end *= $width / $boundsLength;
-
-        // Cap at integer intervals
-        $start = floor($start);
-        $end = ceil($end);
-
-        return [$start, $end];
-    }
-
-    /**
-     * Populate a row with true values where periods are active.
-     */
-    private function populateRow(array $row, Period $period, Period $bounds): array
-    {
-        $width = $this->config->getWidth();
-
-        [$startIndex, $endIndex] = $this->coords($period, $bounds, $width);
-
-        for ($i = 0; $i < $width; $i++) {
-            if ($startIndex <= $i && $i < $endIndex) {
-                $row[$i] = true;
-            }
-        }
-
-        return $row;
     }
 
     /**
@@ -177,6 +140,44 @@ final class Visualizer implements VisualizerInterface
         }
 
         return $periods->getBoundaries();
+    }
+
+    /**
+     * Get the start / end coordinates for a given period.
+     */
+    private function coords(Period $period, Period $boundaries, int $width): array
+    {
+        $boundsStart = $boundaries->getStartDate()->getTimestamp();
+        $boundsLength = $boundaries->getTimestampInterval();
+
+        // Get the bounds
+        $start = $period->getStartDate()->getTimestamp() - $boundsStart;
+        $end = $period->getEndDate()->getTimestamp() - $boundsStart;
+
+        // Rescale from timestamps to width units
+        $start *= $width / $boundsLength;
+        $end *= $width / $boundsLength;
+
+        // Cap at integer intervals
+        return [floor($start), ceil($end)];
+    }
+
+    /**
+     * Populate a row with true values where periods are active.
+     */
+    private function populateRow(array $row, Period $period, Period $boundaries): array
+    {
+        $width = $this->config->getWidth();
+
+        [$startIndex, $endIndex] = $this->coords($period, $boundaries, $width);
+
+        for ($i = 0; $i < $width; $i++) {
+            if ($startIndex <= $i && $i < $endIndex) {
+                $row[$i] = true;
+            }
+        }
+
+        return $row;
     }
 
     /**

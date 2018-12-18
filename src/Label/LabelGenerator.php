@@ -13,7 +13,7 @@ namespace Bakame\Period\Visualizer\Label;
 
 use League\Period\Sequence;
 
-interface GeneratorInterface
+interface LabelGenerator
 {
     /**
      * Returns the label to associate with each view row.
