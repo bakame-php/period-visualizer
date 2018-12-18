@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace BakameTest\Period\Visualizer\Label;
 
 use Bakame\Period\Visualizer\Label\IntegerType;
-use Bakame\Period\Visualizer\Label\RomanIntegerType;
 use League\Period\Period;
 use League\Period\Sequence;
 use PHPUnit\Framework\TestCase;
@@ -22,7 +21,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * @coversDefaultClass Bakame\Period\Visualizer\Label\RomanInteger;
  */
-final class RomanIntegerTypeTest extends TestCase
+final class RomanIntegerType extends TestCase
 {
     /**
      * @dataProvider providerLetter

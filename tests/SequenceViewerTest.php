@@ -102,4 +102,17 @@ final class SequenceViewerTest extends TestCase
         self::assertContains('A         =    ', $data);
         self::assertContains('B    [========]', $data);
     }
+
+    public function testDiff(): void
+    {
+        $data = $this->view->diff(
+                new Period('2018-01-01', '2018-02-01'),
+                new Period('2017-12-01', '2018-03-01')
+            );
+
+
+        self::assertContains('A          [==]', $data);
+        self::assertContains('B       [========]', $data);
+        self::assertContains('DIFF    [==]  [==]', $data);
+    }
 }
