@@ -15,13 +15,14 @@ use Bakame\Period\Visualizer\Label\LabelGenerator;
 use Bakame\Period\Visualizer\Label\LetterType;
 use League\Period\Period;
 use League\Period\Sequence;
+use function array_combine;
 
-final class SequenceViewer
+final class Viewer
 {
     /**
-     * @var VisualizerInterface
+     * @var OutputInterface
      */
-    private $visualizer;
+    private $output;
 
     /**
      * @var LabelGenerator
@@ -29,23 +30,22 @@ final class SequenceViewer
     private $labelGenerator;
 
     /**
-     * Create a new visualizer.
+     * Create a new output.
      *
-     * @param ?VisualizerInterface $visualizer
-     * @param ?LabelGenerator      $label
+     * @param ?LabelGenerator $label
      */
-    public function __construct(?VisualizerInterface $visualizer = null, ?LabelGenerator $label = null)
+    public function __construct(OutputInterface $output, ?LabelGenerator $label = null)
     {
-        $this->setVisualizer($visualizer ?? new Visualizer());
+        $this->output = $output;
         $this->setLabelGenerator($label ?? new LetterType());
     }
 
     /**
-     * Returns the Visualizer.
+     * Returns the output.
      */
-    public function getVisualizer(): VisualizerInterface
+    public function getOutput(): OutputInterface
     {
-        return $this->visualizer;
+        return $this->output;
     }
 
     /**
@@ -57,11 +57,11 @@ final class SequenceViewer
     }
 
     /**
-     * Sets the Visualizer.
+     * Sets the output.
      */
-    public function setVisualizer(VisualizerInterface $visualizer): void
+    public function setOutput(OutputInterface $output): void
     {
-        $this->visualizer = $visualizer;
+        $this->output = $output;
     }
 
     /**
@@ -77,9 +77,9 @@ final class SequenceViewer
      */
     public function sequence(Sequence $sequence): string
     {
-        $input = $this->getInputData($sequence);
+        $input = $this->addLabels($sequence);
 
-        return $this->visualizer->display($input);
+        return $this->output->display($input);
     }
 
     /**
@@ -87,10 +87,10 @@ final class SequenceViewer
      */
     public function intersections(Sequence $sequence): string
     {
-        $input = $this->getInputData($sequence);
+        $input = $this->addLabels($sequence);
         $input['INTERSECTIONS'] = $sequence->getIntersections();
 
-        return $this->visualizer->display($input);
+        return $this->output->display($input);
     }
 
     /**
@@ -98,12 +98,15 @@ final class SequenceViewer
      */
     public function gaps(Sequence $sequence): string
     {
-        $input = $this->getInputData($sequence);
+        $input = $this->addLabels($sequence);
         $input['GAPS'] = $sequence->getGaps();
 
-        return $this->visualizer->display($input);
+        return $this->output->display($input);
     }
 
+    /**
+     * Returns the sequences diff view representation.
+     */
     public function diff(Period $interval1, Period $interval2): string
     {
         $res = $interval1->diff($interval2);
@@ -115,10 +118,10 @@ final class SequenceViewer
             }
         }
 
-        $input = $this->getInputData($sequence);
+        $input = $this->addLabels($sequence);
         $input['DIFF'] = $diff;
 
-        return $this->visualizer->display($input);
+        return $this->output->display($input);
     }
 
     /**
@@ -126,7 +129,7 @@ final class SequenceViewer
      *
      * @return array<string,Period>
      */
-    private function getInputData(Sequence $sequence): array
+    private function addLabels(Sequence $sequence): array
     {
         return array_combine($this->labelGenerator->getLabels($sequence), $sequence->toArray());
     }

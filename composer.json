@@ -1,4 +1,30 @@
 {
+    "name": "bakame/period-visualizer",
+    "description": "A Visualizer for League Period.",
+    "homepage": "https://github.com/bakame-php/period-visualizer",
+    "license": "MIT",
+    "keywords": [
+        "period",
+        "datetime",
+        "interval",
+        "debugger",
+        "time",
+        "range",
+        "gaps",
+        "intersections",
+        "visualizer"
+    ],
+    "authors": [
+        {
+            "name": "Ignace Nyamagana Butera",
+            "homepage": "http://nyamsprod.com",
+            "role": "Developer"
+        },
+        {
+            "name": "Contributors",
+            "homepage": "https://github.com/bakame-php/laravel-domain-parser/graphs/contributors"
+        }
+    ],
     "require": {
         "league/period": "^4.1",
         "php" : ">=7.1.3"

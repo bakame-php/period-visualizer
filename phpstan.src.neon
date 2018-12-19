@@ -3,6 +3,6 @@ includes:
 parameters:
     ignoreErrors:
         - '#Only numeric types are allowed in post-increment, string given.#'
-        - '#Method Bakame\\Period\\Visualizer\\SequenceViewer::getInputData\(\) should return array<string, League\\Period\\Period> but returns array\|false\.#'
-        - '#Method Bakame\\Period\\Visualizer\\Visualizer::matrix\(\) should return array but returns array\|false\.#'
+        - '#Method Bakame\\Period\\Visualizer\\Viewer::addLabels\(\) should return array<string, League\\Period\\Period> but returns array\|false\.#'
+        - '#Method Bakame\\Period\\Visualizer\\Matrix::build\(\) should return array but returns array\|false\.#'
     reportUnmatchedIgnoredErrors: true

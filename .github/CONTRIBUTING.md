@@ -4,13 +4,13 @@ Contributions are **welcome** and will be fully **credited**.
 
 ## Bug Report
 
-We accept bug reports via issues created on [Github](https://github.com/thephpleague/period/issues).
+We accept bug reports via issues created on [Github](https://github.com/bakame-php/period-visualizer/issues).
 
 ### Prior to submitting your report
 
 - **Always search the issue or pull request list first** - The odds are good that if you've found a problem, someone else has found it, too.
 
-- **Always try the [master branch](https://github.com/thephpleague/period)** - to see if the reported bug has not already been fixed.
+- **Always try the [master branch](https://github.com/bakame-php/period-visualizer)** - to see if the reported bug has not already been fixed.
 
 ### When submitting your report
 
@@ -22,7 +22,7 @@ We accept bug reports via issues created on [Github](https://github.com/thephple
 
 ## Pull Request
 
-We accept contributions via Pull Requests on [Github](https://github.com/thephpleague/period/pulls).
+We accept contributions via Pull Requests on [Github](https://github.com/bakame-php/period-visualizer/pulls).
 
 - **[PSR-2 Coding Standard](https://www.php-fig.org/psr/psr-2/)** - Your patch won't be accepted if it doesn't pass the package coding style test suite.
 

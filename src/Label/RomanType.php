@@ -13,7 +13,7 @@ namespace Bakame\Period\Visualizer\Label;
 
 use League\Period\Sequence;
 
-final class RomanIntegerType implements LabelGenerator
+final class RomanType implements LabelGenerator
 {
     public const UPPER = 1;
     public const LOWER = 2;
@@ -55,6 +55,14 @@ final class RomanIntegerType implements LabelGenerator
     public function getStartingAt(): int
     {
         return $this->labelGenerator->getStartingAt();
+    }
+
+    /**
+     * Tells whether the roman integer will be uppercased or not.
+     */
+    public function isUpper(): bool
+    {
+        return self::UPPER === $this->lettercase;
     }
 
     /**

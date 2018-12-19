@@ -13,30 +13,30 @@ declare(strict_types=1);
 
 namespace BakameTest\Period\Visualizer;
 
-use Bakame\Period\Visualizer\Configuration;
+use Bakame\Period\Visualizer\ConsoleConfig;
+use Bakame\Period\Visualizer\ConsoleOutput;
 use Bakame\Period\Visualizer\Label\LetterType;
-use Bakame\Period\Visualizer\SequenceViewer;
-use Bakame\Period\Visualizer\Visualizer;
+use Bakame\Period\Visualizer\Viewer;
 use League\Period\Period;
 use League\Period\Sequence;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass Bakame\Period\Visualizer\SequenceViewer
+ * @coversDefaultClass Bakame\Period\Visualizer\Viewer
  */
-final class SequenceViewerTest extends TestCase
+final class ViewerTest extends TestCase
 {
     /**
-     * @var SequenceViewer
+     * @var Viewer
      */
     private $view;
 
     public function setUp(): void
     {
-        $this->view = new SequenceViewer();
+        $this->view = new Viewer(new ConsoleOutput(new ConsoleConfig()));
     }
 
-    public function testLabelGeneratorAccess(): void
+    public function testLabelGenerator(): void
     {
         $labelGenerator = $this->view->getLabelGenerator();
         self::assertInstanceOf(LetterType::class, $labelGenerator);
@@ -44,12 +44,12 @@ final class SequenceViewerTest extends TestCase
         self::assertNotSame($labelGenerator, $this->view->getLabelGenerator());
     }
 
-    public function testVisualizerAccess(): void
+    public function testOutput(): void
     {
-        $visualizer = $this->view->getVisualizer();
-        self::assertInstanceOf(Visualizer::class, $visualizer);
-        $this->view->setVisualizer(new Visualizer(Configuration::createFromRainbow()));
-        self::assertNotSame($visualizer, $this->view->getVisualizer());
+        $visualizer = $this->view->getOutput();
+        self::assertInstanceOf(ConsoleOutput::class, $visualizer);
+        $this->view->setOutput(new ConsoleOutput(ConsoleConfig::createFromRainbow()));
+        self::assertNotSame($visualizer, $this->view->getOutput());
     }
 
     public function testDisplaySequence(): void
