@@ -340,14 +340,16 @@ The `ConsoleOutput` class can be further customize by providing a `ConsoleConfig
 ~~~php
 <?php
 
+use Bakame\Period\Visualizer\ConsoleConfig;
 use Bakame\Period\Visualizer\ConsoleOutput;
 use League\Period\Period;
 
 $config = (new ConsoleConfig())
-    ->withHead(')')
-    ->withTail('[')
-    ->withBody('-')
+    ->withHead('🍅')
+    ->withTail('🎾')
+    ->withBody('💩')
     ->withSpace('+')
+    ->withWidth(30)
     ->withColors('yellow', 'red')
 ;
 
@@ -361,8 +363,8 @@ echo $view->display([
 results:
 
 ~~~bash
- first    [-----)+++
- last     +++[-----)
+ first    🎾💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩🍅++++++++++
+ last     ++++++++++🎾💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩🍅
 ~~~
 
 *On a Posix compliant console the first line will be yellow and the second red*
@@ -379,7 +381,7 @@ Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed re
 Contributing
 -------
 
-Contributions are welcome and will be fully credited. Please see [CONTRIBUTING](.github/CONTRIBUTING.md) and [CONDUCT](CONDUCT.md) for details.
+Contributions are welcome and will be fully credited. Please see [CONTRIBUTING](.github/CONTRIBUTING.md) for details.
 
 Testing
 -------
