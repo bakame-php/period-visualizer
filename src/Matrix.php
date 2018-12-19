@@ -13,10 +13,8 @@ namespace Bakame\Period\Visualizer;
 
 use League\Period\Period;
 use League\Period\Sequence;
-use function array_combine;
 use function array_fill;
-use function array_keys;
-use function array_values;
+use function array_reduce;
 use function ceil;
 use function count;
 use function floor;
@@ -28,6 +26,16 @@ use function floor;
  */
 final class Matrix
 {
+    /**
+     * @var int
+     */
+    private static $start;
+
+    /**
+     * @var float
+     */
+    private static $ratio;
+
     /**
      * @codeCoverageIgnore
      */
@@ -44,29 +52,32 @@ final class Matrix
      */
     public static function build(array $blocks, int $width): array
     {
+        $matrix = [];
         $boundaries = self::getBoundaries($blocks);
         if (null === $boundaries) {
-            return [];
+            return $matrix;
         }
 
-        $matrix = array_fill(0, count($blocks), array_fill(0, $width, false));
-        $matrix = array_combine(array_keys($blocks), array_values($matrix));
-
+        self::$start = $boundaries->getStartDate()->getTimestamp();
+        self::$ratio = $width / $boundaries->getTimestampInterval();
+        $baseRow = array_fill(0, $width, false);
         foreach ($blocks as $name => $block) {
             if ($block instanceof Period) {
                 $block = [$block];
             }
 
-            foreach ($block as $period) {
-                $matrix[$name] = self::populateRow($matrix[$name], $period, $boundaries, $width);
+            if ($block instanceof Sequence) {
+                $block = $block->toArray();
             }
+
+            $matrix[$name] = array_reduce($block, [self::class, 'populateRow'], $baseRow);
         }
 
         return $matrix;
     }
 
     /**
-     * Get the bounds encompassing all visualized periods.
+     * Gets the bounds encompassing all visualized periods.
      */
     private static function getBoundaries(array $blocks): ?Period
     {
@@ -85,33 +96,22 @@ final class Matrix
     }
 
     /**
-     * Populate a row with true values where periods are active.
+     * Populates a row with true values where periods are active.
      */
-    private static function populateRow(array $row, Period $period, Period $boundaries, int $width): array
+    private static function populateRow(array $row, Period $period): array
     {
-        [$startIndex, $endIndex] = self::coords($period, $boundaries, $width);
-        for ($i = 0; $i < $width; $i++) {
-            if ($startIndex <= $i && $i < $endIndex) {
-                $row[$i] = true;
-            }
-        }
-
-        return $row;
-    }
-
-    /**
-     * Get the start / end coordinates for a given period.
-     */
-    private static function coords(Period $period, Period $boundaries, int $width): array
-    {
-        $boundsStart = $boundaries->getStartDate()->getTimestamp();
-        $boundsLength = $boundaries->getTimestampInterval();
 
         // Get the bounds
-        $start = ($period->getStartDate()->getTimestamp() - $boundsStart) * $width / $boundsLength;
-        $end = ($period->getEndDate()->getTimestamp() - $boundsStart) * $width / $boundsLength;
+        $start = floor(($period->getStartDate()->getTimestamp() - self::$start) * self::$ratio);
+        $end = ceil(($period->getEndDate()->getTimestamp() - self::$start) * self::$ratio);
 
-        // Cap at integer intervals
-        return [floor($start), ceil($end)];
+        foreach ($row as $offset => &$value) {
+            if ($start <= $offset && $offset < $end) {
+                $value = true;
+            }
+        }
+        unset($value);
+
+        return $row;
     }
 }

@@ -19,7 +19,6 @@ use function implode;
 use function max;
 use function preg_replace;
 use function preg_replace_callback;
-use function sprintf;
 use function str_pad;
 use function strpos;
 use function strtolower;
@@ -117,57 +116,55 @@ final class ConsoleOutput implements OutputInterface
 
         $nameLength = max(...array_map('strlen', array_keys($matrix)));
         $colorOffsets = $this->config->getColors();
-        $key = 0;
+        $key = -1;
         foreach ($matrix as $name => $row) {
-            $line = $this->toLine($name, $nameLength, $row);
-            $color = $colorOffsets[$key % count($colorOffsets)];
+            $line = str_pad($name, $nameLength, ' ').'    '.$this->toLine($row);
+            $color = $colorOffsets[++$key % count($colorOffsets)];
+
             yield $this->writeln("<<$color>>$line<<reset>>");
-            ++$key;
         }
     }
 
     /**
-     * Turn a series of true/false values into bars representing the start/end of periods.
+     * Turns a series of boolean values into bars representing the interval.
      */
-    private function toLine(string $name, int $nameLength, array $row): string
+    private function toLine(array $row): string
     {
-        $tmp = '';
-
-        for ($i = 0, $l = count($row); $i < $l; $i++) {
-            $prev = $row[$i - 1] ?? null;
-            $curr = $row[$i];
-            $next = $row[$i + 1] ?? null;
+        $tmp = [];
+        foreach ($row as $offset => $curr) {
+            $prev = $row[$offset - 1] ?? null;
+            $next = $row[$offset + 1] ?? null;
 
             // Small state machine to build the string
             switch (true) {
                 // The current period is only one unit long so display a "="
                 case $curr && $curr !== $prev && $curr !== $next:
-                    $tmp .= $this->config->getBody();
+                    $tmp[] = $this->config->getBody();
                     break;
 
                 // We've hit the start of a period
                 case $curr && $curr !== $prev && $curr === $next:
-                    $tmp .= $this->config->getTail();
+                    $tmp[] = $this->config->getTail();
                     break;
 
                 // We've hit the end of the period
                 case $curr && $curr !== $next:
-                    $tmp .= $this->config->getHead();
+                    $tmp[] = $this->config->getHead();
                     break;
 
                 // We're adding segments to the current period
                 case $curr && $curr === $prev:
-                    $tmp .= $this->config->getBody();
+                    $tmp[] = $this->config->getBody();
                     break;
 
                 // Otherwise it's just empty space
                 default:
-                    $tmp .= $this->config->getSpace();
+                    $tmp[] = $this->config->getSpace();
                     break;
             }
         }
 
-        return  sprintf('%s    %s', str_pad($name, $nameLength, ' '), $tmp);
+        return implode('', $tmp);
     }
 
     /**

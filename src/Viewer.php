@@ -131,6 +131,6 @@ final class Viewer
      */
     private function addLabels(Sequence $sequence): array
     {
-        return array_combine($this->labelGenerator->getLabels($sequence), $sequence->toArray());
+        return (array) array_combine($this->labelGenerator->getLabels($sequence), $sequence->toArray());
     }
 }
