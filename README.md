@@ -247,6 +247,38 @@ results:
  vi.    [===]     
 ~~~
 
+#### Reverse strategy
+
+~~~php
+<?php
+
+use Bakame\Period\Visualizer\Viewer;
+use Bakame\Period\Visualizer\ConsoleOutput;
+use Bakame\Period\Visualizer\Label\IntegerType;
+use Bakame\Period\Visualizer\Label\RomanType;
+use Bakame\Period\Visualizer\Label\AffixType;
+use Bakame\Period\Visualizer\Label\ReverseType;
+use League\Period\Period;
+use League\Period\Sequence;
+
+$labelGenerator = new AffixType(new RomanType(new IntegerType(5), RomanType::LOWER));
+$labelGenerator = new ReverserType($labelGenerator->withSuffix('.'));
+
+$view = new Viewer(new ConsoleOutput(), $labelGenerator);
+echo $view->sequence(new Sequence(
+    new Period('2018-01-01', '2018-02-01'),
+    new Period('2018-01-01', '2018-01-15')
+));
+~~~
+
+results:
+
+~~~bash
+ vi.   [========]
+ v.    [===]     
+~~~
+
+
 #### Custom strategy
 
 You can create your own strategy by implementing the `Bakame\Period\Visualizer\Label\LabelGenerator` interface like shown below:

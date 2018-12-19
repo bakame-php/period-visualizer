@@ -29,11 +29,6 @@ use function floor;
 final class Matrix
 {
     /**
-     * @var ConsoleConfig
-     */
-    private static $config;
-
-    /**
      * @codeCoverageIgnore
      */
     private function __construct()
