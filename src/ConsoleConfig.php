@@ -12,11 +12,20 @@
 namespace Bakame\Period\Visualizer;
 
 use InvalidArgumentException;
+use function array_filter;
+use function array_map;
+use function array_merge;
+use function in_array;
+use function mb_convert_encoding;
+use function mb_strlen;
+use function preg_match;
+use function preg_replace;
+use function sprintf;
 
 /**
- * A class to configure the Millipede settings.
+ * A class to configure the console output settings.
  */
-final class Configuration
+final class ConsoleConfig
 {
     /**
      * POSIX color.
@@ -132,15 +141,6 @@ final class Configuration
     public function getColors(): array
     {
         return $this->colorOffsets;
-    }
-
-    public function applyColors(iterable $iterator): iterable
-    {
-        $colorOffsets = $this->colorOffsets;
-        foreach ($iterator as $key => $line) {
-            $color = $colorOffsets[$key % count($colorOffsets)];
-            yield self::outln("<<$color>>$line<<reset>>");
-        }
     }
 
     /**
@@ -305,62 +305,5 @@ final class Configuration
         }
 
         throw new InvalidArgumentException(sprintf('The given string `%s` is not a valid unicode string', $str));
-    }
-
-    /**
-     * Format the text output.
-     *
-     * Inspired by Aura\Cli\Stdio\Formatter (https://github.com/auraphp/Aura.Cli).
-     */
-    public static function outln(string $str): string
-    {
-        static $formatter;
-        static $func;
-        static $regex;
-        static $codes = [
-            'reset'      => '0',
-            'bold'       => '1',
-            'dim'        => '2',
-            'underscore' => '4',
-            'blink'      => '5',
-            'reverse'    => '7',
-            'hidden'     => '8',
-            'black'      => '30',
-            'red'        => '31',
-            'green'      => '32',
-            'yellow'     => '33',
-            'blue'       => '34',
-            'magenta'    => '35',
-            'cyan'       => '36',
-            'white'      => '37',
-            'blackbg'    => '40',
-            'redbg'      => '41',
-            'greenbg'    => '42',
-            'yellowbg'   => '43',
-            'bluebg'     => '44',
-            'magentabg'  => '45',
-            'cyanbg'     => '46',
-            'whitebg'    => '47',
-        ];
-
-        if (null !== $regex) {
-            return ' '.$func($regex, $formatter, $str)."\n";
-        }
-
-        $regex = ',<<\s*((('.implode('|', array_keys($codes)).')(\s*))+)>>,Umsi';
-        $formatter = '';
-        $func = 'preg_replace';
-        if (false === strpos(strtolower(PHP_OS), 'win')) {
-            $formatter = static function (array $matches) use ($codes) {
-                $str = (string) preg_replace('/(\s+)/msi', ';', (string) $matches[1]);
-
-                return chr(27).'['.strtr($str, $codes).'m';
-            };
-            $func = 'preg_replace_callback';
-
-            return ' '.preg_replace_callback($regex, $formatter, $str)."\n";
-        }
-
-        return ' '.preg_replace($regex, $formatter, $str)."\n";
     }
 }

@@ -17,7 +17,6 @@ interface LabelGenerator
 {
     /**
      * Returns the label to associate with each view row.
-     *
      */
     public function getLabels(Sequence $sequence): array;
 }

@@ -67,6 +67,10 @@ final class LetterType implements LabelGenerator
             return '0';
         }
 
+        if (1 !== preg_match('/^[A-Za-z]+$/', $letter)) {
+            return 'A';
+        }
+
         return $letter;
     }
 

@@ -11,11 +11,13 @@
 
 namespace Bakame\Period\Visualizer;
 
-use Iterator;
 use League\Period\Period;
 use League\Period\Sequence;
 
-interface VisualizerInterface
+/**
+ * Interface to output the matrix
+ */
+interface OutputInterface
 {
     /**
      * Builds an Iterator to visualize one or more

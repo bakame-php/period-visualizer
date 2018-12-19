@@ -13,22 +13,30 @@ declare(strict_types=1);
 
 namespace BakameTest\Period\Visualizer\Label;
 
+use Bakame\Period\Visualizer\Label\AffixType;
+use Bakame\Period\Visualizer\Label\IntegerType;
 use Bakame\Period\Visualizer\Label\LetterType;
+use Bakame\Period\Visualizer\Label\RomanType;
 use League\Period\Period;
 use League\Period\Sequence;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass Bakame\Period\Visualizer\Label\LetterType;
+ * @coversDefaultClass Bakame\Period\Visualizer\Label\AffixType;
  */
-final class LetterTypeTest extends TestCase
+final class AffixTypeTest extends TestCase
 {
     /**
      * @dataProvider providerLetter
      */
-    public function testGetLabels(Sequence $sequence, string $letter, array $expected): void
-    {
-        $generator = new LetterType($letter);
+    public function testGetLabels(
+        Sequence $sequence,
+        string $letter,
+        string $prefix,
+        string $suffix,
+        array $expected
+    ): void {
+        $generator = (new AffixType(new LetterType($letter)))->withPrefix($prefix)->withSuffix($suffix);
         self::assertSame($expected, $generator->getLabels($sequence));
     }
 
@@ -38,12 +46,16 @@ final class LetterTypeTest extends TestCase
             'empty labels' => [
                 'sequence' => new Sequence(),
                 'letter' => 'i',
+                'prefix' => '',
+                'suffix' => '',
                 'expected' => [],
             ],
             'labels starts at i' => [
                 'sequence' => new Sequence(new Period('2018-01-01', '2018-02-01')),
                 'letter' => 'i',
-                'expected' => ['i'],
+                'prefix' => '',
+                'suffix' => '.',
+                'expected' => ['i.'],
             ],
             'labels starts ends at ab' => [
                 'sequence' => new Sequence(
@@ -51,33 +63,42 @@ final class LetterTypeTest extends TestCase
                     new Period('2018-02-01', '2018-03-01')
                 ),
                 'letter' => 'aa',
-                'expected' => ['aa', 'ab'],
+                'prefix' => '-',
+                'suffix' => '',
+                'expected' => ['-aa', '-ab'],
             ],
             'labels starts at 0 (1)' => [
                 'sequence' => new Sequence(new Period('2018-01-01', '2018-02-01')),
                 'letter' => '        ',
-                'expected' => ['0'],
+                'prefix' => '.',
+                'suffix' => '.',
+                'expected' => ['.0.'],
             ],
             'labels starts at 0 (2)' => [
                 'sequence' => new Sequence(new Period('2018-01-01', '2018-02-01')),
                 'letter' => '',
-                'expected' => ['0'],
+                'prefix' => '.'.PHP_EOL,
+                'suffix' => PHP_EOL.'.',
+                'expected' => ['.0.'],
             ],
             'labels with an integer' => [
                 'sequence' => new Sequence(new Period('2018-01-01', '2018-02-01')),
                 'letter' => '1',
-                'expected' => ['A'],
+                'prefix' => '.'.PHP_EOL,
+                'suffix' => PHP_EOL,
+                'expected' => ['.A'],
             ],
         ];
     }
 
-    public function testStartWith(): void
+    public function testGetter(): void
     {
-        $generator = new LetterType('i');
-        self::assertSame('i', $generator->getStartingString());
-        $new = $generator->startWith('o');
+        $generator = new AffixType(new RomanType(new IntegerType(10)));
+        self::assertSame('', $generator->getSuffix());
+        self::assertSame('', $generator->getPrefix());
+        $new = $generator->withPrefix('o')->withSuffix('');
         self::assertNotSame($new, $generator);
-        self::assertSame('o', $new->getStartingString());
-        self::assertSame($generator, $generator->startWith('i'));
+        self::assertSame('o', $new->getPrefix());
+        self::assertSame('', $new->getSuffix());
     }
 }

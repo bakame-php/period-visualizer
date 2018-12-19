@@ -13,23 +13,23 @@ declare(strict_types=1);
 
 namespace BakameTest\Period\Visualizer;
 
-use Bakame\Period\Visualizer\Configuration;
+use Bakame\Period\Visualizer\ConsoleConfig;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass Bakame\Period\Visualizer\Configuration
+ * @coversDefaultClass Bakame\Period\Visualizer\ConsoleConfig
  */
-final class ConfigurationTest extends TestCase
+final class ConsoleConfigTest extends TestCase
 {
     /**
-     * @var Configuration
+     * @var ConsoleConfig
      */
     private $config;
 
     public function setUp(): void
     {
-        $this->config = new Configuration();
+        $this->config = new ConsoleConfig();
     }
 
     public function testNewInstance(): void
@@ -44,14 +44,14 @@ final class ConfigurationTest extends TestCase
 
     public function testCreateFromRandom(): void
     {
-        $config = Configuration::createFromRandom();
-        self::assertContains($config->getColors()[0], Configuration::COLORS);
+        $config = ConsoleConfig::createFromRandom();
+        self::assertContains($config->getColors()[0], ConsoleConfig::COLORS);
     }
 
     public function testCreateFromRainbow(): void
     {
-        $config = Configuration::createFromRainbow();
-        self::assertSame($config->getColors(), Configuration::COLORS);
+        $config = ConsoleConfig::createFromRainbow();
+        self::assertSame($config->getColors(), ConsoleConfig::COLORS);
     }
     /**
      * @dataProvider widthProvider
