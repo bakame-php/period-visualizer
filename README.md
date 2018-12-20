@@ -377,7 +377,7 @@ results:
 
 *On a Posix compliant console the first line will be yellow and the second red*
 
-![Result on a POSIX compliant console](posix-output.png)
+![Result on a POSIX compliant console](posix-colors.png)
 
 **ALL CONFIGURATION OBJECTS ARE IMMUTABLE SO MODIFYING THEIR PROPERTIES RETURNS A NEW INSTANCE**
 
