@@ -99,7 +99,7 @@ final class ConsoleOutput implements OutputInterface
     {
         ob_start();
         foreach ($this->render($blocks) as $row) {
-            echo $row;
+            echo $row.$this->newline;
         }
 
         return (string) ob_get_clean();
@@ -122,7 +122,7 @@ final class ConsoleOutput implements OutputInterface
             $line = str_pad($name, $nameLength, ' ').'    '.$this->toLine($row);
             $color = $colorOffsets[++$key % count($colorOffsets)];
 
-            yield $this->writeln("<<$color>>$line<<reset>>");
+            yield $this->write("<<$color>>$line<<reset>>");
         }
     }
 
@@ -173,9 +173,9 @@ final class ConsoleOutput implements OutputInterface
      *
      * Inspired by Aura\Cli\Stdio\Formatter (https://github.com/auraphp/Aura.Cli).
      */
-    private function writeln(string $str): string
+    private function write(string $str): string
     {
-        return $this->{$this->method}($str).$this->newline;
+        return $this->{$this->method}($str);
     }
 
     /**

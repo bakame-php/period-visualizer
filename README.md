@@ -362,10 +362,14 @@ $config = (new ConsoleConfig())
 ;
 
 $output = new ConsoleOutput($config);
-echo $output->display([
+$content = $output->render([
     ['first', new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00')],
     ['last', new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00')],
 ]);
+
+foreach ($content as $line) {
+    echo $line, PHP_EOL;
+}
 ~~~
 
 results:
