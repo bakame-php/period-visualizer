@@ -115,7 +115,7 @@ final class ConsoleOutput implements OutputInterface
             return;
         }
 
-        $nameLength = max(...array_map('strlen', array_column($blocks, 0)));
+        $nameLength = max(...array_map('strlen', array_column($matrix, 0)));
         $colorOffsets = $this->config->getColors();
         $key = -1;
         foreach ($matrix as [$name, $row]) {
