@@ -361,8 +361,8 @@ $config = (new ConsoleConfig())
     ->withColors('yellow', 'red')
 ;
 
-$view = new ConsoleOutput($config);
-echo $view->display([
+$output = new ConsoleOutput($config);
+echo $output->display([
     ['first', new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00')],
     ['last', new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00')],
 ]);

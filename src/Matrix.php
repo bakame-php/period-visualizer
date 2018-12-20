@@ -27,14 +27,14 @@ use function floor;
 final class Matrix
 {
     /**
-     * @var int
+     * @var float
      */
     private static $start;
 
     /**
      * @var float
      */
-    private static $ratio;
+    private static $unit;
 
     /**
      * @codeCoverageIgnore
@@ -59,7 +59,7 @@ final class Matrix
         }
 
         self::$start = $boundaries->getStartDate()->getTimestamp();
-        self::$ratio = $width / $boundaries->getTimestampInterval();
+        self::$unit = $width / $boundaries->getTimestampInterval();
         $baseRow = array_fill(0, $width, false);
         foreach ($blocks as [$name, $block]) {
             if ($block instanceof Period) {
@@ -81,32 +81,32 @@ final class Matrix
      */
     private static function getBoundaries(array $blocks): ?Period
     {
-        $periods = new Sequence();
+        $sequence = new Sequence();
         foreach ($blocks as [$name, $block]) {
             if ($block instanceof Period) {
                 $block = [$block];
             }
 
             if (0 !== count($block)) {
-                $periods->push(...$block);
+                $sequence->push(...$block);
             }
         }
 
-        return $periods->getBoundaries();
+        return $sequence->getBoundaries();
     }
 
     /**
      * Populates a row with true values where periods are active.
+     *
+     * @return bool[]
      */
     private static function populateRow(array $row, Period $period): array
     {
+        $startIndex = floor(($period->getStartDate()->getTimestamp() - self::$start) * self::$unit);
+        $endIndex = ceil(($period->getEndDate()->getTimestamp() - self::$start) * self::$unit);
 
-        // Get the bounds
-        $start = floor(($period->getStartDate()->getTimestamp() - self::$start) * self::$ratio);
-        $end = ceil(($period->getEndDate()->getTimestamp() - self::$start) * self::$ratio);
-
-        foreach ($row as $offset => &$value) {
-            if ($start <= $offset && $offset < $end) {
+        foreach ($row as $index => &$value) {
+            if ($startIndex <= $index && $index < $endIndex) {
                 $value = true;
             }
         }
