@@ -70,7 +70,7 @@ final class ConsoleOutput implements OutputInterface
     /**
      * @var string
      */
-    private $writer;
+    private $writerMethod;
 
     /**
      * @var ConsoleConfig
@@ -82,11 +82,14 @@ final class ConsoleOutput implements OutputInterface
      */
     public function __construct(ConsoleConfig $config = null)
     {
-        $isWindows = false !== strpos(strtolower(PHP_OS), 'win');
         $this->config = $config ?? new ConsoleConfig();
         $this->regexp = ',<<\s*((('.implode('|', array_keys(self::POSIX_COLOR_CODES)).')(\s*))+)>>,Umsi';
-        $this->writer = ($isWindows || in_array('default', $this->config->getColors()[0], true)) ? 'windowsWrite' : 'posixWrite';
-        $this->newline = $isWindows ? "\r\n" : "\n";
+        $this->writerMethod = 'posixWrite';
+        $this->newline = "\n";
+        if (false !== strpos(strtolower(PHP_OS), 'win')) {
+            $this->writerMethod = 'windowsWrite';
+            $this->newline = "\r\n";
+        }
     }
 
     /**
@@ -118,8 +121,11 @@ final class ConsoleOutput implements OutputInterface
         foreach ($matrix as [$name, $row]) {
             $line = str_pad($name, $nameLength, ' ').'    '.$this->toLine($row);
             $color = $colorOffsets[++$key % count($colorOffsets)];
+            if ('default' !== $color) {
+                $line = "<<$color>>$line<<reset>>";
+            }
 
-            yield $this->write("<<$color>>$line<<reset>>");
+            yield $this->write($line);
         }
     }
 
@@ -172,7 +178,7 @@ final class ConsoleOutput implements OutputInterface
      */
     private function write(string $str): string
     {
-        return $this->{$this->writer}($str);
+        return $this->{$this->writerMethod}($str);
     }
 
     /**
