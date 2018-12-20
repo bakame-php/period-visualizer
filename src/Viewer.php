@@ -15,7 +15,7 @@ use Bakame\Period\Visualizer\Label\LabelGenerator;
 use Bakame\Period\Visualizer\Label\LetterType;
 use League\Period\Period;
 use League\Period\Sequence;
-use function array_combine;
+use function array_values;
 
 final class Viewer
 {
@@ -88,7 +88,7 @@ final class Viewer
     public function intersections(Sequence $sequence): string
     {
         $input = $this->addLabels($sequence);
-        $input['INTERSECTIONS'] = $sequence->getIntersections();
+        $input[] = ['INTERSECTIONS', $sequence->getIntersections()];
 
         return $this->output->display($input);
     }
@@ -99,7 +99,7 @@ final class Viewer
     public function gaps(Sequence $sequence): string
     {
         $input = $this->addLabels($sequence);
-        $input['GAPS'] = $sequence->getGaps();
+        $input[] = ['GAPS', $sequence->getGaps()];
 
         return $this->output->display($input);
     }
@@ -119,18 +119,23 @@ final class Viewer
         }
 
         $input = $this->addLabels($sequence);
-        $input['DIFF'] = $diff;
+        $input[] = ['DIFF', $diff];
 
         return $this->output->display($input);
     }
 
     /**
      * Format the sequence data to be shown.
-     *
-     * @return array<string,Period>
      */
     private function addLabels(Sequence $sequence): array
     {
-        return (array) array_combine($this->labelGenerator->getLabels($sequence), $sequence->toArray());
+        $labels = array_values($this->labelGenerator->getLabels($sequence));
+        $data = array_values($sequence->toArray());
+        $results = [];
+        foreach ($data as $offset => $period) {
+            $results[] = [$labels[$offset], $period];
+        }
+
+        return $results;
     }
 }

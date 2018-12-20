@@ -11,6 +11,7 @@
 
 namespace Bakame\Period\Visualizer;
 
+use function array_column;
 use function array_keys;
 use function array_map;
 use function chr;
@@ -85,7 +86,7 @@ final class ConsoleOutput implements OutputInterface
         $this->regexp = ',<<\s*((('.implode('|', array_keys(self::POSIX_COLOR_CODES)).')(\s*))+)>>,Umsi';
         $this->newline = "\n";
         $this->method = 'posixWrite';
-        if (false !== strpos(strtolower(PHP_OS), 'win')) {
+        if (false !== strpos(strtolower(PHP_OS), 'win') || 'default' === $this->config->getColors()[0]) {
             $this->newline = "\r\n";
             $this->method = 'windowsWrite';
         }
@@ -114,10 +115,10 @@ final class ConsoleOutput implements OutputInterface
             return;
         }
 
-        $nameLength = max(...array_map('strlen', array_keys($matrix)));
+        $nameLength = max(...array_map('strlen', array_column($blocks, 0)));
         $colorOffsets = $this->config->getColors();
         $key = -1;
-        foreach ($matrix as $name => $row) {
+        foreach ($matrix as [$name, $row]) {
             $line = str_pad($name, $nameLength, ' ').'    '.$this->toLine($row);
             $color = $colorOffsets[++$key % count($colorOffsets)];
 

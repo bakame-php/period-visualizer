@@ -286,18 +286,21 @@ You can create your own strategy by implementing the `Bakame\Period\Visualizer\L
 ~~~php
 use Bakame\Period\Visualizer\Viewer;
 use Bakame\Period\Visualizer\ConsoleOutput;
+use Bakame\Period\Visualizer\Label\AffixType;
 use Bakame\Period\Visualizer\Label\LabelGenerator;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$reverseLabel = new class implements LabelGenerator {
+$samelabel = new class implements LabelGenerator {
     public function getLabels(Sequence $sequence): array
     {
-        return array_reverse(array_keys($sequence->toArray()));
+        return array_fill(0, count($sequence), 'foobar');
     }
 };
 
-$view = new Viewer(new ConsoleOutput(), $reverseLabel);
+$labelGenerator = (new AffixType($samelabel))->withSuffix('.');
+
+$view = new Viewer($output, $labelGenerator);
 echo $view->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
     new Period('2018-01-01', '2018-01-15')
@@ -307,8 +310,8 @@ echo $view->sequence(new Sequence(
 results:
 
 ~~~bash
- 1     [========]
- 0     [===]     
+ foobar.    [========]
+ foobar.    [===]     
 ~~~
 
 ### Customize the output
@@ -323,8 +326,8 @@ use League\Period\Period;
 
 $view = new ConsoleOutput();
 echo $view->display([
-    'first' => new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00'),
-    'last' => new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00')
+    ['first', new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00')],
+    ['last', new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00')],
 ]);
 ~~~
 
@@ -334,6 +337,11 @@ results:
  first    [=====]   
  last        [=====]
 ~~~
+
+The `ConsoleOutput::display` or `ConsoleOutput::render` methods excepts a tuple as its unique argument where:
+
+- the first value of the tuple represents the label name
+- the second and last value represents a `Period` or `Sequence` object.
 
 The `ConsoleOutput` class can be further customize by providing a `ConsoleConfig` object with further configuration to apply to the output.
 
@@ -355,8 +363,8 @@ $config = (new ConsoleConfig())
 
 $view = new ConsoleOutput($config);
 echo $view->display([
-    'first' => new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00'),
-    'last' => new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00')
+    ['first', new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00')],
+    ['last', new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00')],
 ]);
 ~~~
 

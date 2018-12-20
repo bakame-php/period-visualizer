@@ -36,6 +36,10 @@ final class ViewerTest extends TestCase
         $this->view = new Viewer(new ConsoleOutput(new ConsoleConfig()));
     }
 
+    /**
+     * @covers Bakame\Period\Visualizer\ConsoleOutput
+     * @covers Bakame\Period\Visualizer\Viewer
+     */
     public function testLabelGenerator(): void
     {
         $labelGenerator = $this->view->getLabelGenerator();
@@ -99,17 +103,23 @@ final class ViewerTest extends TestCase
             new Period('2018-01-01', '2018-02-01'),
             new Period('2017-01-01', '2019-01-01')
         ));
+
         self::assertContains('A         =    ', $data);
         self::assertContains('B    [========]', $data);
     }
 
+    /**
+     * @covers Bakame\Period\Visualizer\ConsoleOutput
+     * @covers Bakame\Period\Visualizer\Viewer
+     */
     public function testDiff(): void
     {
-        $data = $this->view->diff(
-                new Period('2018-01-01', '2018-02-01'),
-                new Period('2017-12-01', '2018-03-01')
-            );
-
+        $config = (new ConsoleConfig())->withColors('white');
+        $view = new Viewer(new ConsoleOutput($config));
+        $data = $view->diff(
+            new Period('2018-01-01', '2018-02-01'),
+            new Period('2017-12-01', '2018-03-01')
+        );
 
         self::assertContains('A          [==]', $data);
         self::assertContains('B       [========]', $data);

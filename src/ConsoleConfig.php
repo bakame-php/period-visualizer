@@ -32,14 +32,14 @@ final class ConsoleConfig
      *
      * @var array
      */
-    public const COLORS = ['white', 'red', 'yellow', 'green', 'cyan', 'blue', 'magenta'];
+    public const COLORS = ['white', 'red', 'yellow', 'green', 'cyan', 'blue', 'magenta', 'default'];
 
     private const REGEXP_UNICODE = '/\\\\u(?<unicode>[0-9A-F]{1,4})/i';
 
     /**
      * @var string[]
      */
-    private $colorOffsets = ['white'];
+    private $colorOffsets = ['default'];
 
     /**
      * @var int
@@ -257,7 +257,7 @@ final class ConsoleConfig
         $colorOffsets = array_filter(array_map('strtolower', array_merge([$primary], $optionals)), $filter);
 
         if ([] === $colorOffsets) {
-            $colorOffsets = ['white'];
+            $colorOffsets = ['default'];
         }
 
         if ($colorOffsets === $this->colorOffsets) {

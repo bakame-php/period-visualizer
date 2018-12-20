@@ -61,7 +61,7 @@ final class Matrix
         self::$start = $boundaries->getStartDate()->getTimestamp();
         self::$ratio = $width / $boundaries->getTimestampInterval();
         $baseRow = array_fill(0, $width, false);
-        foreach ($blocks as $name => $block) {
+        foreach ($blocks as [$name, $block]) {
             if ($block instanceof Period) {
                 $block = [$block];
             }
@@ -70,7 +70,7 @@ final class Matrix
                 $block = $block->toArray();
             }
 
-            $matrix[$name] = array_reduce($block, [self::class, 'populateRow'], $baseRow);
+            $matrix[] = [$name, array_reduce($block, [self::class, 'populateRow'], $baseRow)];
         }
 
         return $matrix;
@@ -82,7 +82,7 @@ final class Matrix
     private static function getBoundaries(array $blocks): ?Period
     {
         $periods = new Sequence();
-        foreach ($blocks as $block) {
+        foreach ($blocks as [$name, $block]) {
             if ($block instanceof Period) {
                 $block = [$block];
             }

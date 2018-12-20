@@ -36,7 +36,7 @@ interface OutputInterface
      * CURRENT        [===============]
      * OVERLAP        [=]   [==]    [=]
      *
-     * @param array|Period[]|Sequence[] $blocks
+     * @param array<int, array<int|string, Period|Sequence>> $blocks
      */
     public function render(array $blocks): iterable;
 
@@ -57,7 +57,7 @@ interface OutputInterface
      * CURRENT        [===============]
      * OVERLAP        [=]   [==]    [=]
      *
-     * @param array|Period[]|Sequence[] $blocks
+     * @param array<int, array<int|string, Period|Sequence>> $blocks
      */
     public function display(array $blocks): string;
 }
