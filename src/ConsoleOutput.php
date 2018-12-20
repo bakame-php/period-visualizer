@@ -70,7 +70,7 @@ final class ConsoleOutput implements OutputInterface
     /**
      * @var string
      */
-    private $method;
+    private $writer;
 
     /**
      * @var ConsoleConfig
@@ -82,14 +82,11 @@ final class ConsoleOutput implements OutputInterface
      */
     public function __construct(ConsoleConfig $config = null)
     {
+        $isWindows = false !== strpos(strtolower(PHP_OS), 'win');
         $this->config = $config ?? new ConsoleConfig();
         $this->regexp = ',<<\s*((('.implode('|', array_keys(self::POSIX_COLOR_CODES)).')(\s*))+)>>,Umsi';
-        $this->newline = "\n";
-        $this->method = 'posixWrite';
-        if (false !== strpos(strtolower(PHP_OS), 'win') || 'default' === $this->config->getColors()[0]) {
-            $this->newline = "\r\n";
-            $this->method = 'windowsWrite';
-        }
+        $this->writer = ($isWindows || in_array('default', $this->config->getColors()[0], true)) ? 'windowsWrite' : 'posixWrite';
+        $this->newline = $isWindows ? "\r\n" : "\n";
     }
 
     /**
@@ -175,7 +172,7 @@ final class ConsoleOutput implements OutputInterface
      */
     private function write(string $str): string
     {
-        return $this->{$this->method}($str);
+        return $this->{$this->writer}($str);
     }
 
     /**
