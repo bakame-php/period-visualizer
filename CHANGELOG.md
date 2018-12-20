@@ -2,6 +2,10 @@
 
 All Notable changes to `Period Visualizer` will be documented in this file
 
+## 0.2.1 - 2018-12-20
+
+- Bug Fix `ConsoleOutput::render` method.
+
 ## 0.2.0 - 2018-12-20
 
 - The `OutputInterface::render` and the `OutputInterface::display` array signature has changed.
