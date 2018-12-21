@@ -62,15 +62,11 @@ final class Matrix
         self::$unit = $width / $boundaries->getTimestampInterval();
         $baseRow = array_fill(0, $width, false);
         foreach ($blocks as [$name, $block]) {
-            if ($block instanceof Period) {
-                $block = [$block];
+            if (!$block instanceof Sequence) {
+                $block = new Sequence($block);
             }
 
-            if ($block instanceof Sequence) {
-                $block = $block->toArray();
-            }
-
-            $matrix[] = [$name, array_reduce($block, [self::class, 'populateRow'], $baseRow)];
+            $matrix[] = [$name, array_reduce($block->toArray(), [self::class, 'populateRow'], $baseRow)];
         }
 
         return $matrix;

@@ -119,8 +119,8 @@ final class ConsoleOutput implements OutputInterface
         $colorOffsets = $this->config->getColors();
         $key = -1;
         foreach ($matrix as [$name, $row]) {
-            $line = str_pad($name, $nameLength, ' ').'    '.$this->toLine($row);
             $color = $colorOffsets[++$key % count($colorOffsets)];
+            $line = str_pad($name, $nameLength, ' ').'    '.$this->toLine($row);
             if ('default' !== $color) {
                 $line = "<<$color>>$line<<reset>>";
             }
