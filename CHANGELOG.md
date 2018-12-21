@@ -2,6 +2,12 @@
 
 All Notable changes to `Period Visualizer` will be documented in this file
 
+## 0.3.0 - 2018-12-21
+
+- Removed the `OutputInterface`.
+- Made `ConsoleOutput::render` private only `ConsoleOutput::display` stays public.
+- Improve `Matrix` code.
+
 ## 0.2.2 - 2018-12-20
 
 - Bug Fix `ConsoleOutput::render` method. No newline character must be added at the end of the line.
