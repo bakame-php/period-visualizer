@@ -373,7 +373,7 @@ results:
  last     ++++++++++🎾💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩🍅
 ~~~
 
-*On a Posix compliant console the first line will be yellow and the second red*
+*On a POSIX compliant console the first line will be yellow and the second red*
 
 ![Result on a POSIX compliant console](posix-colors.png)
 
