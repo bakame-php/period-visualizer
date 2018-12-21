@@ -2,6 +2,10 @@
 
 All Notable changes to `Period Visualizer` will be documented in this file
 
+## 0.3.1 - 2018-12-21
+
+- Enforces strict types
+
 ## 0.3.0 - 2018-12-21
 
 - Removed the `OutputInterface`.
@@ -14,8 +18,7 @@ All Notable changes to `Period Visualizer` will be documented in this file
 
 ## 0.2.1 - 2018-12-20
 
-- Bug Fix `ConsoleOutput::render` method. Once the matrix is created we just use it and we non longer rely on 
-the submitted data.
+- Bug Fix `ConsoleOutput::render` method. Once the matrix is created we just use it and we non longer rely on the submitted data.
 
 ## 0.2.0 - 2018-12-20
 
