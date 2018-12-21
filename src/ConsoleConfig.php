@@ -68,7 +68,6 @@ final class ConsoleConfig
 
     /**
      * Create a Cli Renderer to Display the millipede in Rainbow.
-     *
      */
     public static function createFromRandom(): self
     {
@@ -79,7 +78,6 @@ final class ConsoleConfig
 
     /**
      * Create a Cli Renderer to Display the millipede in Rainbow.
-     *
      */
     public static function createFromRainbow(): self
     {
@@ -90,7 +88,6 @@ final class ConsoleConfig
 
     /**
      * Retrieve the row width.
-     *
      */
     public function getWidth(): int
     {
@@ -99,7 +96,6 @@ final class ConsoleConfig
 
     /**
      * Retrieve the body block character.
-     *
      */
     public function getTail(): string
     {
@@ -108,7 +104,6 @@ final class ConsoleConfig
 
     /**
      * Retrieve the body block character.
-     *
      */
     public function getBody(): string
     {
@@ -117,7 +112,6 @@ final class ConsoleConfig
 
     /**
      * Retrieve the head block character.
-     *
      */
     public function getHead(): string
     {
@@ -126,7 +120,6 @@ final class ConsoleConfig
 
     /**
      * Retrieve the row space character.
-     *
      */
     public function getSpace(): string
     {
@@ -147,7 +140,7 @@ final class ConsoleConfig
      * Return an instance with the specified row width.
      *
      * This method MUST retain the state of the current instance, and return
-     * an instance that contains the specified curve.
+     * an instance that contains the specified width.
      */
     public function withWidth(int $width): self
     {
@@ -169,7 +162,7 @@ final class ConsoleConfig
      * Return an instance with the head pattern.
      *
      * This method MUST retain the state of the current instance, and return
-     * an instance that contains the specified curve.
+     * an instance that contains the specified head character.
      */
     public function withHead(string $head): self
     {
@@ -188,7 +181,7 @@ final class ConsoleConfig
      * Return an instance with the specified body block.
      *
      * This method MUST retain the state of the current instance, and return
-     * an instance that contains the specified curve.
+     * an instance that contains the specified body pattern.
      */
     public function withBody(string $body): self
     {
@@ -207,7 +200,7 @@ final class ConsoleConfig
      * Return an instance with the tail pattern.
      *
      * This method MUST retain the state of the current instance, and return
-     * an instance that contains the specified curve.
+     * an instance that contains the specified tail character.
      */
     public function withTail(string $tail): self
     {
@@ -226,7 +219,7 @@ final class ConsoleConfig
      * Return an instance with the head pattern.
      *
      * This method MUST retain the state of the current instance, and return
-     * an instance that contains the specified curve.
+     * an instance that contains the specified space character.
      */
     public function withSpace(string $space): self
     {
@@ -245,7 +238,8 @@ final class ConsoleConfig
      * Return an instance with a new color palette.
      *
      * This method MUST retain the state of the current instance, and return
-     * an instance that contains the specified curve.
+     * an instance that contains the specified color palette.
+     *
      * @param string... $optionals
      */
     public function withColors(string $primary, string ...$optionals): self

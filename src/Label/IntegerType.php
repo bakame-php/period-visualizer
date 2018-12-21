@@ -12,7 +12,9 @@
 namespace Bakame\Period\Visualizer\Label;
 
 use League\Period\Sequence;
+use function array_map;
 use function count;
+use function range;
 
 final class IntegerType implements LabelGenerator
 {

@@ -12,11 +12,21 @@
 namespace Bakame\Period\Visualizer\Label;
 
 use League\Period\Sequence;
+use function array_map;
+use function in_array;
 
 final class RomanType implements LabelGenerator
 {
     public const UPPER = 1;
     public const LOWER = 2;
+
+    private const CHARACTER_MAP = [
+        'M'  => 1000, 'CM' => 900,  'D' => 500,
+        'CD' => 400,   'C' => 100, 'XC' => 90,
+        'L'  => 50,   'XL' => 40,   'X' => 10,
+        'IX' => 9,     'V' => 5,   'IV' => 4,
+        'I'  => 1,
+    ];
 
     /**
      * @var IntegerType
@@ -118,27 +128,22 @@ final class RomanType implements LabelGenerator
 
     /**
      * Convert a integer number into its roman representation.
+     *
+     * @see https://stackoverflow.com/a/15023547
      */
     private function convert(int $number): string
     {
-        $map = [
-            'M' => 1000, 'CM' => 900, 'D' => 500,
-            'CD' => 400, 'C' => 100, 'XC' => 90,
-            'L' => 50, 'XL' => 40, 'X' => 10,
-            'IX' => 9, 'V' => 5, 'IV' => 4, 'I' => 1,
-        ];
-
-        $returnValue = '';
+        $retVal = '';
         while ($number > 0) {
-            foreach ($map as $roman => $int) {
+            foreach (self::CHARACTER_MAP as $roman => $int) {
                 if ($number >= $int) {
                     $number -= $int;
-                    $returnValue .= $roman;
+                    $retVal .= $roman;
                     break;
                 }
             }
         }
 
-        return $returnValue;
+        return $retVal;
     }
 }

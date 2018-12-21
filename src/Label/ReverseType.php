@@ -12,6 +12,7 @@
 namespace Bakame\Period\Visualizer\Label;
 
 use League\Period\Sequence;
+use function array_reverse;
 
 final class ReverseType implements LabelGenerator
 {

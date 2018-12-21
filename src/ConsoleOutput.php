@@ -20,6 +20,8 @@ use function chr;
 use function count;
 use function implode;
 use function max;
+use function ob_get_clean;
+use function ob_start;
 use function preg_replace;
 use function preg_replace_callback;
 use function str_pad;

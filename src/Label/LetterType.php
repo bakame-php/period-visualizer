@@ -13,6 +13,7 @@ namespace Bakame\Period\Visualizer\Label;
 
 use League\Period\Sequence;
 use function count;
+use function preg_match;
 use function trim;
 
 final class LetterType implements LabelGenerator
