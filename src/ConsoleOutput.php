@@ -11,6 +11,8 @@
 
 namespace Bakame\Period\Visualizer;
 
+use League\Period\Period;
+use League\Period\Sequence;
 use function array_column;
 use function array_keys;
 use function array_map;
@@ -29,7 +31,7 @@ use const PHP_OS;
 /**
  * A class to output to the console the matrix.
  */
-final class ConsoleOutput implements OutputInterface
+final class ConsoleOutput
 {
     private const POSIX_COLOR_CODES = [
         'reset'      => '0',
@@ -93,12 +95,33 @@ final class ConsoleOutput implements OutputInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Builds a string to visualize one or more
+     * periods and/or sequences in a more
+     * human readable / parsable manner.
+     *
+     * The submitted array values represent a tuple where
+     * the first value is the identifer and the second value
+     * the intervals represented as Period or Sequence instances.
+     *
+     * the returned string can be represented like the following:
+     *
+     * A       [========]
+     * B                    [==]
+     * C                            [=====]
+     * D              [===============]
+     * OVERLAP        [=]   [==]    [=]
+     *
+     * @param array<int, array<int|string, Period|Sequence>> $blocks
      */
     public function display(array $blocks): string
     {
+        $matrix = Matrix::build($blocks, $this->config->getWidth());
+        if ([] === $matrix) {
+            return '';
+        }
+
         ob_start();
-        foreach ($this->render($blocks) as $row) {
+        foreach ($this->render($matrix) as $row) {
             echo $row.$this->newline;
         }
 
@@ -106,15 +129,20 @@ final class ConsoleOutput implements OutputInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Builds an Iterator to visualize one or more
+     * periods and/or collections in a more
+     * human readable / parsable manner.
+     *
+     * The submitted array values represent a tuple where
+     * the first value is the identifer and the second value
+     * the periods represented as Period or Sequence instances.
+     *
+     * This method returns one output line at a time.
+     *
+     * @param array<int, array<int|string, mixed>> $matrix
      */
-    public function render(array $blocks): iterable
+    private function render(array $matrix): iterable
     {
-        $matrix = Matrix::build($blocks, $this->config->getWidth());
-        if ([] === $matrix) {
-            return;
-        }
-
         $nameLength = max(...array_map('strlen', array_column($matrix, 0)));
         $colorOffsets = $this->config->getColors();
         $key = -1;
@@ -131,6 +159,8 @@ final class ConsoleOutput implements OutputInterface
 
     /**
      * Turns a series of boolean values into bars representing the interval.
+     *
+     * @param array<bool> $row
      */
     private function toLine(array $row): string
     {

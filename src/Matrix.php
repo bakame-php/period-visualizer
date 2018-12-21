@@ -49,6 +49,8 @@ final class Matrix
      * - There's one column for every unit of width.
      * - Each cell is true when a period is active for that unit.
      * - Each cell is false when a period is not active for that unit.
+     *
+     * @return array<int, array<int|string, bool[]>>
      */
     public static function build(array $blocks, int $width): array
     {
@@ -94,13 +96,14 @@ final class Matrix
     /**
      * Populates a row with true values where periods are active.
      *
+     * @param bool[] $row
+     *
      * @return bool[]
      */
     private static function populateRow(array $row, Period $period): array
     {
         $startIndex = floor(($period->getStartDate()->getTimestamp() - self::$start) * self::$unit);
         $endIndex = ceil(($period->getEndDate()->getTimestamp() - self::$start) * self::$unit);
-
         foreach ($row as $index => &$value) {
             if ($startIndex <= $index && $index < $endIndex) {
                 $value = true;

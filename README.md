@@ -19,20 +19,18 @@ use Bakame\Period\Visualizer\ConsoleOutput;
 use League\Period\Period;
 use League\Period\Sequence;
 
-require 'vendor/autoload.php';
-
 $view = new Viewer(new ConsoleOutput());
 echo $view->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
-    new Period('2017-01-01', '2019-01-01')
+    new Period('2018-01-15', '2018-02-01')
 ));
 ~~~
 
 results:
 
 ~~~bash
- A         =    
- B    [========]
+ A    [========]
+ B         [===]
 ~~~
 
 System Requirements
@@ -362,14 +360,10 @@ $config = (new ConsoleConfig())
 ;
 
 $output = new ConsoleOutput($config);
-$content = $output->render([
+echo $output->display([
     ['first', new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00')],
     ['last', new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00')],
 ]);
-
-foreach ($content as $line) {
-    echo $line, PHP_EOL;
-}
 ~~~
 
 results:

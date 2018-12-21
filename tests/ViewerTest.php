@@ -50,10 +50,9 @@ final class ViewerTest extends TestCase
 
     public function testOutput(): void
     {
-        $visualizer = $this->view->getOutput();
-        self::assertInstanceOf(ConsoleOutput::class, $visualizer);
+        $output = $this->view->getOutput();
         $this->view->setOutput(new ConsoleOutput(ConsoleConfig::createFromRainbow()));
-        self::assertNotSame($visualizer, $this->view->getOutput());
+        self::assertNotSame($output, $this->view->getOutput());
     }
 
     public function testDisplaySequence(): void

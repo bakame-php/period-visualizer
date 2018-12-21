@@ -20,7 +20,7 @@ use function array_values;
 final class Viewer
 {
     /**
-     * @var OutputInterface
+     * @var ConsoleOutput
      */
     private $output;
 
@@ -34,7 +34,7 @@ final class Viewer
      *
      * @param ?LabelGenerator $label
      */
-    public function __construct(OutputInterface $output, ?LabelGenerator $label = null)
+    public function __construct(ConsoleOutput $output, ?LabelGenerator $label = null)
     {
         $this->output = $output;
         $this->setLabelGenerator($label ?? new LetterType());
@@ -43,7 +43,7 @@ final class Viewer
     /**
      * Returns the output.
      */
-    public function getOutput(): OutputInterface
+    public function getOutput(): ConsoleOutput
     {
         return $this->output;
     }
@@ -59,7 +59,7 @@ final class Viewer
     /**
      * Sets the output.
      */
-    public function setOutput(OutputInterface $output): void
+    public function setOutput(ConsoleOutput $output): void
     {
         $this->output = $output;
     }
