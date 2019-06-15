@@ -38,7 +38,8 @@ System Requirements
 
 You need:
 
-- **PHP >= 7.1.3** but the latest stable version of PHP is recommended
+- **PHP >= 7.2** but the latest stable version of PHP is recommended
+- **League/Period ^4.4** but the latest stable version is recommended
 
 Installation
 --------
