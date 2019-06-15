@@ -1,7 +1,7 @@
 <?php
 
 /**
- * League.Period Visualizer (https://github.com/bakame-php/period-visualizer).
+ * League.Period Visualizer (https://github.com/bakame-php/period-visualizer)
  *
  * (c) Ignace Nyamagana Butera <nyamsprod@gmail.com>
  *
@@ -33,7 +33,7 @@ final class ReverseTypeTest extends TestCase
         array $expected
     ): void {
         $generator = new ReverseType(new LetterType($letter));
-        self::assertSame($expected, $generator->getLabels($sequence));
+        self::assertSame($expected, $generator->generateLabels($sequence));
     }
 
     public function providerLetter(): iterable

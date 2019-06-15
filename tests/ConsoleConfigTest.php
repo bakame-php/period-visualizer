@@ -1,7 +1,7 @@
 <?php
 
 /**
- * League.Period Visualizer (https://github.com/bakame-php/period-visualizer).
+ * League.Period Visualizer (https://github.com/bakame-php/period-visualizer)
  *
  * (c) Ignace Nyamagana Butera <nyamsprod@gmail.com>
  *
@@ -34,31 +34,29 @@ final class ConsoleConfigTest extends TestCase
 
     public function testNewInstance(): void
     {
-        self::assertSame(10, $this->config->getWidth());
-        self::assertSame(']', $this->config->getHead());
-        self::assertSame('=', $this->config->getBody());
-        self::assertSame('[', $this->config->getTail());
-        self::assertSame(' ', $this->config->getSpace());
-        self::assertSame(['default'], $this->config->getColors());
+        self::assertSame(10, $this->config->width());
+        self::assertSame('=', $this->config->body());
+        self::assertSame(' ', $this->config->space());
+        self::assertSame(['default'], $this->config->colors());
     }
 
     public function testCreateFromRandom(): void
     {
         $config = ConsoleConfig::createFromRandom();
-        self::assertContains($config->getColors()[0], ConsoleConfig::COLORS);
+        self::assertContains($config->colors()[0], ConsoleConfig::COLORS);
     }
 
     public function testCreateFromRainbow(): void
     {
         $config = ConsoleConfig::createFromRainbow();
-        self::assertSame($config->getColors(), ConsoleConfig::COLORS);
+        self::assertSame($config->colors(), ConsoleConfig::COLORS);
     }
     /**
      * @dataProvider widthProvider
      */
     public function testWidth(int $size, int $expected): void
     {
-        self::assertSame($expected, $this->config->withWidth($size)->getWidth());
+        self::assertSame($expected, $this->config->withWidth($size)->width());
     }
     public function widthProvider(): array
     {
@@ -74,7 +72,7 @@ final class ConsoleConfigTest extends TestCase
      */
     public function testBody(string $char, string $expected): void
     {
-        self::assertSame($expected, $this->config->withBody($char)->getBody());
+        self::assertSame($expected, $this->config->withBody($char)->body());
     }
 
     /**
@@ -82,7 +80,7 @@ final class ConsoleConfigTest extends TestCase
      */
     public function testHead(string $char, string $expected): void
     {
-        self::assertSame($expected, $this->config->withHead($char)->getHead());
+        self::assertSame($expected, $this->config->withHead($char)->head());
     }
 
     /**
@@ -90,7 +88,7 @@ final class ConsoleConfigTest extends TestCase
      */
     public function testTail(string $char, string $expected): void
     {
-        self::assertSame($expected, $this->config->withTail($char)->getTail());
+        self::assertSame($expected, $this->config->withTail($char)->tail());
     }
 
     /**
@@ -98,7 +96,7 @@ final class ConsoleConfigTest extends TestCase
      */
     public function testSpace(string $char, string $expected): void
     {
-        self::assertSame($expected, $this->config->withSpace($char)->getSpace());
+        self::assertSame($expected, $this->config->withSpace($char)->space());
     }
 
     public function providerChars(): array
@@ -122,7 +120,7 @@ final class ConsoleConfigTest extends TestCase
      */
     public function testColors(string $char, string $expected): void
     {
-        self::assertSame($expected, $this->config->withColors($char)->getColors()[0]);
+        self::assertSame($expected, $this->config->withColors($char)->colors()[0]);
     }
 
     public function colorsProvider(): array
@@ -131,6 +129,11 @@ final class ConsoleConfigTest extends TestCase
             ['=', 'default'],
             ['white', 'white'],
         ];
+    }
+
+    public function testWithColorsReturnSameInstance(): void
+    {
+        self::assertSame($this->config, $this->config->withColors());
     }
 
     public function providerInvalidChars(): array
@@ -146,6 +149,6 @@ final class ConsoleConfigTest extends TestCase
     public function testWithHeadBlockThrowsInvalidArgumentException(string $input): void
     {
         self::expectException(InvalidArgumentException::class);
-        $this->config->withHead($input);
+        $this->config->withBody($input);
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * League.Period Visualizer (https://github.com/bakame-php/period-visualizer).
+ * League.Period Visualizer (https://github.com/bakame-php/period-visualizer)
  *
  * (c) Ignace Nyamagana Butera <nyamsprod@gmail.com>
  *
@@ -118,9 +118,9 @@ final class RomanType implements LabelGenerator
     /**
      * {@inheritdoc}
      */
-    public function getLabels(Sequence $sequence): array
+    public function generateLabels(Sequence $sequence): array
     {
-        $retval = array_map([$this, 'convert'], $this->labelGenerator->getLabels($sequence));
+        $retval = array_map([$this, 'convert'], $this->labelGenerator->generateLabels($sequence));
         if (self::LOWER === $this->lettercase) {
             return array_map('strtolower', $retval);
         }

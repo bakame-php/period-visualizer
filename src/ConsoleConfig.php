@@ -1,7 +1,7 @@
 <?php
 
 /**
- * League.Period Visualizer (https://github.com/bakame-php/period-visualizer).
+ * League.Period Visualizer (https://github.com/bakame-php/period-visualizer)
  *
  * (c) Ignace Nyamagana Butera <nyamsprod@gmail.com>
  *
@@ -16,7 +16,6 @@ namespace Bakame\Period\Visualizer;
 use InvalidArgumentException;
 use function array_filter;
 use function array_map;
-use function array_merge;
 use function in_array;
 use function mb_convert_encoding;
 use function mb_strlen;
@@ -91,7 +90,7 @@ final class ConsoleConfig
     /**
      * Retrieve the row width.
      */
-    public function getWidth(): int
+    public function width(): int
     {
         return $this->width;
     }
@@ -99,7 +98,7 @@ final class ConsoleConfig
     /**
      * Retrieve the body block character.
      */
-    public function getTail(): string
+    public function tail(): string
     {
         return $this->tail;
     }
@@ -107,7 +106,7 @@ final class ConsoleConfig
     /**
      * Retrieve the body block character.
      */
-    public function getBody(): string
+    public function body(): string
     {
         return $this->body;
     }
@@ -115,7 +114,7 @@ final class ConsoleConfig
     /**
      * Retrieve the head block character.
      */
-    public function getHead(): string
+    public function head(): string
     {
         return $this->head;
     }
@@ -123,7 +122,7 @@ final class ConsoleConfig
     /**
      * Retrieve the row space character.
      */
-    public function getSpace(): string
+    public function space(): string
     {
         return $this->space;
     }
@@ -133,7 +132,7 @@ final class ConsoleConfig
      *
      * @return string[]
      */
-    public function getColors(): array
+    public function colors(): array
     {
         return $this->colorOffsets;
     }
@@ -244,13 +243,13 @@ final class ConsoleConfig
      *
      * @param string... $optionals
      */
-    public function withColors(string $primary, string ...$optionals): self
+    public function withColors(string ...$optionals): self
     {
         $filter = function ($value) {
             return in_array($value, self::COLORS, true);
         };
 
-        $colorOffsets = array_filter(array_map('strtolower', array_merge([$primary], $optionals)), $filter);
+        $colorOffsets = array_filter(array_map('strtolower', $optionals), $filter);
 
         if ([] === $colorOffsets) {
             $colorOffsets = ['default'];

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * League.Period Visualizer (https://github.com/bakame-php/period-visualizer).
+ * League.Period Visualizer (https://github.com/bakame-php/period-visualizer)
  *
  * (c) Ignace Nyamagana Butera <nyamsprod@gmail.com>
  *
@@ -28,7 +28,6 @@ use function preg_replace;
 use function preg_replace_callback;
 use function str_pad;
 use function strpos;
-use function strtolower;
 use function strtr;
 use const PHP_OS;
 
@@ -71,12 +70,12 @@ final class ConsoleOutput
     /**
      * @var string
      */
-    private $newline;
+    private $newline = PHP_EOL;
 
     /**
      * @var string
      */
-    private $writerMethod;
+    private $writerMethod = 'POSIX';
 
     /**
      * @var ConsoleConfig
@@ -90,10 +89,9 @@ final class ConsoleOutput
     {
         $this->config = $config ?? new ConsoleConfig();
         $this->regexp = ',<<\s*((('.implode('|', array_keys(self::POSIX_COLOR_CODES)).')(\s*))+)>>,Umsi';
-        $this->writerMethod = 'posixWrite';
-        $this->newline = "\n";
-        if (false !== strpos(strtolower(PHP_OS), 'win')) {
-            $this->writerMethod = 'windowsWrite';
+        $this->newline = PHP_EOL;
+        if (false !== strpos(PHP_OS, 'WIN')) {
+            $this->writerMethod = 'WINDOWS';
             $this->newline = "\r\n";
         }
     }
@@ -119,7 +117,7 @@ final class ConsoleOutput
      */
     public function display(array $blocks): string
     {
-        $matrix = Matrix::build($blocks, $this->config->getWidth());
+        $matrix = Matrix::build($blocks, $this->config->width());
         if ([] === $matrix) {
             return '';
         }
@@ -148,7 +146,7 @@ final class ConsoleOutput
     private function render(array $matrix): iterable
     {
         $nameLength = max(...array_map('strlen', array_column($matrix, 0)));
-        $colorOffsets = $this->config->getColors();
+        $colorOffsets = $this->config->colors();
         $key = -1;
         foreach ($matrix as [$name, $row]) {
             $color = $colorOffsets[++$key % count($colorOffsets)];
@@ -177,27 +175,27 @@ final class ConsoleOutput
             switch (true) {
                 // The current period is only one unit long so display a "="
                 case $curr && $curr !== $prev && $curr !== $next:
-                    $tmp[] = $this->config->getBody();
+                    $tmp[] = $this->config->body();
                     break;
 
                 // We've hit the start of a period
                 case $curr && $curr !== $prev && $curr === $next:
-                    $tmp[] = $this->config->getTail();
+                    $tmp[] = $this->config->tail();
                     break;
 
                 // We've hit the end of the period
                 case $curr && $curr !== $next:
-                    $tmp[] = $this->config->getHead();
+                    $tmp[] = $this->config->head();
                     break;
 
                 // We're adding segments to the current period
                 case $curr && $curr === $prev:
-                    $tmp[] = $this->config->getBody();
+                    $tmp[] = $this->config->body();
                     break;
 
                 // Otherwise it's just empty space
                 default:
-                    $tmp[] = $this->config->getSpace();
+                    $tmp[] = $this->config->space();
                     break;
             }
         }
@@ -212,7 +210,11 @@ final class ConsoleOutput
      */
     private function write(string $str): string
     {
-        return $this->{$this->writerMethod}($str);
+        if ('POSIX' === $this->writerMethod) {
+            return $this->posixWrite($str);
+        }
+
+        return $this->windowsWrite($str);
     }
 
     /**

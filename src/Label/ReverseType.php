@@ -1,7 +1,7 @@
 <?php
 
 /**
- * League.Period Visualizer (https://github.com/bakame-php/period-visualizer).
+ * League.Period Visualizer (https://github.com/bakame-php/period-visualizer)
  *
  * (c) Ignace Nyamagana Butera <nyamsprod@gmail.com>
  *
@@ -34,8 +34,8 @@ final class ReverseType implements LabelGenerator
     /**
      * {@inheritdoc}
      */
-    public function getLabels(Sequence $sequence): array
+    public function generateLabels(Sequence $sequence): array
     {
-        return array_reverse($this->labelGenerator->getLabels($sequence));
+        return array_reverse($this->labelGenerator->generateLabels($sequence));
     }
 }

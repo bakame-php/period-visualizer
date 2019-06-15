@@ -1,7 +1,7 @@
 <?php
 
 /**
- * League.Period Visualizer (https://github.com/bakame-php/period-visualizer).
+ * League.Period Visualizer (https://github.com/bakame-php/period-visualizer)
  *
  * (c) Ignace Nyamagana Butera <nyamsprod@gmail.com>
  *
@@ -67,7 +67,8 @@ final class Matrix
         $baseRow = array_fill(0, $width, false);
         foreach ($blocks as [$name, $block]) {
             if (!$block instanceof Sequence) {
-                $block = new Sequence($block);
+                $matrix[] = [$name, self::populateRow($baseRow, $block)];
+                continue;
             }
 
             $matrix[] = [$name, array_reduce($block->toArray(), [self::class, 'populateRow'], $baseRow)];
@@ -92,7 +93,7 @@ final class Matrix
             }
         }
 
-        return $sequence->getBoundaries();
+        return $sequence->boundaries();
     }
 
     /**
