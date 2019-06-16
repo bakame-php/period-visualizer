@@ -1,7 +1,7 @@
 <?php
 
 /**
- * League.Period Visualizer (https://github.com/bakame-php/period-visualizer).
+ * League.Period Visualizer (https://github.com/bakame-php/period-visualizer)
  *
  * (c) Ignace Nyamagana Butera <nyamsprod@gmail.com>
  *
@@ -46,13 +46,13 @@ final class AffixType implements LabelGenerator
     /**
      * {@inheritdoc}
      */
-    public function getLabels(Sequence $sequence): array
+    public function generateLabels(Sequence $sequence): array
     {
         $mapper = function (string $value) {
             return $this->prefix.$value.$this->suffix;
         };
 
-        return array_map($mapper, $this->labelGenerator->getLabels($sequence));
+        return array_map($mapper, $this->labelGenerator->generateLabels($sequence));
     }
 
     /**

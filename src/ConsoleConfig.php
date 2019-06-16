@@ -1,7 +1,7 @@
 <?php
 
 /**
- * League.Period Visualizer (https://github.com/bakame-php/period-visualizer).
+ * League.Period Visualizer (https://github.com/bakame-php/period-visualizer)
  *
  * (c) Ignace Nyamagana Butera <nyamsprod@gmail.com>
  *
@@ -16,7 +16,6 @@ namespace Bakame\Period\Visualizer;
 use InvalidArgumentException;
 use function array_filter;
 use function array_map;
-use function array_merge;
 use function in_array;
 use function mb_convert_encoding;
 use function mb_strlen;
@@ -46,18 +45,27 @@ final class ConsoleConfig
     /**
      * @var int
      */
-    private $width = 10;
+    private $width = 80;
 
     /**
      * @var string
      */
-    private $head = ']';
+    private $endExcluded = ')';
 
     /**
      * @var string
      */
-    private $tail = '[';
+    private $startIncluded = '[';
 
+    /**
+     * @var string
+     */
+    private $endIncluded = ']';
+
+    /**
+     * @var string
+     */
+    private $startExcluded = '(';
     /**
      * @var string
      */
@@ -91,39 +99,54 @@ final class ConsoleConfig
     /**
      * Retrieve the row width.
      */
-    public function getWidth(): int
+    public function width(): int
     {
         return $this->width;
     }
 
     /**
-     * Retrieve the body block character.
+     * Retrieve the start excluded block character.
      */
-    public function getTail(): string
+    public function startExcluded(): string
     {
-        return $this->tail;
+        return $this->startExcluded;
+    }
+    /**
+     * Retrieve the start included block character.
+     */
+    public function startIncluded(): string
+    {
+        return $this->startIncluded;
     }
 
     /**
      * Retrieve the body block character.
      */
-    public function getBody(): string
+    public function body(): string
     {
         return $this->body;
     }
 
     /**
-     * Retrieve the head block character.
+     * Retrieve the excluded end block character.
      */
-    public function getHead(): string
+    public function endExcluded(): string
     {
-        return $this->head;
+        return $this->endExcluded;
+    }
+
+    /**
+     * Retrieve the excluded end block character.
+     */
+    public function endIncluded(): string
+    {
+        return $this->endIncluded;
     }
 
     /**
      * Retrieve the row space character.
      */
-    public function getSpace(): string
+    public function space(): string
     {
         return $this->space;
     }
@@ -133,7 +156,7 @@ final class ConsoleConfig
      *
      * @return string[]
      */
-    public function getColors(): array
+    public function colors(): array
     {
         return $this->colorOffsets;
     }
@@ -161,24 +184,42 @@ final class ConsoleConfig
     }
 
     /**
-     * Return an instance with the head pattern.
+     * Return an instance with the end excluded pattern.
      *
      * This method MUST retain the state of the current instance, and return
-     * an instance that contains the specified head character.
+     * an instance that contains the specified end excluded character.
      */
-    public function withHead(string $head): self
+    public function withEndExcluded(string $endExcluded): self
     {
-        $head = $this->filterPattern($head, 'head');
-        if ($head === $this->head) {
+        $endExcluded = $this->filterPattern($endExcluded, 'endExcluded');
+        if ($endExcluded === $this->endExcluded) {
             return $this;
         }
 
         $clone = clone $this;
-        $clone->head = $head;
+        $clone->endExcluded = $endExcluded;
 
         return $clone;
     }
 
+    /**
+     * Return an instance with the end included pattern.
+     *
+     * This method MUST retain the state of the current instance, and return
+     * an instance that contains the specified end included character.
+     */
+    public function withEndIncluded(string $endIncluded): self
+    {
+        $endIncluded = $this->filterPattern($endIncluded, 'endIncluded');
+        if ($endIncluded === $this->endIncluded) {
+            return $this;
+        }
+
+        $clone = clone $this;
+        $clone->endIncluded = $endIncluded;
+
+        return $clone;
+    }
     /**
      * Return an instance with the specified body block.
      *
@@ -199,20 +240,39 @@ final class ConsoleConfig
     }
 
     /**
-     * Return an instance with the tail pattern.
+     * Return an instance with the start included pattern.
      *
      * This method MUST retain the state of the current instance, and return
-     * an instance that contains the specified tail character.
+     * an instance that contains the specified start included character.
      */
-    public function withTail(string $tail): self
+    public function withStartIncluded(string $startIncluded): self
     {
-        $tail = $this->filterPattern($tail, 'tail');
-        if ($tail === $this->tail) {
+        $startIncluded = $this->filterPattern($startIncluded, 'startIncluded');
+        if ($startIncluded === $this->startIncluded) {
             return $this;
         }
 
         $clone = clone $this;
-        $clone->tail = $tail;
+        $clone->startIncluded = $startIncluded;
+
+        return $clone;
+    }
+
+    /**
+     * Return an instance with the start excluded pattern.
+     *
+     * This method MUST retain the state of the current instance, and return
+     * an instance that contains the specified start excluded character.
+     */
+    public function withStartExcluded(string $startExcluded): self
+    {
+        $startExcluded = $this->filterPattern($startExcluded, 'startExcluded');
+        if ($startExcluded === $this->startExcluded) {
+            return $this;
+        }
+
+        $clone = clone $this;
+        $clone->startExcluded = $startExcluded;
 
         return $clone;
     }
@@ -244,13 +304,13 @@ final class ConsoleConfig
      *
      * @param string... $optionals
      */
-    public function withColors(string $primary, string ...$optionals): self
+    public function withColors(string ...$optionals): self
     {
         $filter = function ($value) {
             return in_array($value, self::COLORS, true);
         };
 
-        $colorOffsets = array_filter(array_map('strtolower', array_merge([$primary], $optionals)), $filter);
+        $colorOffsets = array_filter(array_map('strtolower', $optionals), $filter);
 
         if ([] === $colorOffsets) {
             $colorOffsets = ['default'];

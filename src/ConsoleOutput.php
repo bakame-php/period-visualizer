@@ -1,7 +1,7 @@
 <?php
 
 /**
- * League.Period Visualizer (https://github.com/bakame-php/period-visualizer).
+ * League.Period Visualizer (https://github.com/bakame-php/period-visualizer)
  *
  * (c) Ignace Nyamagana Butera <nyamsprod@gmail.com>
  *
@@ -28,7 +28,6 @@ use function preg_replace;
 use function preg_replace_callback;
 use function str_pad;
 use function strpos;
-use function strtolower;
 use function strtr;
 use const PHP_OS;
 
@@ -71,12 +70,12 @@ final class ConsoleOutput
     /**
      * @var string
      */
-    private $newline;
+    private $newline = PHP_EOL;
 
     /**
      * @var string
      */
-    private $writerMethod;
+    private $writerMethod = 'POSIX';
 
     /**
      * @var ConsoleConfig
@@ -90,11 +89,9 @@ final class ConsoleOutput
     {
         $this->config = $config ?? new ConsoleConfig();
         $this->regexp = ',<<\s*((('.implode('|', array_keys(self::POSIX_COLOR_CODES)).')(\s*))+)>>,Umsi';
-        $this->writerMethod = 'posixWrite';
-        $this->newline = "\n";
-        if (false !== strpos(strtolower(PHP_OS), 'win')) {
-            $this->writerMethod = 'windowsWrite';
-            $this->newline = "\r\n";
+        $this->newline = PHP_EOL;
+        if (false !== strpos(PHP_OS, 'WIN')) {
+            $this->writerMethod = 'WINDOWS';
         }
     }
 
@@ -117,9 +114,9 @@ final class ConsoleOutput
      *
      * @param array<int, array<int|string, Period|Sequence>> $blocks
      */
-    public function display(array $blocks): string
+    public function display(iterable $blocks): string
     {
-        $matrix = Matrix::build($blocks, $this->config->getWidth());
+        $matrix = Matrix::build($blocks, $this->config->width());
         if ([] === $matrix) {
             return '';
         }
@@ -128,6 +125,7 @@ final class ConsoleOutput
         foreach ($this->render($matrix) as $row) {
             echo $row.$this->newline;
         }
+        echo $this->newline;
 
         return (string) ob_get_clean();
     }
@@ -148,7 +146,7 @@ final class ConsoleOutput
     private function render(array $matrix): iterable
     {
         $nameLength = max(...array_map('strlen', array_column($matrix, 0)));
-        $colorOffsets = $this->config->getColors();
+        $colorOffsets = $this->config->colors();
         $key = -1;
         foreach ($matrix as [$name, $row]) {
             $color = $colorOffsets[++$key % count($colorOffsets)];
@@ -164,40 +162,30 @@ final class ConsoleOutput
     /**
      * Turns a series of boolean values into bars representing the interval.
      *
-     * @param array<bool> $row
+     * @param array<int> $row
      */
     private function toLine(array $row): string
     {
         $tmp = [];
-        foreach ($row as $offset => $curr) {
-            $prev = $row[$offset - 1] ?? null;
-            $next = $row[$offset + 1] ?? null;
-
-            // Small state machine to build the string
-            switch (true) {
-                // The current period is only one unit long so display a "="
-                case $curr && $curr !== $prev && $curr !== $next:
-                    $tmp[] = $this->config->getBody();
+        foreach ($row as $token) {
+            switch ($token) {
+                case Matrix::TOKEN_BODY:
+                    $tmp[] = $this->config->body();
                     break;
-
-                // We've hit the start of a period
-                case $curr && $curr !== $prev && $curr === $next:
-                    $tmp[] = $this->config->getTail();
+                case Matrix::TOKEN_START_EXCLUDED:
+                    $tmp[] = $this->config->startExcluded();
                     break;
-
-                // We've hit the end of the period
-                case $curr && $curr !== $next:
-                    $tmp[] = $this->config->getHead();
+                case Matrix::TOKEN_START_INCLUDED:
+                    $tmp[] = $this->config->startIncluded();
                     break;
-
-                // We're adding segments to the current period
-                case $curr && $curr === $prev:
-                    $tmp[] = $this->config->getBody();
+                case Matrix::TOKEN_END_EXCLUDED:
+                    $tmp[] = $this->config->endExcluded();
                     break;
-
-                // Otherwise it's just empty space
-                default:
-                    $tmp[] = $this->config->getSpace();
+                case Matrix::TOKEN_END_INCLUDED:
+                    $tmp[] = $this->config->endIncluded();
+                    break;
+                case Matrix::TOKEN_SPACE:
+                    $tmp[] = $this->config->space();
                     break;
             }
         }
@@ -212,7 +200,11 @@ final class ConsoleOutput
      */
     private function write(string $str): string
     {
-        return $this->{$this->writerMethod}($str);
+        if ('POSIX' === $this->writerMethod) {
+            return $this->posixWrite($str);
+        }
+
+        return $this->windowsWrite($str);
     }
 
     /**

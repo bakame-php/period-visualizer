@@ -1,7 +1,7 @@
 <?php
 
 /**
- * League.Period Visualizer (https://github.com/bakame-php/period-visualizer).
+ * League.Period Visualizer (https://github.com/bakame-php/period-visualizer)
  *
  * (c) Ignace Nyamagana Butera <nyamsprod@gmail.com>
  *
@@ -38,7 +38,7 @@ final class ViewerTest extends TestCase
 
     /**
      * @covers Bakame\Period\Visualizer\ConsoleOutput
-     * @covers Bakame\Period\Visualizer\Viewer
+     * @covers ::getLabelGenerator
      */
     public function testLabelGenerator(): void
     {
@@ -62,8 +62,8 @@ final class ViewerTest extends TestCase
             new Period('2018-01-15', '2018-02-01')
         ));
 
-        self::assertContains('A    [===]', $data);
-        self::assertContains('B        [====]', $data);
+        self::assertStringContainsString('A     [==================================)', $data);
+        self::assertStringContainsString('B                                         [=========================================)', $data);
     }
 
     public function testDisplayEmptySequence(): void
@@ -79,32 +79,32 @@ final class ViewerTest extends TestCase
             new Period('2018-01-10', '2018-02-01')
         ));
 
-        self::assertContains('A                [===]', $data);
-        self::assertContains('B                  [======]', $data);
-        self::assertContains('INTERSECTIONS      [=]', $data);
+        self::assertStringContainsString('A                 [==================================)', $data);
+        self::assertStringContainsString('B                                        [======================================================)', $data);
+        self::assertStringContainsString('INTERSECTIONS                            [===========)', $data);
     }
 
     public function testGaps(): void
     {
         $data = $this->view->gaps(new Sequence(
             new Period('2018-01-01', '2018-01-10'),
-            new Period('2018-01-15', '2018-02-01')
-        ));
+            new Period('2018-01-15', '2018-02-01', Period::EXCLUDE_ALL)
+        ), '');
 
-        self::assertContains('A       [=]', $data);
-        self::assertContains('B           [====]', $data);
-        self::assertContains('GAPS      [=]', $data);
+        self::assertStringContainsString('A          [=====================)', $data);
+        self::assertStringContainsString('B                                              (=========================================)', $data);
+        self::assertStringContainsString('RESULT                            [===========]', $data);
     }
 
     public function testSingleUnitIntervalLength(): void
     {
         $data = $this->view->sequence(new Sequence(
             new Period('2018-01-01', '2018-02-01'),
-            new Period('2017-01-01', '2019-01-01')
+            new Period('2017-01-01', '2019-01-01', Period::INCLUDE_ALL)
         ));
 
-        self::assertContains('A         =    ', $data);
-        self::assertContains('B    [========]', $data);
+        self::assertStringContainsString('A                                             [=)', $data);
+        self::assertStringContainsString('B     [=============================================================================]', $data);
     }
 
     /**
@@ -120,8 +120,8 @@ final class ViewerTest extends TestCase
             new Period('2017-12-01', '2018-03-01')
         );
 
-        self::assertContains('A          [==]', $data);
-        self::assertContains('B       [========]', $data);
-        self::assertContains('DIFF    [==]  [==]', $data);
+        self::assertStringContainsString('A                                   [==========================)', $data);
+        self::assertStringContainsString('B        [=============================================================================)', $data);
+        self::assertStringContainsString('DIFF     [=========================)                            [======================)', $data);
     }
 }

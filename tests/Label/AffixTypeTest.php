@@ -1,7 +1,7 @@
 <?php
 
 /**
- * League.Period Visualizer (https://github.com/bakame-php/period-visualizer).
+ * League.Period Visualizer (https://github.com/bakame-php/period-visualizer)
  *
  * (c) Ignace Nyamagana Butera <nyamsprod@gmail.com>
  *
@@ -37,7 +37,7 @@ final class AffixTypeTest extends TestCase
         array $expected
     ): void {
         $generator = (new AffixType(new LetterType($letter)))->withPrefix($prefix)->withSuffix($suffix);
-        self::assertSame($expected, $generator->getLabels($sequence));
+        self::assertSame($expected, $generator->generateLabels($sequence));
     }
 
     public function providerLetter(): iterable

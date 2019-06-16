@@ -1,7 +1,7 @@
 <?php
 
 /**
- * League.Period Visualizer (https://github.com/bakame-php/period-visualizer).
+ * League.Period Visualizer (https://github.com/bakame-php/period-visualizer)
  *
  * (c) Ignace Nyamagana Butera <nyamsprod@gmail.com>
  *
@@ -22,5 +22,5 @@ interface LabelGenerator
      *
      * @return string[]
      */
-    public function getLabels(Sequence $sequence): array;
+    public function generateLabels(Sequence $sequence): array;
 }
