@@ -117,7 +117,7 @@ results:
 
 ~~~php
 $view = new Viewer(new ConsoleOutput());
-echo $view->diff
+echo $view->diff(
     new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00'),
     new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00')
 );
@@ -352,8 +352,10 @@ use Bakame\Period\Visualizer\ConsoleOutput;
 use League\Period\Period;
 
 $config = (new ConsoleConfig())
-    ->withHead('🍅')
-    ->withTail('🎾')
+    ->withStartIncluded('🍅')
+    ->withEndExcluded('🎾')
+    ->withStartExcluded('🍕')
+    ->withEndIncluded('🍔')
     ->withBody('💩')
     ->withSpace('+')
     ->withWidth(30)
@@ -362,21 +364,19 @@ $config = (new ConsoleConfig())
 
 $output = new ConsoleOutput($config);
 echo $output->display([
-    ['first', new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00')],
-    ['last', new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00')],
+    ['first', new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00', Period::EXCLUDE_ALL)],
+    ['last', new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00', Period::INCLUDE_ALL)],
 ]);
 ~~~
 
 results:
 
 ~~~bash
- first    🎾💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩🍅++++++++++
- last     ++++++++++🎾💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩🍅
+ first    🍕💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩🎾++++++++++
+ last     ++++++++++🍅💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩🍔
 ~~~
 
 *On a POSIX compliant console the first line will be yellow and the second red*
-
-![Result on a POSIX compliant console](posix-colors.png)
 
 **ALL CONFIGURATION OBJECTS ARE IMMUTABLE SO MODIFYING THEIR PROPERTIES RETURNS A NEW INSTANCE**
 

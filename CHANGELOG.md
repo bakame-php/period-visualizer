@@ -2,6 +2,10 @@
 
 All Notable changes to `Period Visualizer` will be documented in this file
 
+## 0.4.0 - 2019-06-16
+
+- Added support for boundary type.
+
 ## 0.3.1 - 2018-12-21
 
 - Enforces strict types
