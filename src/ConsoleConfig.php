@@ -45,18 +45,27 @@ final class ConsoleConfig
     /**
      * @var int
      */
-    private $width = 10;
+    private $width = 80;
 
     /**
      * @var string
      */
-    private $head = ']';
+    private $endExcluded = ')';
 
     /**
      * @var string
      */
-    private $tail = '[';
+    private $startIncluded = '[';
 
+    /**
+     * @var string
+     */
+    private $endIncluded = ']';
+
+    /**
+     * @var string
+     */
+    private $startExcluded = '(';
     /**
      * @var string
      */
@@ -96,11 +105,18 @@ final class ConsoleConfig
     }
 
     /**
-     * Retrieve the body block character.
+     * Retrieve the start excluded block character.
      */
-    public function tail(): string
+    public function startExcluded(): string
     {
-        return $this->tail;
+        return $this->startExcluded;
+    }
+    /**
+     * Retrieve the start included block character.
+     */
+    public function startIncluded(): string
+    {
+        return $this->startIncluded;
     }
 
     /**
@@ -112,11 +128,19 @@ final class ConsoleConfig
     }
 
     /**
-     * Retrieve the head block character.
+     * Retrieve the excluded end block character.
      */
-    public function head(): string
+    public function endExcluded(): string
     {
-        return $this->head;
+        return $this->endExcluded;
+    }
+
+    /**
+     * Retrieve the excluded end block character.
+     */
+    public function endIncluded(): string
+    {
+        return $this->endIncluded;
     }
 
     /**
@@ -160,24 +184,42 @@ final class ConsoleConfig
     }
 
     /**
-     * Return an instance with the head pattern.
+     * Return an instance with the end excluded pattern.
      *
      * This method MUST retain the state of the current instance, and return
-     * an instance that contains the specified head character.
+     * an instance that contains the specified end excluded character.
      */
-    public function withHead(string $head): self
+    public function withEndExcluded(string $endExcluded): self
     {
-        $head = $this->filterPattern($head, 'head');
-        if ($head === $this->head) {
+        $endExcluded = $this->filterPattern($endExcluded, 'endExcluded');
+        if ($endExcluded === $this->endExcluded) {
             return $this;
         }
 
         $clone = clone $this;
-        $clone->head = $head;
+        $clone->endExcluded = $endExcluded;
 
         return $clone;
     }
 
+    /**
+     * Return an instance with the end included pattern.
+     *
+     * This method MUST retain the state of the current instance, and return
+     * an instance that contains the specified end included character.
+     */
+    public function withEndIncluded(string $endIncluded): self
+    {
+        $endIncluded = $this->filterPattern($endIncluded, 'endIncluded');
+        if ($endIncluded === $this->endIncluded) {
+            return $this;
+        }
+
+        $clone = clone $this;
+        $clone->endIncluded = $endIncluded;
+
+        return $clone;
+    }
     /**
      * Return an instance with the specified body block.
      *
@@ -198,20 +240,39 @@ final class ConsoleConfig
     }
 
     /**
-     * Return an instance with the tail pattern.
+     * Return an instance with the start included pattern.
      *
      * This method MUST retain the state of the current instance, and return
-     * an instance that contains the specified tail character.
+     * an instance that contains the specified start included character.
      */
-    public function withTail(string $tail): self
+    public function withStartIncluded(string $startIncluded): self
     {
-        $tail = $this->filterPattern($tail, 'tail');
-        if ($tail === $this->tail) {
+        $startIncluded = $this->filterPattern($startIncluded, 'startIncluded');
+        if ($startIncluded === $this->startIncluded) {
             return $this;
         }
 
         $clone = clone $this;
-        $clone->tail = $tail;
+        $clone->startIncluded = $startIncluded;
+
+        return $clone;
+    }
+
+    /**
+     * Return an instance with the start excluded pattern.
+     *
+     * This method MUST retain the state of the current instance, and return
+     * an instance that contains the specified start excluded character.
+     */
+    public function withStartExcluded(string $startExcluded): self
+    {
+        $startExcluded = $this->filterPattern($startExcluded, 'startExcluded');
+        if ($startExcluded === $this->startExcluded) {
+            return $this;
+        }
+
+        $clone = clone $this;
+        $clone->startExcluded = $startExcluded;
 
         return $clone;
     }

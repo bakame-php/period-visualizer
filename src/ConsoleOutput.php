@@ -92,7 +92,6 @@ final class ConsoleOutput
         $this->newline = PHP_EOL;
         if (false !== strpos(PHP_OS, 'WIN')) {
             $this->writerMethod = 'WINDOWS';
-            $this->newline = "\r\n";
         }
     }
 
@@ -115,7 +114,7 @@ final class ConsoleOutput
      *
      * @param array<int, array<int|string, Period|Sequence>> $blocks
      */
-    public function display(array $blocks): string
+    public function display(iterable $blocks): string
     {
         $matrix = Matrix::build($blocks, $this->config->width());
         if ([] === $matrix) {
@@ -126,6 +125,7 @@ final class ConsoleOutput
         foreach ($this->render($matrix) as $row) {
             echo $row.$this->newline;
         }
+        echo $this->newline;
 
         return (string) ob_get_clean();
     }
@@ -162,39 +162,29 @@ final class ConsoleOutput
     /**
      * Turns a series of boolean values into bars representing the interval.
      *
-     * @param array<bool> $row
+     * @param array<int> $row
      */
     private function toLine(array $row): string
     {
         $tmp = [];
-        foreach ($row as $offset => $curr) {
-            $prev = $row[$offset - 1] ?? null;
-            $next = $row[$offset + 1] ?? null;
-
-            // Small state machine to build the string
-            switch (true) {
-                // The current period is only one unit long so display a "="
-                case $curr && $curr !== $prev && $curr !== $next:
+        foreach ($row as $token) {
+            switch ($token) {
+                case Matrix::TOKEN_BODY:
                     $tmp[] = $this->config->body();
                     break;
-
-                // We've hit the start of a period
-                case $curr && $curr !== $prev && $curr === $next:
-                    $tmp[] = $this->config->tail();
+                case Matrix::TOKEN_START_EXCLUDED:
+                    $tmp[] = $this->config->startExcluded();
                     break;
-
-                // We've hit the end of the period
-                case $curr && $curr !== $next:
-                    $tmp[] = $this->config->head();
+                case Matrix::TOKEN_START_INCLUDED:
+                    $tmp[] = $this->config->startIncluded();
                     break;
-
-                // We're adding segments to the current period
-                case $curr && $curr === $prev:
-                    $tmp[] = $this->config->body();
+                case Matrix::TOKEN_END_EXCLUDED:
+                    $tmp[] = $this->config->endExcluded();
                     break;
-
-                // Otherwise it's just empty space
-                default:
+                case Matrix::TOKEN_END_INCLUDED:
+                    $tmp[] = $this->config->endIncluded();
+                    break;
+                case Matrix::TOKEN_SPACE:
                     $tmp[] = $this->config->space();
                     break;
             }

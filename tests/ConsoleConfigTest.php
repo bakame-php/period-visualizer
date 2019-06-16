@@ -34,9 +34,13 @@ final class ConsoleConfigTest extends TestCase
 
     public function testNewInstance(): void
     {
-        self::assertSame(10, $this->config->width());
+        self::assertSame('[', $this->config->startIncluded());
+        self::assertSame('(', $this->config->startExcluded());
+        self::assertSame(']', $this->config->endIncluded());
+        self::assertSame(')', $this->config->endExcluded());
         self::assertSame('=', $this->config->body());
         self::assertSame(' ', $this->config->space());
+        self::assertSame(80, $this->config->width());
         self::assertSame(['default'], $this->config->colors());
     }
 
@@ -64,6 +68,7 @@ final class ConsoleConfigTest extends TestCase
             '0 size' => [0, 10],
             'negative size' => [-23, 10],
             'basic usage' => [23, 23],
+            'default value' => [80, 80],
         ];
     }
 
@@ -78,17 +83,33 @@ final class ConsoleConfigTest extends TestCase
     /**
      * @dataProvider providerChars
      */
-    public function testHead(string $char, string $expected): void
+    public function testEndExcluded(string $char, string $expected): void
     {
-        self::assertSame($expected, $this->config->withHead($char)->head());
+        self::assertSame($expected, $this->config->withEndExcluded($char)->endExcluded());
     }
 
     /**
      * @dataProvider providerChars
      */
-    public function testTail(string $char, string $expected): void
+    public function testEndIncluded(string $char, string $expected): void
     {
-        self::assertSame($expected, $this->config->withTail($char)->tail());
+        self::assertSame($expected, $this->config->withEndIncluded($char)->endIncluded());
+    }
+
+    /**
+     * @dataProvider providerChars
+     */
+    public function testStartExcluded(string $char, string $expected): void
+    {
+        self::assertSame($expected, $this->config->withStartExcluded($char)->startExcluded());
+    }
+
+    /**
+     * @dataProvider providerChars
+     */
+    public function testStartIncluded(string $char, string $expected): void
+    {
+        self::assertSame($expected, $this->config->withStartIncluded($char)->startIncluded());
     }
 
     /**
@@ -105,6 +126,8 @@ final class ConsoleConfigTest extends TestCase
             ['=', '='],
             ['[', '['],
             [']', ']'],
+            [')', ')'],
+            ['(', '('],
             [' ', ' '],
             ['#', '#'],
             ["\t", "\t"],
