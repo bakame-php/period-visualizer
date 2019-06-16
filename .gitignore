@@ -1,7 +1,8 @@
 vendor
 build
 composer.lock
-.idea
 docs/_site
 docs/node_modules
+.idea
 .php_cs.cache
+.phpunit.result.cache
