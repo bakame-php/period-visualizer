@@ -279,6 +279,11 @@ $samelabel = new class implements LabelGenerator {
     {
         return array_fill(0, count($sequence), 'foobar');
     }
+        
+    public function format($str): string
+    {
+        return (string) $str;
+    }
 };
 
 $labelGenerator = (new AffixGenerator($samelabel))->withSuffix('.');
