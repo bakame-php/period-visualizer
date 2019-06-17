@@ -114,7 +114,7 @@ final class ConsoleOutput
      * periods and/or sequences in a more
      * human readable / parsable manner.
      *
-     * The submitted array values represent a tuple where
+     * The submitted iterable structure represent a tuple where
      * the first value is the identifer and the second value
      * the intervals represented as Period or Sequence instances.
      *
@@ -163,7 +163,9 @@ final class ConsoleOutput
         $key = -1;
         foreach ($matrix as [$name, $row]) {
             $color = $colorOffsets[++$key % count($colorOffsets)];
-            $line = str_pad($name, $nameLength, ' ').'    '.$this->toLine($row);
+            $prefix = str_pad($name, $nameLength, ' ');
+            $data = implode('', array_map([$this, 'convertMatrixValue'], $row));
+            $line = $prefix.'    '.$data;
             if ('default' !== $color) {
                 $line = "<<$color>>$line<<reset>>";
             }
@@ -174,35 +176,18 @@ final class ConsoleOutput
 
     /**
      * Turns a series of boolean values into bars representing the interval.
-     *
-     * @param array<int> $row
      */
-    private function toLine(array $row): string
+    private function convertMatrixValue(int $token): string
     {
-        $tmp = [];
-        foreach ($row as $token) {
-            switch ($token) {
-                case Matrix::TOKEN_BODY:
-                    $tmp[] = $this->config->body();
-                    break;
-                case Matrix::TOKEN_START_EXCLUDED:
-                    $tmp[] = $this->config->startExcluded();
-                    break;
-                case Matrix::TOKEN_START_INCLUDED:
-                    $tmp[] = $this->config->startIncluded();
-                    break;
-                case Matrix::TOKEN_END_EXCLUDED:
-                    $tmp[] = $this->config->endExcluded();
-                    break;
-                case Matrix::TOKEN_END_INCLUDED:
-                    $tmp[] = $this->config->endIncluded();
-                    break;
-                case Matrix::TOKEN_SPACE:
-                    $tmp[] = $this->config->space();
-                    break;
-            }
-        }
+        static $list = [
+            Matrix::TOKEN_SPACE => 'space',
+            Matrix::TOKEN_BODY => 'body',
+            Matrix::TOKEN_START_EXCLUDED => 'startExcluded',
+            Matrix::TOKEN_START_INCLUDED => 'startIncluded',
+            Matrix::TOKEN_END_INCLUDED => 'endIncluded',
+            Matrix::TOKEN_END_EXCLUDED => 'endExcluded',
+        ];
 
-        return implode('', $tmp);
+        return $this->config->{$list[$token]}();
     }
 }
