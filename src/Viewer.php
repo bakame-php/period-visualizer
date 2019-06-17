@@ -62,17 +62,21 @@ final class Viewer
     /**
      * Sets the output.
      */
-    public function setOutput(ConsoleOutput $output): void
+    public function setOutput(ConsoleOutput $output): self
     {
         $this->output = $output;
+
+        return $this;
     }
 
     /**
      * Sets the Label Generator.
      */
-    public function setLabelGenerator(LabelGenerator $label): void
+    public function setLabelGenerator(LabelGenerator $label): self
     {
         $this->labelGenerator = $label;
+
+        return $this;
     }
 
     /**

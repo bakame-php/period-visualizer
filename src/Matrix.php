@@ -120,9 +120,9 @@ final class Matrix
     {
         $startIndex = (int) floor(($period->getStartDate()->getTimestamp() - self::$start) * self::$unit);
         $endIndex = (int) ceil(($period->getEndDate()->getTimestamp() - self::$start) * self::$unit);
-        $periodLength = $endIndex - $startIndex - 1;
+        $periodLength = $endIndex - $startIndex;
 
-        array_splice($row, $startIndex + 1, $periodLength, array_fill(0, $periodLength, self::TOKEN_BODY));
+        array_splice($row, $startIndex, $periodLength, array_fill(0, $periodLength, self::TOKEN_BODY));
         $row[$startIndex] = $period->isStartIncluded() ? self::TOKEN_START_INCLUDED : self::TOKEN_START_EXCLUDED;
         $row[$endIndex - 1] = $period->isEndIncluded() ? self::TOKEN_END_INCLUDED : self::TOKEN_END_EXCLUDED;
 

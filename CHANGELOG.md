@@ -2,7 +2,7 @@
 
 All Notable changes to `Period Visualizer` will be documented in this file
 
-## 0.4.0 - 2019-06-16
+## 0.4.0 - 2019-06-17
 
 - Added support for boundary type in:
     - Added `Matrix::TOKEN_*` public constants
@@ -23,6 +23,7 @@ All Notable changes to `Period Visualizer` will be documented in this file
     - Changed `LabelGenerator::getLabels` method name to `LabelGenerator::generate`
     - Made `ConsoleOutput` optional in the `Viewer` constructor method
     - Added `Viewer::unions`
+    - Added `Viewer::setLabelGenerator` and `Viewer::setOutput` are chainable
     - Added `$prefix` and `$suffix` parameters to the `AffixGenerator`
 
 ## 0.3.1 - 2018-12-21
