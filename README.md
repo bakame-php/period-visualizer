@@ -9,17 +9,16 @@ Period Visualizer
 
 This package contains a visualizer for [League Period](https://period.thephpleague.com).
 
-It is heavily inspired from the work of [@thecrypticace](https://github.com/thecrypticace) on the following PR [Visualization Helper](https://github.com/spatie/period/pull/10).
+It is inspired from the work of [@thecrypticace](https://github.com/thecrypticace) on the following PR [Visualization Helper](https://github.com/spatie/period/pull/10).
 
 ~~~php
 <?php
 
 use Bakame\Period\Visualizer\Viewer;
-use Bakame\Period\Visualizer\ConsoleOutput;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$view = new Viewer(new ConsoleOutput());
+$view = new Viewer();
 echo $view->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
     new Period('2018-01-15', '2018-02-01')
@@ -29,8 +28,8 @@ echo $view->sequence(new Sequence(
 results:
 
 ~~~bash
- A    [========]
- B         [===]
+ A    [==============================================================================)
+ B                                        [==========================================)
 ~~~
 
 System Requirements
@@ -39,7 +38,7 @@ System Requirements
 You need:
 
 - **PHP >= 7.2** but the latest stable version of PHP is recommended
-- **League/Period ^4.4** but the latest stable version is recommended
+- **League/Period 4.4+** but the latest stable version is recommended
 
 Installation
 --------
@@ -59,11 +58,10 @@ Usage
 <?php
 
 use Bakame\Period\Visualizer\Viewer;
-use Bakame\Period\Visualizer\ConsoleOutput;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$view = new Viewer(new ConsoleOutput());
+$view = new Viewer();
 echo $view->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
     new Period('2018-01-01', '2018-01-15')
@@ -73,14 +71,14 @@ echo $view->sequence(new Sequence(
 results:
 
 ~~~bash
- A    [========]
- B    [===]     
+ A    [==============================================================================)
+ B                                        [==========================================)
 ~~~
 
 ### Viewing a Sequence gaps.
 
 ~~~php
-$view = new Viewer(new ConsoleOutput());
+$view = new Viewer();
 echo $view->gaps(new Sequence(
     new Period('2018-01-01', '2018-03-01'),
     new Period('2018-05-01', '2018-08-01')
@@ -90,15 +88,15 @@ echo $view->gaps(new Sequence(
 results:
 
 ~~~bash
- A       [=]       
- B            [===]
- GAPS      [==]  
+ A       [=====================)                                                         
+ B                                                    [=================================)
+ GAPS                          [======================)    
 ~~~
 
 ### Viewing a Sequence intersections.
 
 ~~~php
-$view = new Viewer(new ConsoleOutput());
+$view = new Viewer();
 echo $view->intersections(new Sequence(
     new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00'),
     new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00')
@@ -108,15 +106,15 @@ echo $view->intersections(new Sequence(
 results:
 
 ~~~bash
- A                [=====]   
- B                   [=====]
- INTERSECTIONS       [==] 
+ A                [====================================================)                          
+ B                                          [====================================================)
+ INTERSECTIONS                              [==========================) 
 ~~~
 
 ### Viewing a Period difference.
 
 ~~~php
-$view = new Viewer(new ConsoleOutput());
+$view = new Viewer();
 echo $view->diff(
     new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00'),
     new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00')
@@ -126,9 +124,9 @@ echo $view->diff(
 results:
 
 ~~~bash
- A       [=====]   
- B          [=====]
- DIFF    [==]  [==]
+ A       [====================================================)                          
+ B                                 [====================================================)
+ DIFF    [=========================)                          [=========================)
 ~~~
 
 ## Advance Usage
@@ -136,20 +134,17 @@ results:
 ### Customize the line labels
 
 The `Bakame\Period\Visualizer\Viewer` class can be further formatter by providing a object to improve line index generation.
-By default the class is instantiated with the letter index strategy which starts incrementing the labes from  the 'A' index. You can choose between the following strategies to modify the default behaviour
+By default the class is instantiated with the letter index strategy which starts incrementing the labels from  the 'A' index. You can choose between the following strategies to modify the default behaviour
 
 #### Letter strategy
 
 ~~~php
-<?php
-
 use Bakame\Period\Visualizer\Viewer;
-use Bakame\Period\Visualizer\ConsoleOutput;
-use Bakame\Period\Visualizer\Label\LetterType;
+use Bakame\Period\Visualizer\Label\LetterGenerator;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$view = new Viewer(new ConsoleOutput(), new LetterType('aa'));
+$view = new Viewer(new LetterGenerator('aa'));
 echo $view->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
     new Period('2018-01-01', '2018-01-15')
@@ -159,22 +154,19 @@ echo $view->sequence(new Sequence(
 results:
 
 ~~~bash
- aa    [========]
- ab    [===]     
+ aa    [==============================================================================)
+ ab    [===================================)     
 ~~~
 
 #### Integer strategy
 
 ~~~php
-<?php
-
 use Bakame\Period\Visualizer\Viewer;
-use Bakame\Period\Visualizer\ConsoleOutput;
-use Bakame\Period\Visualizer\Label\IntegerType;
+use Bakame\Period\Visualizer\Label\IntegerGenerator;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$view = new Viewer(new ConsoleOutput(), new IntegerType(42));
+$view = new Viewer(new IntegerGenerator(42));
 echo $view->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
     new Period('2018-01-01', '2018-01-15')
@@ -184,25 +176,22 @@ echo $view->sequence(new Sequence(
 results:
 
 ~~~bash
- 42    [========]
- 43    [===]     
+ 42    [==============================================================================)
+ 43    [===================================)     
 ~~~
 
 #### Roman Number strategy
 
 ~~~php
-<?php
-
 use Bakame\Period\Visualizer\Viewer;
-use Bakame\Period\Visualizer\ConsoleOutput;
-use Bakame\Period\Visualizer\Label\IntegerType;
-use Bakame\Period\Visualizer\Label\RomanType;
+use Bakame\Period\Visualizer\Label\IntegerGenerator;
+use Bakame\Period\Visualizer\Label\RomanGenerator;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$labelGenerator = new RomanType(new IntegerType(5), RomanType::LOWER);
+$labelGenerator = new RomanGenerator(new IntegerGenerator(5), RomanGenerator::LOWER);
 
-$view = new Viewer(new ConsoleOutput(), $labelGenerator);
+$view = new Viewer($labelGenerator);
 echo $view->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
     new Period('2018-01-01', '2018-01-15')
@@ -212,27 +201,26 @@ echo $view->sequence(new Sequence(
 results:
 
 ~~~bash
- v     [========]
- vi    [===]     
+ v     [==============================================================================)
+ vi    [===================================)    
 ~~~
 
 #### Affix strategy
 
 ~~~php
-<?php
-
 use Bakame\Period\Visualizer\Viewer;
-use Bakame\Period\Visualizer\ConsoleOutput;
-use Bakame\Period\Visualizer\Label\IntegerType;
-use Bakame\Period\Visualizer\Label\RomanType;
-use Bakame\Period\Visualizer\Label\AffixType;
+use Bakame\Period\Visualizer\Label\IntegerGenerator;
+use Bakame\Period\Visualizer\Label\RomanGenerator;
+use Bakame\Period\Visualizer\Label\AffixGenerator;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$labelGenerator = new AffixType(new RomanType(new IntegerType(5), RomanType::LOWER));
-$labelGenerator = $labelGenerator->withSuffix('.');
-
-$view = new Viewer(new ConsoleOutput(), $labelGenerator);
+$labelGenerator = new AffixGenerator(
+    new RomanGenerator(new IntegerGenerator(5), RomanGenerator::LOWER),
+    '*', //prefix
+    '.)'    //suffix
+);
+$view = new Viewer($labelGenerator);
 echo $view->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
     new Period('2018-01-01', '2018-01-15')
@@ -242,28 +230,25 @@ echo $view->sequence(new Sequence(
 results:
 
 ~~~bash
- v.     [========]
- vi.    [===]     
+ *v.)     [==============================================================================)
+ *vi.)    [===================================)      
 ~~~
 
 #### Reverse strategy
 
 ~~~php
-<?php
-
 use Bakame\Period\Visualizer\Viewer;
-use Bakame\Period\Visualizer\ConsoleOutput;
-use Bakame\Period\Visualizer\Label\IntegerType;
-use Bakame\Period\Visualizer\Label\RomanType;
-use Bakame\Period\Visualizer\Label\AffixType;
-use Bakame\Period\Visualizer\Label\ReverseType;
+use Bakame\Period\Visualizer\Label\IntegerGenerator;
+use Bakame\Period\Visualizer\Label\RomanGenerator;
+use Bakame\Period\Visualizer\Label\AffixGenerator;
+use Bakame\Period\Visualizer\Label\ReverseGenerator;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$labelGenerator = new AffixType(new RomanType(new IntegerType(5), RomanType::LOWER));
-$labelGenerator = new ReverserType($labelGenerator->withSuffix('.'));
+$labelGenerator = new AffixGenerator(new RomanGenerator(new IntegerGenerator(5), RomanGenerator::LOWER));
+$labelGenerator = new ReverseGenerator($labelGenerator->withSuffix('.'));
 
-$view = new Viewer(new ConsoleOutput(), $labelGenerator);
+$view = new Viewer($labelGenerator);
 echo $view->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
     new Period('2018-01-01', '2018-01-15')
@@ -273,8 +258,8 @@ echo $view->sequence(new Sequence(
 results:
 
 ~~~bash
- vi.   [========]
- v.    [===]     
+ vi.   [==============================================================================)
+ v.    [===================================)     
 ~~~
 
 
@@ -283,23 +268,22 @@ results:
 You can create your own strategy by implementing the `Bakame\Period\Visualizer\Label\LabelGenerator` interface like shown below:
 
 ~~~php
-use Bakame\Period\Visualizer\Viewer;
-use Bakame\Period\Visualizer\ConsoleOutput;
-use Bakame\Period\Visualizer\Label\AffixType;
+use Bakame\Period\Visualizer\Label\AffixGenerator;
 use Bakame\Period\Visualizer\Label\LabelGenerator;
+use Bakame\Period\Visualizer\Viewer;
 use League\Period\Period;
 use League\Period\Sequence;
 
 $samelabel = new class implements LabelGenerator {
-    public function getLabels(Sequence $sequence): array
+    public function generate(Sequence $sequence): array
     {
         return array_fill(0, count($sequence), 'foobar');
     }
 };
 
-$labelGenerator = (new AffixType($samelabel))->withSuffix('.');
+$labelGenerator = (new AffixGenerator($samelabel))->withSuffix('.');
 
-$view = new Viewer($output, $labelGenerator);
+$view = new Viewer($labelGenerator);
 echo $view->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
     new Period('2018-01-01', '2018-01-15')
@@ -309,17 +293,15 @@ echo $view->sequence(new Sequence(
 results:
 
 ~~~bash
- foobar.    [========]
- foobar.    [===]     
+ foobar.    [==============================================================================)
+ foobar.    [===================================)     
 ~~~
 
 ### Customize the output
 
-If what you want to display can not be rendered using the `Viewer` class you can fallback to using the `ConsoleOutput` class directly.
+Under the hood, the `Viewer` class uses the `ConsoleOutput` class to generate your graph.
 
 ~~~php
-<?php
-
 use Bakame\Period\Visualizer\ConsoleOutput;
 use League\Period\Period;
 
@@ -333,52 +315,66 @@ echo $view->display([
 results:
 
 ~~~bash
- first    [=====]   
- last        [=====]
+ first    [====================================================)                          
+ last                               [====================================================)
 ~~~
 
-The `ConsoleOutput::display` or `ConsoleOutput::render` methods excepts a tuple as its unique argument where:
+The `ConsoleOutput::display` methods expects a tuple as its unique argument where:
 
 - the first value of the tuple represents the label name
 - the second and last value represents a `Period` or `Sequence` object.
 
-The `ConsoleOutput` class can be further customize by providing a `ConsoleConfig` object with further configuration to apply to the output.
+The `ConsoleOutput` class can be customized by providing a `ConsoleConfig` which defines the output settings.
 
 ~~~php
-<?php
-
 use Bakame\Period\Visualizer\ConsoleConfig;
 use Bakame\Period\Visualizer\ConsoleOutput;
+use Bakame\Period\Visualizer\Label\LabelGenerator;
+use Bakame\Period\Visualizer\Viewer;
 use League\Period\Period;
 
 $config = (new ConsoleConfig())
+    ->withStartExcluded('🍕')
     ->withStartIncluded('🍅')
     ->withEndExcluded('🎾')
-    ->withStartExcluded('🍕')
     ->withEndIncluded('🍔')
-    ->withBody('💩')
-    ->withSpace('+')
     ->withWidth(30)
+    ->withSpace('💩')
+    ->withBody('😊')
     ->withColors('yellow', 'red')
 ;
 
+$fixedLabels = new class implements LabelGenerator {
+    public function generate(Sequence $sequence): array
+    {
+        return ['first', 'last'];
+    }
+    
+    public function format($str): string
+    {
+        return (string) $str;
+    }
+};
+
 $output = new ConsoleOutput($config);
-echo $output->display([
-    ['first', new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00', Period::EXCLUDE_ALL)],
-    ['last', new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00', Period::INCLUDE_ALL)],
-]);
+$viewer = new Viewer($fixedLabels, $output);
+
+echo $viewer->sequence(new Sequence(
+    new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00', Period::EXCLUDE_ALL),
+    new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00', Period::INCLUDE_ALL)
+));
 ~~~
 
 results:
 
 ~~~bash
- first    🍕💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩🎾++++++++++
- last     ++++++++++🍅💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩🍔
+ first    🍕😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊🎾💩💩💩💩💩💩💩💩💩💩
+ last     💩💩💩💩💩💩💩💩💩💩🍅😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊🍔
 ~~~
 
 *On a POSIX compliant console the first line will be yellow and the second red*
 
-**ALL CONFIGURATION OBJECTS ARE IMMUTABLE SO MODIFYING THEIR PROPERTIES RETURNS A NEW INSTANCE**
+**`ConsoleConfig` is immutable, modifying its properties returns a new instance with the updated values.**
 
 Changelog
 -------

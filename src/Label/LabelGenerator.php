@@ -22,5 +22,12 @@ interface LabelGenerator
      *
      * @return string[]
      */
-    public function generateLabels(Sequence $sequence): array;
+    public function generate(Sequence $sequence): array;
+
+    /**
+     * Returns a formatted label according to the generator.
+     *
+     * @param mixed $str a stringable label
+     */
+    public function format($str): string;
 }

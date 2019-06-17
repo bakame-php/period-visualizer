@@ -15,10 +15,12 @@ namespace Bakame\Period\Visualizer\Label;
 
 use League\Period\Sequence;
 use function count;
+use function is_scalar;
+use function method_exists;
 use function preg_match;
 use function trim;
 
-final class LetterType implements LabelGenerator
+final class LetterGenerator implements LabelGenerator
 {
     /**
      * @var string
@@ -30,7 +32,7 @@ final class LetterType implements LabelGenerator
      */
     public function __construct(string $str = 'A')
     {
-        $this->str = $this->filter($str);
+        $this->str = $this->format($str);
     }
 
     /**
@@ -49,7 +51,7 @@ final class LetterType implements LabelGenerator
      */
     public function startWith(string $str): self
     {
-        $str = $this->filter($str);
+        $str = $this->format($str);
         if ($str === $this->str) {
             return $this;
         }
@@ -61,26 +63,31 @@ final class LetterType implements LabelGenerator
     }
 
     /**
-     * Format the starting string.
+     * {@inheritdoc}
      */
-    private function filter(string $letter): string
+    public function format($str): string
     {
-        $letter = trim($letter);
-        if ('' === $letter) {
+        if (!is_scalar($str) && !method_exists($str, '__toString') && null !== $str) {
+            return '';
+        }
+
+        $str = (string) $str;
+        $str = trim($str);
+        if ('' === $str) {
             return '0';
         }
 
-        if (1 !== preg_match('/^[A-Za-z]+$/', $letter)) {
+        if (1 !== preg_match('/^[A-Za-z]+$/', $str)) {
             return 'A';
         }
 
-        return $letter;
+        return $str;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function generateLabels(Sequence $sequence): array
+    public function generate(Sequence $sequence): array
     {
         $letters = [];
         if ($sequence->isEmpty()) {

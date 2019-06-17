@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Bakame\Period\Visualizer;
 
 use Bakame\Period\Visualizer\Label\LabelGenerator;
-use Bakame\Period\Visualizer\Label\LetterType;
+use Bakame\Period\Visualizer\Label\LetterGenerator;
 use League\Period\Period;
 use League\Period\Sequence;
 use function trim;
@@ -34,13 +34,13 @@ final class Viewer
 
     /**
      * Create a new output.
-     *
      * @param ?LabelGenerator $label
+     * @param ?ConsoleOutput  $output
      */
-    public function __construct(ConsoleOutput $output, ?LabelGenerator $label = null)
+    public function __construct(?LabelGenerator $label = null, ?ConsoleOutput $output = null)
     {
-        $this->output = $output;
-        $this->setLabelGenerator($label ?? new LetterType());
+        $this->setLabelGenerator($label ?? new LetterGenerator());
+        $this->setOutput($output ?? new ConsoleOutput());
     }
 
     /**
@@ -62,17 +62,21 @@ final class Viewer
     /**
      * Sets the output.
      */
-    public function setOutput(ConsoleOutput $output): void
+    public function setOutput(ConsoleOutput $output): self
     {
         $this->output = $output;
+
+        return $this;
     }
 
     /**
      * Sets the Label Generator.
      */
-    public function setLabelGenerator(LabelGenerator $label): void
+    public function setLabelGenerator(LabelGenerator $label): self
     {
         $this->labelGenerator = $label;
+
+        return $this;
     }
 
     /**
@@ -103,10 +107,10 @@ final class Viewer
     {
         $label = trim($label);
         if ('' === $label) {
-            return self::DEFAULT_RESULT_LABEL;
+            return $this->labelGenerator->format(self::DEFAULT_RESULT_LABEL);
         }
 
-        return $label;
+        return $this->labelGenerator->format($label);
     }
 
     /**
@@ -116,6 +120,17 @@ final class Viewer
     {
         $input = $this->addLabels($sequence);
         $input[] = [$this->filterResultLabel($resultLabel), $sequence->gaps()];
+
+        return $this->output->display($input);
+    }
+
+    /**
+     * Returns the sequence gaps view representation.
+     */
+    public function unions(Sequence $sequence, string $resultLabel = 'UNIONS'): string
+    {
+        $input = $this->addLabels($sequence);
+        $input[] = [$this->filterResultLabel($resultLabel), $sequence->unions()];
 
         return $this->output->display($input);
     }
@@ -145,7 +160,7 @@ final class Viewer
      */
     private function addLabels(Sequence $sequence): array
     {
-        $labels = $this->labelGenerator->generateLabels($sequence);
+        $labels = $this->labelGenerator->generate($sequence);
         $results = [];
         foreach ($sequence as $offset => $period) {
             $results[] = [$labels[$offset], $period];

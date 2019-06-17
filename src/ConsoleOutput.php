@@ -13,8 +13,6 @@ declare(strict_types=1);
 
 namespace Bakame\Period\Visualizer;
 
-use League\Period\Period;
-use League\Period\Sequence;
 use function array_column;
 use function array_keys;
 use function array_map;
@@ -27,7 +25,6 @@ use function ob_start;
 use function preg_replace;
 use function preg_replace_callback;
 use function str_pad;
-use function strpos;
 use function strtr;
 use const PHP_OS;
 
@@ -68,14 +65,9 @@ final class ConsoleOutput
     private $regexp;
 
     /**
-     * @var string
+     * @var callable
      */
-    private $newline = PHP_EOL;
-
-    /**
-     * @var string
-     */
-    private $writerMethod = 'POSIX';
+    private $writer;
 
     /**
      * @var ConsoleConfig
@@ -89,10 +81,29 @@ final class ConsoleOutput
     {
         $this->config = $config ?? new ConsoleConfig();
         $this->regexp = ',<<\s*((('.implode('|', array_keys(self::POSIX_COLOR_CODES)).')(\s*))+)>>,Umsi';
-        $this->newline = PHP_EOL;
-        if (false !== strpos(PHP_OS, 'WIN')) {
-            $this->writerMethod = 'WINDOWS';
+        $this->writer = $this->setWriterMethod();
+    }
+
+    /**
+     * Set the writing method depending on the underlying platform.
+     */
+    private function setWriterMethod(): callable
+    {
+        if (false === stripos(PHP_OS, 'WIN')) {
+            return function (string $str): string {
+                return ' '.preg_replace($this->regexp, '', $str);
+            };
         }
+
+        return function (string $str): string {
+            $formatter = static function (array $matches) {
+                $str = (string) preg_replace('/(\s+)/msi', ';', (string) $matches[1]);
+
+                return chr(27).'['.strtr($str, self::POSIX_COLOR_CODES).'m';
+            };
+
+            return ' '.preg_replace_callback($this->regexp, $formatter, $str);
+        };
     }
 
     /**
@@ -100,7 +111,7 @@ final class ConsoleOutput
      * periods and/or sequences in a more
      * human readable / parsable manner.
      *
-     * The submitted array values represent a tuple where
+     * The submitted iterable structure represent a tuple where
      * the first value is the identifer and the second value
      * the intervals represented as Period or Sequence instances.
      *
@@ -112,7 +123,7 @@ final class ConsoleOutput
      * D              [===============]
      * OVERLAP        [=]   [==]    [=]
      *
-     * @param array<int, array<int|string, Period|Sequence>> $blocks
+     * @param array $blocks
      */
     public function display(iterable $blocks): string
     {
@@ -123,9 +134,8 @@ final class ConsoleOutput
 
         ob_start();
         foreach ($this->render($matrix) as $row) {
-            echo $row.$this->newline;
+            echo $row.PHP_EOL;
         }
-        echo $this->newline;
 
         return (string) ob_get_clean();
     }
@@ -140,8 +150,6 @@ final class ConsoleOutput
      * the periods represented as Period or Sequence instances.
      *
      * This method returns one output line at a time.
-     *
-     * @param array<int, array<int|string, mixed>> $matrix
      */
     private function render(array $matrix): iterable
     {
@@ -150,82 +158,31 @@ final class ConsoleOutput
         $key = -1;
         foreach ($matrix as [$name, $row]) {
             $color = $colorOffsets[++$key % count($colorOffsets)];
-            $line = str_pad($name, $nameLength, ' ').'    '.$this->toLine($row);
+            $prefix = str_pad($name, $nameLength, ' ');
+            $data = implode('', array_map([$this, 'convertMatrixValue'], $row));
+            $line = $prefix.'    '.$data;
             if ('default' !== $color) {
                 $line = "<<$color>>$line<<reset>>";
             }
 
-            yield $this->write($line);
+            yield ($this->writer)($line);
         }
     }
 
     /**
      * Turns a series of boolean values into bars representing the interval.
-     *
-     * @param array<int> $row
      */
-    private function toLine(array $row): string
+    private function convertMatrixValue(int $token): string
     {
-        $tmp = [];
-        foreach ($row as $token) {
-            switch ($token) {
-                case Matrix::TOKEN_BODY:
-                    $tmp[] = $this->config->body();
-                    break;
-                case Matrix::TOKEN_START_EXCLUDED:
-                    $tmp[] = $this->config->startExcluded();
-                    break;
-                case Matrix::TOKEN_START_INCLUDED:
-                    $tmp[] = $this->config->startIncluded();
-                    break;
-                case Matrix::TOKEN_END_EXCLUDED:
-                    $tmp[] = $this->config->endExcluded();
-                    break;
-                case Matrix::TOKEN_END_INCLUDED:
-                    $tmp[] = $this->config->endIncluded();
-                    break;
-                case Matrix::TOKEN_SPACE:
-                    $tmp[] = $this->config->space();
-                    break;
-            }
-        }
+        static $list = [
+            Matrix::TOKEN_SPACE => 'space',
+            Matrix::TOKEN_BODY => 'body',
+            Matrix::TOKEN_START_EXCLUDED => 'startExcluded',
+            Matrix::TOKEN_START_INCLUDED => 'startIncluded',
+            Matrix::TOKEN_END_INCLUDED => 'endIncluded',
+            Matrix::TOKEN_END_EXCLUDED => 'endExcluded',
+        ];
 
-        return implode('', $tmp);
-    }
-
-    /**
-     * @inheritdoc
-     *
-     * Inspired by Aura\Cli\Stdio\Formatter (https://github.com/auraphp/Aura.Cli).
-     */
-    private function write(string $str): string
-    {
-        if ('POSIX' === $this->writerMethod) {
-            return $this->posixWrite($str);
-        }
-
-        return $this->windowsWrite($str);
-    }
-
-    /**
-     * Write a line to windows console.
-     */
-    private function windowsWrite(string $str): string
-    {
-        return ' '.preg_replace($this->regexp, '', $str);
-    }
-
-    /**
-     * Write a line to Posix compliant console.
-     */
-    private function posixWrite(string $str): string
-    {
-        $formatter = static function (array $matches) {
-            $str = (string) preg_replace('/(\s+)/msi', ';', (string) $matches[1]);
-
-            return chr(27).'['.strtr($str, self::POSIX_COLOR_CODES).'m';
-        };
-
-        return ' '.preg_replace_callback($this->regexp, $formatter, $str);
+        return $this->config->{$list[$token]}();
     }
 }

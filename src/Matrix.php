@@ -64,7 +64,6 @@ final class Matrix
      * - There's one column for every unit of width.
      * - Cell state depends on Period presence and boundary type.
      *
-     * @return array<int, array<int|string, int[]>>
      */
     public static function build(iterable $blocks, int $width): array
     {
@@ -78,7 +77,7 @@ final class Matrix
         self::$unit = $width / $boundaries->getTimestampInterval();
         $baseRow = array_fill(0, $width, self::TOKEN_SPACE);
         foreach ($blocks as [$name, $block]) {
-            if (!$block instanceof Sequence) {
+            if ($block instanceof Period) {
                 $matrix[] = [$name, self::populateRow($baseRow, $block)];
                 continue;
             }
@@ -97,7 +96,8 @@ final class Matrix
         $sequence = new Sequence();
         foreach ($blocks as [$name, $block]) {
             if ($block instanceof Period) {
-                $block = [$block];
+                $sequence->push($block);
+                continue;
             }
 
             if (0 !== count($block)) {
@@ -119,12 +119,11 @@ final class Matrix
     {
         $startIndex = (int) floor(($period->getStartDate()->getTimestamp() - self::$start) * self::$unit);
         $endIndex = (int) ceil(($period->getEndDate()->getTimestamp() - self::$start) * self::$unit);
-        $periodLength = $endIndex - $startIndex - 1;
+        $periodLength = $endIndex - $startIndex;
 
-        array_splice($row, $startIndex + 1, $periodLength, array_fill(0, $periodLength, self::TOKEN_BODY));
-        $row[$startIndex + 1] = $period->isStartIncluded() ? self::TOKEN_START_INCLUDED : self::TOKEN_START_EXCLUDED;
+        array_splice($row, $startIndex, $periodLength, array_fill(0, $periodLength, self::TOKEN_BODY));
+        $row[$startIndex] = $period->isStartIncluded() ? self::TOKEN_START_INCLUDED : self::TOKEN_START_EXCLUDED;
         $row[$endIndex - 1] = $period->isEndIncluded() ? self::TOKEN_END_INCLUDED : self::TOKEN_END_EXCLUDED;
-
 
         return $row;
     }

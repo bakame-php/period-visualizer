@@ -3,4 +3,5 @@ includes:
 parameters:
     ignoreErrors:
         - '#Only numeric types are allowed in post-increment, string given.#'
+        - '#Variable method call on Bakame\\Period\\Visualizer\\ConsoleConfig.#'
     reportUnmatchedIgnoredErrors: true

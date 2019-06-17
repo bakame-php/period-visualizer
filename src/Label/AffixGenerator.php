@@ -15,10 +15,12 @@ namespace Bakame\Period\Visualizer\Label;
 
 use League\Period\Sequence;
 use function array_map;
+use function is_scalar;
+use function method_exists;
 use function preg_replace;
 use function trim;
 
-final class AffixType implements LabelGenerator
+final class AffixGenerator implements LabelGenerator
 {
     /**
      * @var LabelGenerator
@@ -38,21 +40,38 @@ final class AffixType implements LabelGenerator
     /**
      * New instance.
      */
-    public function __construct(LabelGenerator $labelGenerator)
+    public function __construct(LabelGenerator $labelGenerator, string $prefix = '', string $suffix = '')
     {
         $this->labelGenerator = $labelGenerator;
+        $this->prefix = $this->filterString($prefix);
+        $this->suffix = $this->filterString($suffix);
+    }
+
+    private function filterString(string $str): string
+    {
+        $str = (string) preg_replace("/[\r\n]/", '', $str);
+
+        return trim($str);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function generateLabels(Sequence $sequence): array
+    public function generate(Sequence $sequence): array
     {
-        $mapper = function (string $value) {
-            return $this->prefix.$value.$this->suffix;
-        };
+        return array_map([$this, 'format'], $this->labelGenerator->generate($sequence));
+    }
 
-        return array_map($mapper, $this->labelGenerator->generateLabels($sequence));
+    /**
+     * {@inheritdoc}
+     */
+    public function format($str): string
+    {
+        if (is_scalar($str) || method_exists($str, '__toString') || null === $str) {
+            return $this->prefix.$str.$this->suffix;
+        }
+
+        return $this->prefix.$this->suffix;
     }
 
     /**
@@ -79,8 +98,7 @@ final class AffixType implements LabelGenerator
      */
     public function withSuffix(string $suffix): self
     {
-        $suffix = (string) preg_replace("/[\r\n]/", '', $suffix);
-        $suffix = trim($suffix);
+        $suffix = $this->filterString($suffix);
         if ($suffix === $this->suffix) {
             return $this;
         }
@@ -99,8 +117,7 @@ final class AffixType implements LabelGenerator
      */
     public function withPrefix(string $prefix): self
     {
-        $prefix = (string) preg_replace("/[\r\n]/", '', $prefix);
-        $prefix = trim($prefix);
+        $prefix = $this->filterString($prefix);
         if ($prefix === $this->prefix) {
             return $this;
         }

@@ -2,9 +2,31 @@
 
 All Notable changes to `Period Visualizer` will be documented in this file
 
-## 0.4.0 - 2019-06-16
+## 0.4.0 - 2019-06-17
 
-- Added support for boundary type.
+- Added support for boundary type in:
+    - Added `Matrix::TOKEN_*` public constants
+    - Changed `Matrix::build` returned array content
+    - Added the following `ConsoleConfig` methods:
+        - `ConsoleConfig::endIncluded`
+        - `ConsoleConfig::withEndIncluded`
+        - `ConsoleConfig::startExcluded`
+        - `ConsoleConfig::withStartIncluded`
+    - Renamed the following `ConsoleConfig` methods:
+        - `ConsoleConfig::getTail` with `ConsoleConfig::startIncluded` 
+        - `ConsoleConfig::withTead` with `ConsoleConfig::withEndExcluded` 
+        - `ConsoleConfig::getHead` with `ConsoleConfig::endExcluded` 
+        - `ConsoleConfig::withHead` with `ConsoleConfig::withEndExcluded`
+- Improve Package UX/DX
+    - Removed the `get` prefix from all `ConsoleConfig` getter methods
+    - Changed the suffix from all `LabelGenerator` classes from `Type` to `Generator`
+    - Changed `LabelGenerator::getLabels` method name to `LabelGenerator::generate`
+    - Added `LabelGenerator::format` method to format a single label
+    - Made `ConsoleOutput` optional in the `Viewer` constructor method
+    - Added `Viewer::unions`
+    - Added `Viewer::setLabelGenerator` and `Viewer::setOutput` are chainable
+    - Changed arguments order in `Viewer::__construct`
+    - Added `$prefix` and `$suffix` parameters to the `AffixGenerator`
 
 ## 0.3.1 - 2018-12-21
 
