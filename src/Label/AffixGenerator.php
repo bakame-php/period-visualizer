@@ -38,9 +38,18 @@ final class AffixGenerator implements LabelGenerator
     /**
      * New instance.
      */
-    public function __construct(LabelGenerator $labelGenerator)
+    public function __construct(LabelGenerator $labelGenerator, string $prefix = '', string $suffix = '')
     {
         $this->labelGenerator = $labelGenerator;
+        $this->prefix = $this->filterString($prefix);
+        $this->suffix = $this->filterString($suffix);
+    }
+
+    private function filterString(string $str): string
+    {
+        $str = (string) preg_replace("/[\r\n]/", '', $str);
+
+        return trim($str);
     }
 
     /**
@@ -79,8 +88,7 @@ final class AffixGenerator implements LabelGenerator
      */
     public function withSuffix(string $suffix): self
     {
-        $suffix = (string) preg_replace("/[\r\n]/", '', $suffix);
-        $suffix = trim($suffix);
+        $suffix = $this->filterString($suffix);
         if ($suffix === $this->suffix) {
             return $this;
         }
@@ -99,8 +107,7 @@ final class AffixGenerator implements LabelGenerator
      */
     public function withPrefix(string $prefix): self
     {
-        $prefix = (string) preg_replace("/[\r\n]/", '', $prefix);
-        $prefix = trim($prefix);
+        $prefix = $this->filterString($prefix);
         if ($prefix === $this->prefix) {
             return $this;
         }

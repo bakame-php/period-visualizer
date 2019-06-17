@@ -36,6 +36,9 @@ final class AffixGeneratorTest extends TestCase
         string $suffix,
         array $expected
     ): void {
+        $generator = new AffixGenerator(new LetterGenerator($letter), $prefix, $suffix);
+        self::assertSame($expected, $generator->generate($sequence));
+
         $generator = (new AffixGenerator(new LetterGenerator($letter)))->withPrefix($prefix)->withSuffix($suffix);
         self::assertSame($expected, $generator->generate($sequence));
     }
