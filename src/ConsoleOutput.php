@@ -60,11 +60,6 @@ final class ConsoleOutput
     ];
 
     /**
-     * @var string
-     */
-    private static $regexp;
-
-    /**
      * @var callable
      */
     private static $writer;
@@ -80,7 +75,6 @@ final class ConsoleOutput
     public function __construct(ConsoleConfig $config = null)
     {
         $this->config = $config ?? new ConsoleConfig();
-        self::$regexp =  self::$regexp ?? ',<<\s*((('.implode('|', array_keys(self::POSIX_COLOR_CODES)).')(\s*))+)>>,Umsi';
         self::$writer = self::$writer ?? self::setWriter();
     }
 
@@ -89,20 +83,21 @@ final class ConsoleOutput
      */
     private static function setWriter(): callable
     {
+        $regexp = ',<<\s*((('.implode('|', array_keys(self::POSIX_COLOR_CODES)).')(\s*))+)>>,Umsi';
         if (false === stripos(PHP_OS, 'WIN')) {
-            return function (string $str): string {
-                return ' '.preg_replace(self::$regexp, '', $str);
+            return function (string $str) use ($regexp): string {
+                return ' '.preg_replace($regexp, '', $str);
             };
         }
 
-        return function (string $str): string {
+        return function (string $str) use ($regexp): string {
             $formatter = static function (array $matches) {
                 $str = (string) preg_replace('/(\s+)/msi', ';', (string) $matches[1]);
 
                 return chr(27).'['.strtr($str, self::POSIX_COLOR_CODES).'m';
             };
 
-            return ' '.preg_replace_callback(self::$regexp, $formatter, $str);
+            return ' '.preg_replace_callback($regexp, $formatter, $str);
         };
     }
 
