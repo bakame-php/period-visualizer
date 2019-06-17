@@ -59,6 +59,15 @@ final class ConsoleOutput
         'whitebg'    => '47',
     ];
 
+    private const TOKEN_TO_METHOD = [
+        Matrix::TOKEN_SPACE => 'space',
+        Matrix::TOKEN_BODY => 'body',
+        Matrix::TOKEN_START_EXCLUDED => 'startExcluded',
+        Matrix::TOKEN_START_INCLUDED => 'startIncluded',
+        Matrix::TOKEN_END_INCLUDED => 'endIncluded',
+        Matrix::TOKEN_END_EXCLUDED => 'endExcluded',
+    ];
+
     /**
      * @var callable
      */
@@ -84,9 +93,9 @@ final class ConsoleOutput
     private static function setWriter(): callable
     {
         $regexp = ',<<\s*((('.implode('|', array_keys(self::POSIX_COLOR_CODES)).')(\s*))+)>>,Umsi';
-        if (false === stripos(PHP_OS, 'WIN')) {
+        if (0 === stripos(PHP_OS, 'WIN')) {
             return function (string $str) use ($regexp): string {
-                return ' '.preg_replace($regexp, '', $str);
+                return ' '.preg_replace($regexp, '', $str).PHP_EOL;
             };
         }
 
@@ -97,7 +106,7 @@ final class ConsoleOutput
                 return chr(27).'['.strtr($str, self::POSIX_COLOR_CODES).'m';
             };
 
-            return ' '.preg_replace_callback($regexp, $formatter, $str);
+            return ' '.preg_replace_callback($regexp, $formatter, $str).PHP_EOL;
         };
     }
 
@@ -129,7 +138,7 @@ final class ConsoleOutput
 
         ob_start();
         foreach ($this->render($matrix) as $row) {
-            echo $row.PHP_EOL;
+            echo $row;
         }
 
         return (string) ob_get_clean();
@@ -169,15 +178,6 @@ final class ConsoleOutput
      */
     private function convertMatrixValue(int $token): string
     {
-        static $list = [
-            Matrix::TOKEN_SPACE => 'space',
-            Matrix::TOKEN_BODY => 'body',
-            Matrix::TOKEN_START_EXCLUDED => 'startExcluded',
-            Matrix::TOKEN_START_INCLUDED => 'startIncluded',
-            Matrix::TOKEN_END_INCLUDED => 'endIncluded',
-            Matrix::TOKEN_END_EXCLUDED => 'endExcluded',
-        ];
-
-        return $this->config->{$list[$token]}();
+        return $this->config->{self::TOKEN_TO_METHOD[$token]}();
     }
 }
