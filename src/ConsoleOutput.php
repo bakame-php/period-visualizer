@@ -62,12 +62,12 @@ final class ConsoleOutput
     /**
      * @var string
      */
-    private $regexp;
+    private static $regexp;
 
     /**
      * @var callable
      */
-    private $writer;
+    private static $writer;
 
     /**
      * @var ConsoleConfig
@@ -80,18 +80,18 @@ final class ConsoleOutput
     public function __construct(ConsoleConfig $config = null)
     {
         $this->config = $config ?? new ConsoleConfig();
-        $this->regexp = ',<<\s*((('.implode('|', array_keys(self::POSIX_COLOR_CODES)).')(\s*))+)>>,Umsi';
-        $this->writer = $this->setWriterMethod();
+        self::$regexp =  self::$regexp ?? ',<<\s*((('.implode('|', array_keys(self::POSIX_COLOR_CODES)).')(\s*))+)>>,Umsi';
+        self::$writer = self::$writer ?? self::setWriter();
     }
 
     /**
      * Set the writing method depending on the underlying platform.
      */
-    private function setWriterMethod(): callable
+    private static function setWriter(): callable
     {
         if (false === stripos(PHP_OS, 'WIN')) {
             return function (string $str): string {
-                return ' '.preg_replace($this->regexp, '', $str);
+                return ' '.preg_replace(self::$regexp, '', $str);
             };
         }
 
@@ -102,7 +102,7 @@ final class ConsoleOutput
                 return chr(27).'['.strtr($str, self::POSIX_COLOR_CODES).'m';
             };
 
-            return ' '.preg_replace_callback($this->regexp, $formatter, $str);
+            return ' '.preg_replace_callback(self::$regexp, $formatter, $str);
         };
     }
 
@@ -165,7 +165,7 @@ final class ConsoleOutput
                 $line = "<<$color>>$line<<reset>>";
             }
 
-            yield ($this->writer)($line);
+            yield (self::$writer)($line);
         }
     }
 

@@ -35,7 +35,7 @@ final class MatrixTest extends TestCase
     /**
      * @covers ::build
      * @covers ::getBoundaries
-     * @covers ::populateRow
+     * @covers ::addPeriodToRow
      */
     public function testBuildPeriod(): void
     {
@@ -56,7 +56,7 @@ final class MatrixTest extends TestCase
     /**
      * @covers ::build
      * @covers ::getBoundaries
-     * @covers ::populateRow
+     * @covers ::addPeriodToRow
      */
     public function testBuildSequence(): void
     {

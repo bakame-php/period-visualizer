@@ -35,7 +35,7 @@ final class ConsoleOutputTest extends TestCase
 
     /**
      * @covers ::__construct
-     * @covers ::setWriterMethod
+     * @covers ::setWriter
      */
     public function testConstructor(): void
     {

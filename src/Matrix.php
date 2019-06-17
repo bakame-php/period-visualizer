@@ -75,14 +75,14 @@ final class Matrix
 
         self::$start = $boundaries->getStartDate()->getTimestamp();
         self::$unit = $width / $boundaries->getTimestampInterval();
-        $baseRow = array_fill(0, $width, self::TOKEN_SPACE);
+        $row = array_fill(0, $width, self::TOKEN_SPACE);
         foreach ($blocks as [$name, $block]) {
             if ($block instanceof Period) {
-                $matrix[] = [$name, self::populateRow($baseRow, $block)];
+                $matrix[] = [$name, self::addPeriodToRow($row, $block)];
                 continue;
             }
 
-            $matrix[] = [$name, array_reduce($block->toArray(), [self::class, 'populateRow'], $baseRow)];
+            $matrix[] = [$name, array_reduce($block->toArray(), [self::class, 'addPeriodToRow'], $row)];
         }
 
         return $matrix;
@@ -109,13 +109,15 @@ final class Matrix
     }
 
     /**
-     * Populates a row with state values dependent on periods presence and boudary type.
+     * Converts and add a Period to the matrix row.
+     *
+     * The conversion is done depending on the period presence and boundaries.
      *
      * @param int[] $row
      *
      * @return int[]
      */
-    private static function populateRow(array $row, Period $period): array
+    private static function addPeriodToRow(array $row, Period $period): array
     {
         $startIndex = (int) floor(($period->getStartDate()->getTimestamp() - self::$start) * self::$unit);
         $endIndex = (int) ceil(($period->getEndDate()->getTimestamp() - self::$start) * self::$unit);
