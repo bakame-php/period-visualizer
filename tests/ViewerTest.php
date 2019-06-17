@@ -115,7 +115,7 @@ final class ViewerTest extends TestCase
     public function testDiff(): void
     {
         $config = (new ConsoleConfig())->withColors('white');
-        $view = new Viewer(new ConsoleOutput($config));
+        $view = new Viewer(new LetterGenerator(), new ConsoleOutput($config));
         $data = $view->diff(
             new Period('2018-01-01', '2018-02-01'),
             new Period('2017-12-01', '2018-03-01')

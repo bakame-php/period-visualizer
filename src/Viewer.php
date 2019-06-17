@@ -34,13 +34,11 @@ final class Viewer
 
     /**
      * Create a new output.
-     * @param ?ConsoleOutput  $output
-     * @param ?LabelGenerator $label
      */
-    public function __construct(?ConsoleOutput $output = null, ?LabelGenerator $label = null)
+    public function __construct(?LabelGenerator $label = null, ?ConsoleOutput $output = null)
     {
-        $this->setOutput($output ?? new ConsoleOutput());
         $this->setLabelGenerator($label ?? new LetterGenerator());
+        $this->setOutput($output ?? new ConsoleOutput());
     }
 
     /**

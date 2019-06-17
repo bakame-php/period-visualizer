@@ -24,6 +24,7 @@ All Notable changes to `Period Visualizer` will be documented in this file
     - Made `ConsoleOutput` optional in the `Viewer` constructor method
     - Added `Viewer::unions`
     - Added `Viewer::setLabelGenerator` and `Viewer::setOutput` are chainable
+    - Changed arguments order in `Viewer::__construct`
     - Added `$prefix` and `$suffix` parameters to the `AffixGenerator`
 
 ## 0.3.1 - 2018-12-21
