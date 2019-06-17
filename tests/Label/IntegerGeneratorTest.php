@@ -19,7 +19,7 @@ use League\Period\Sequence;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass Bakame\Period\Visualizer\Label\IntegerType;
+ * @coversDefaultClass \Bakame\Period\Visualizer\Label\IntegerType;
  */
 final class IntegerGeneratorTest extends TestCase
 {
@@ -76,5 +76,11 @@ final class IntegerGeneratorTest extends TestCase
         self::assertSame($generator, $generator->startWith(42));
         self::assertSame(1, (new IntegerGenerator(-3))->getStartingAt());
         self::assertSame(1, $generator->startWith(-3)->getStartingAt());
+    }
+
+    public function testFormat(): void
+    {
+        $generator = new IntegerGenerator(42);
+        self::assertSame('', $generator->format([]));
     }
 }

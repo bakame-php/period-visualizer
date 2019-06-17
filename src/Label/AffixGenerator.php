@@ -15,6 +15,8 @@ namespace Bakame\Period\Visualizer\Label;
 
 use League\Period\Sequence;
 use function array_map;
+use function is_scalar;
+use function method_exists;
 use function preg_replace;
 use function trim;
 
@@ -57,11 +59,19 @@ final class AffixGenerator implements LabelGenerator
      */
     public function generate(Sequence $sequence): array
     {
-        $mapper = function (string $value) {
-            return $this->prefix.$value.$this->suffix;
-        };
+        return array_map([$this, 'format'], $this->labelGenerator->generate($sequence));
+    }
 
-        return array_map($mapper, $this->labelGenerator->generate($sequence));
+    /**
+     * {@inheritdoc}
+     */
+    public function format($str): string
+    {
+        if (is_scalar($str) || method_exists($str, '__toString') || null === $str) {
+            return $this->prefix.$str.$this->suffix;
+        }
+
+        return $this->prefix.$this->suffix;
     }
 
     /**

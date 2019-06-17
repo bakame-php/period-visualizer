@@ -19,7 +19,7 @@ use League\Period\Sequence;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass Bakame\Period\Visualizer\Label\LetterType;
+ * @coversDefaultClass \Bakame\Period\Visualizer\Label\LetterType;
  */
 final class LetterGeneratorTest extends TestCase
 {

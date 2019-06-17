@@ -16,6 +16,8 @@ namespace Bakame\Period\Visualizer\Label;
 use League\Period\Sequence;
 use function array_map;
 use function in_array;
+use function strtolower;
+use const FILTER_VALIDATE_INT;
 
 final class RomanGenerator implements LabelGenerator
 {
@@ -120,12 +122,7 @@ final class RomanGenerator implements LabelGenerator
      */
     public function generate(Sequence $sequence): array
     {
-        $retval = array_map([$this, 'convert'], $this->labelGenerator->generate($sequence));
-        if (self::LOWER === $this->lettercase) {
-            return array_map('strtolower', $retval);
-        }
-
-        return $retval;
+        return array_map([$this, 'format'], $this->labelGenerator->generate($sequence));
     }
 
     /**
@@ -146,6 +143,23 @@ final class RomanGenerator implements LabelGenerator
             }
         }
 
+        if (self::LOWER === $this->lettercase) {
+            return strtolower($retVal);
+        }
+
         return $retVal;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function format($str): string
+    {
+        $res = filter_var($str, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if (false === $res) {
+            return '';
+        }
+
+        return $this->convert($res);
     }
 }

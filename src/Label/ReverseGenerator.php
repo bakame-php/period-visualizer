@@ -38,4 +38,12 @@ final class ReverseGenerator implements LabelGenerator
     {
         return array_reverse($this->labelGenerator->generate($sequence));
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function format($str): string
+    {
+        return $this->labelGenerator->format($str);
+    }
 }

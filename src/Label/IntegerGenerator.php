@@ -16,6 +16,8 @@ namespace Bakame\Period\Visualizer\Label;
 use League\Period\Sequence;
 use function array_map;
 use function count;
+use function is_scalar;
+use function method_exists;
 use function range;
 
 final class IntegerGenerator implements LabelGenerator
@@ -77,6 +79,18 @@ final class IntegerGenerator implements LabelGenerator
             return $letters;
         }
 
-        return array_map('sprintf', range($this->int, $this->int + count($sequence) - 1));
+        return array_map([$this, 'format'], range($this->int, $this->int + count($sequence) - 1));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function format($str): string
+    {
+        if (is_scalar($str) || method_exists($str, '__toString') || null === $str) {
+            return (string) $str;
+        }
+
+        return '';
     }
 }

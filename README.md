@@ -349,6 +349,11 @@ $fixedLabels = new class implements LabelGenerator {
     {
         return ['first', 'last'];
     }
+    
+    public function format($str): string
+    {
+        return (string) $str;
+    }
 };
 
 $output = new ConsoleOutput($config);

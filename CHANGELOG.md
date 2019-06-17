@@ -21,6 +21,7 @@ All Notable changes to `Period Visualizer` will be documented in this file
     - Removed the `get` prefix from all `ConsoleConfig` getter methods
     - Changed the suffix from all `LabelGenerator` classes from `Type` to `Generator`
     - Changed `LabelGenerator::getLabels` method name to `LabelGenerator::generate`
+    - Added `LabelGenerator::format` method to format a single label
     - Made `ConsoleOutput` optional in the `Viewer` constructor method
     - Added `Viewer::unions`
     - Added `Viewer::setLabelGenerator` and `Viewer::setOutput` are chainable

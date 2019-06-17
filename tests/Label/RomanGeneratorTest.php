@@ -20,7 +20,7 @@ use League\Period\Sequence;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass Bakame\Period\Visualizer\Label\RomanType;
+ * @coversDefaultClass \Bakame\Period\Visualizer\Label\RomanType;
  */
 final class RomanGeneratorTest extends TestCase
 {
@@ -92,5 +92,11 @@ final class RomanGeneratorTest extends TestCase
         self::assertFalse($new->isUpper());
         $alt = $new->withLetterCase(RomanGenerator::LOWER);
         self::assertSame($alt, $new);
+    }
+
+    public function testFormat(): void
+    {
+        $generator = new RomanGenerator(new IntegerGenerator(10));
+        self::assertSame('', $generator->format([]));
     }
 }

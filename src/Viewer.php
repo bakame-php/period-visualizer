@@ -107,10 +107,10 @@ final class Viewer
     {
         $label = trim($label);
         if ('' === $label) {
-            return self::DEFAULT_RESULT_LABEL;
+            return $this->labelGenerator->format(self::DEFAULT_RESULT_LABEL);
         }
 
-        return $label;
+        return $this->labelGenerator->format($label);
     }
 
     /**

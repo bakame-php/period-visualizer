@@ -22,7 +22,7 @@ use League\Period\Sequence;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass Bakame\Period\Visualizer\Label\AffixType;
+ * @coversDefaultClass \Bakame\Period\Visualizer\Label\AffixType;
  */
 final class AffixGeneratorTest extends TestCase
 {
@@ -103,5 +103,11 @@ final class AffixGeneratorTest extends TestCase
         self::assertNotSame($new, $generator);
         self::assertSame('o', $new->getPrefix());
         self::assertSame('', $new->getSuffix());
+    }
+
+    public function testFormat(): void
+    {
+        $generator = new AffixGenerator(new RomanGenerator(new IntegerGenerator(10)), ':', '.');
+        self::assertSame(':.', $generator->format([]));
     }
 }

@@ -20,7 +20,7 @@ use League\Period\Sequence;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass Bakame\Period\Visualizer\Label\AffixType;
+ * @coversDefaultClass \Bakame\Period\Visualizer\Label\AffixType;
  */
 final class ReverseGeneratorTest extends TestCase
 {
@@ -61,5 +61,11 @@ final class ReverseGeneratorTest extends TestCase
                 'expected' => ['ab', 'aa'],
             ],
         ];
+    }
+
+    public function testFormat(): void
+    {
+        $generator = new ReverseGenerator(new LetterGenerator('AA'));
+        self::assertSame('', $generator->format([]));
     }
 }
