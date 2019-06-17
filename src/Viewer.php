@@ -34,6 +34,8 @@ final class Viewer
 
     /**
      * Create a new output.
+     * @param ?LabelGenerator $label
+     * @param ?ConsoleOutput  $output
      */
     public function __construct(?LabelGenerator $label = null, ?ConsoleOutput $output = null)
     {

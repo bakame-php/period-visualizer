@@ -13,8 +13,6 @@ declare(strict_types=1);
 
 namespace Bakame\Period\Visualizer;
 
-use League\Period\Period;
-use League\Period\Sequence;
 use function array_column;
 use function array_keys;
 use function array_map;
@@ -27,7 +25,6 @@ use function ob_start;
 use function preg_replace;
 use function preg_replace_callback;
 use function str_pad;
-use function strpos;
 use function strtr;
 use const PHP_OS;
 
@@ -70,7 +67,7 @@ final class ConsoleOutput
     /**
      * @var callable
      */
-    private $writerMethod;
+    private $writer;
 
     /**
      * @var ConsoleConfig
@@ -84,7 +81,7 @@ final class ConsoleOutput
     {
         $this->config = $config ?? new ConsoleConfig();
         $this->regexp = ',<<\s*((('.implode('|', array_keys(self::POSIX_COLOR_CODES)).')(\s*))+)>>,Umsi';
-        $this->writerMethod = $this->setWriterMethod();
+        $this->writer = $this->setWriterMethod();
     }
 
     /**
@@ -92,7 +89,7 @@ final class ConsoleOutput
      */
     private function setWriterMethod(): callable
     {
-        if (false !== strpos(PHP_OS, 'WIN')) {
+        if (false === stripos(PHP_OS, 'WIN')) {
             return function (string $str): string {
                 return ' '.preg_replace($this->regexp, '', $str);
             };
@@ -126,7 +123,7 @@ final class ConsoleOutput
      * D              [===============]
      * OVERLAP        [=]   [==]    [=]
      *
-     * @param array<int, array<int|string, Period|Sequence>> $blocks
+     * @param array $blocks
      */
     public function display(iterable $blocks): string
     {
@@ -153,8 +150,6 @@ final class ConsoleOutput
      * the periods represented as Period or Sequence instances.
      *
      * This method returns one output line at a time.
-     *
-     * @param array<int, array<int|string, mixed>> $matrix
      */
     private function render(array $matrix): iterable
     {
@@ -170,7 +165,7 @@ final class ConsoleOutput
                 $line = "<<$color>>$line<<reset>>";
             }
 
-            yield ($this->writerMethod)($line);
+            yield ($this->writer)($line);
         }
     }
 

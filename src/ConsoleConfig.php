@@ -45,7 +45,7 @@ final class ConsoleConfig
     /**
      * @var int
      */
-    private $width = 80;
+    private $width = 60;
 
     /**
      * @var string

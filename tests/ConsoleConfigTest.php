@@ -18,7 +18,7 @@ use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass Bakame\Period\Visualizer\ConsoleConfig
+ * @coversDefaultClass \Bakame\Period\Visualizer\ConsoleConfig
  */
 final class ConsoleConfigTest extends TestCase
 {
@@ -40,7 +40,7 @@ final class ConsoleConfigTest extends TestCase
         self::assertSame(')', $this->config->endExcluded());
         self::assertSame('=', $this->config->body());
         self::assertSame(' ', $this->config->space());
-        self::assertSame(80, $this->config->width());
+        self::assertSame(60, $this->config->width());
         self::assertSame(['default'], $this->config->colors());
     }
 
@@ -68,7 +68,7 @@ final class ConsoleConfigTest extends TestCase
             '0 size' => [0, 10],
             'negative size' => [-23, 10],
             'basic usage' => [23, 23],
-            'default value' => [80, 80],
+            'default value' => [60, 60],
         ];
     }
 

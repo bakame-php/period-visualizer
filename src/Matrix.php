@@ -64,7 +64,6 @@ final class Matrix
      * - There's one column for every unit of width.
      * - Cell state depends on Period presence and boundary type.
      *
-     * @return array<int, array<int|string, int[]>>
      */
     public static function build(iterable $blocks, int $width): array
     {
