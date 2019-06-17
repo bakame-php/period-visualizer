@@ -16,7 +16,7 @@ namespace Bakame\Period\Visualizer\Label;
 use League\Period\Sequence;
 use function array_reverse;
 
-final class ReverseType implements LabelGenerator
+final class ReverseGenerator implements LabelGenerator
 {
     /**
      * @var LabelGenerator
@@ -34,8 +34,8 @@ final class ReverseType implements LabelGenerator
     /**
      * {@inheritdoc}
      */
-    public function generateLabels(Sequence $sequence): array
+    public function generate(Sequence $sequence): array
     {
-        return array_reverse($this->labelGenerator->generateLabels($sequence));
+        return array_reverse($this->labelGenerator->generate($sequence));
     }
 }

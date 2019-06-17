@@ -4,7 +4,27 @@ All Notable changes to `Period Visualizer` will be documented in this file
 
 ## 0.4.0 - 2019-06-16
 
-- Added support for boundary type.
+- Added support for boundary type in:
+    - `Matrix`   
+    - `ConsoleOutput`
+    - `ConsoleConfig`
+- Added `Matrix::TOKEN_*` public constants to support boundary type
+- Changed `Matrix::build` returned array structure
+- Added the following `ConsoleConfig` methods:
+    - `ConsoleConfig::endIncluded`
+    - `ConsoleConfig::withEndIncluded`
+    - `ConsoleConfig::startExcluded`
+    - `ConsoleConfig::withStartIncluded`
+- Removed and replaced the following `ConsoleConfig` methods:
+    - `ConsoleConfig::getTail` with `ConsoleConfig::startIncluded` 
+    - `ConsoleConfig::withTead` with `ConsoleConfig::withEndExcluded` 
+    - `ConsoleConfig::getHead` with `ConsoleConfig::endExcluded` 
+    - `ConsoleConfig::withHead` with `ConsoleConfig::withEndExcluded` 
+- Removed the `get` prefix from all `ConsoleConfig` getter methods
+- Changed the suffix from all `LabelGenerator` classes from `Type` to `Generator`
+- Changed `LabelGenerator::getLabels` method name to `LabelGenerator::generate`
+- Made `ConsoleOutput` optional in the `Viewer` constructor method
+- Added `Viewer::unions`
 
 ## 0.3.1 - 2018-12-21
 

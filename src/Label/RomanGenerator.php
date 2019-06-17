@@ -17,7 +17,7 @@ use League\Period\Sequence;
 use function array_map;
 use function in_array;
 
-final class RomanType implements LabelGenerator
+final class RomanGenerator implements LabelGenerator
 {
     public const UPPER = 1;
     public const LOWER = 2;
@@ -31,7 +31,7 @@ final class RomanType implements LabelGenerator
     ];
 
     /**
-     * @var IntegerType
+     * @var IntegerGenerator
      */
     private $labelGenerator;
 
@@ -43,7 +43,7 @@ final class RomanType implements LabelGenerator
     /**
      * New instance.
      */
-    public function __construct(IntegerType $labelGenerator, int $lettercase = self::UPPER)
+    public function __construct(IntegerGenerator $labelGenerator, int $lettercase = self::UPPER)
     {
         $this->labelGenerator = $labelGenerator;
         $this->lettercase = $this->filter($lettercase);
@@ -118,9 +118,9 @@ final class RomanType implements LabelGenerator
     /**
      * {@inheritdoc}
      */
-    public function generateLabels(Sequence $sequence): array
+    public function generate(Sequence $sequence): array
     {
-        $retval = array_map([$this, 'convert'], $this->labelGenerator->generateLabels($sequence));
+        $retval = array_map([$this, 'convert'], $this->labelGenerator->generate($sequence));
         if (self::LOWER === $this->lettercase) {
             return array_map('strtolower', $retval);
         }

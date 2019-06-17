@@ -22,5 +22,5 @@ interface LabelGenerator
      *
      * @return string[]
      */
-    public function generateLabels(Sequence $sequence): array;
+    public function generate(Sequence $sequence): array;
 }

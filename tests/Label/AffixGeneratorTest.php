@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace BakameTest\Period\Visualizer\Label;
 
-use Bakame\Period\Visualizer\Label\AffixType;
-use Bakame\Period\Visualizer\Label\IntegerType;
-use Bakame\Period\Visualizer\Label\LetterType;
-use Bakame\Period\Visualizer\Label\RomanType;
+use Bakame\Period\Visualizer\Label\AffixGenerator;
+use Bakame\Period\Visualizer\Label\IntegerGenerator;
+use Bakame\Period\Visualizer\Label\LetterGenerator;
+use Bakame\Period\Visualizer\Label\RomanGenerator;
 use League\Period\Period;
 use League\Period\Sequence;
 use PHPUnit\Framework\TestCase;
@@ -24,7 +24,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * @coversDefaultClass Bakame\Period\Visualizer\Label\AffixType;
  */
-final class AffixTypeTest extends TestCase
+final class AffixGeneratorTest extends TestCase
 {
     /**
      * @dataProvider providerLetter
@@ -36,8 +36,8 @@ final class AffixTypeTest extends TestCase
         string $suffix,
         array $expected
     ): void {
-        $generator = (new AffixType(new LetterType($letter)))->withPrefix($prefix)->withSuffix($suffix);
-        self::assertSame($expected, $generator->generateLabels($sequence));
+        $generator = (new AffixGenerator(new LetterGenerator($letter)))->withPrefix($prefix)->withSuffix($suffix);
+        self::assertSame($expected, $generator->generate($sequence));
     }
 
     public function providerLetter(): iterable
@@ -93,7 +93,7 @@ final class AffixTypeTest extends TestCase
 
     public function testGetter(): void
     {
-        $generator = new AffixType(new RomanType(new IntegerType(10)));
+        $generator = new AffixGenerator(new RomanGenerator(new IntegerGenerator(10)));
         self::assertSame('', $generator->getSuffix());
         self::assertSame('', $generator->getPrefix());
         $new = $generator->withPrefix('o')->withSuffix('');

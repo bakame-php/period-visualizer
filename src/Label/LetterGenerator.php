@@ -18,7 +18,7 @@ use function count;
 use function preg_match;
 use function trim;
 
-final class LetterType implements LabelGenerator
+final class LetterGenerator implements LabelGenerator
 {
     /**
      * @var string
@@ -80,7 +80,7 @@ final class LetterType implements LabelGenerator
     /**
      * {@inheritdoc}
      */
-    public function generateLabels(Sequence $sequence): array
+    public function generate(Sequence $sequence): array
     {
         $letters = [];
         if ($sequence->isEmpty()) {

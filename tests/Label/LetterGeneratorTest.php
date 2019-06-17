@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace BakameTest\Period\Visualizer\Label;
 
-use Bakame\Period\Visualizer\Label\LetterType;
+use Bakame\Period\Visualizer\Label\LetterGenerator;
 use League\Period\Period;
 use League\Period\Sequence;
 use PHPUnit\Framework\TestCase;
@@ -21,15 +21,15 @@ use PHPUnit\Framework\TestCase;
 /**
  * @coversDefaultClass Bakame\Period\Visualizer\Label\LetterType;
  */
-final class LetterTypeTest extends TestCase
+final class LetterGeneratorTest extends TestCase
 {
     /**
      * @dataProvider providerLetter
      */
     public function testGetLabels(Sequence $sequence, string $letter, array $expected): void
     {
-        $generator = new LetterType($letter);
-        self::assertSame($expected, $generator->generateLabels($sequence));
+        $generator = new LetterGenerator($letter);
+        self::assertSame($expected, $generator->generate($sequence));
     }
 
     public function providerLetter(): iterable
@@ -73,7 +73,7 @@ final class LetterTypeTest extends TestCase
 
     public function testStartWith(): void
     {
-        $generator = new LetterType('i');
+        $generator = new LetterGenerator('i');
         self::assertSame('i', $generator->getStartingString());
         $new = $generator->startWith('o');
         self::assertNotSame($new, $generator);

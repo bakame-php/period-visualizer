@@ -18,7 +18,7 @@ use function array_map;
 use function count;
 use function range;
 
-final class IntegerType implements LabelGenerator
+final class IntegerGenerator implements LabelGenerator
 {
     /**
      * @var int
@@ -70,7 +70,7 @@ final class IntegerType implements LabelGenerator
     /**
      * {@inheritdoc}
      */
-    public function generateLabels(Sequence $sequence): array
+    public function generate(Sequence $sequence): array
     {
         $letters = [];
         if ($sequence->isEmpty()) {

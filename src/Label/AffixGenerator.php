@@ -18,7 +18,7 @@ use function array_map;
 use function preg_replace;
 use function trim;
 
-final class AffixType implements LabelGenerator
+final class AffixGenerator implements LabelGenerator
 {
     /**
      * @var LabelGenerator
@@ -46,13 +46,13 @@ final class AffixType implements LabelGenerator
     /**
      * {@inheritdoc}
      */
-    public function generateLabels(Sequence $sequence): array
+    public function generate(Sequence $sequence): array
     {
         $mapper = function (string $value) {
             return $this->prefix.$value.$this->suffix;
         };
 
-        return array_map($mapper, $this->labelGenerator->generateLabels($sequence));
+        return array_map($mapper, $this->labelGenerator->generate($sequence));
     }
 
     /**

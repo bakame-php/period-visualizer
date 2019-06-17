@@ -68,14 +68,9 @@ final class ConsoleOutput
     private $regexp;
 
     /**
-     * @var string
+     * @var callable
      */
-    private $newline = PHP_EOL;
-
-    /**
-     * @var string
-     */
-    private $writerMethod = 'POSIX';
+    private $writerMethod;
 
     /**
      * @var ConsoleConfig
@@ -89,10 +84,29 @@ final class ConsoleOutput
     {
         $this->config = $config ?? new ConsoleConfig();
         $this->regexp = ',<<\s*((('.implode('|', array_keys(self::POSIX_COLOR_CODES)).')(\s*))+)>>,Umsi';
-        $this->newline = PHP_EOL;
+        $this->writerMethod = $this->setWriterMethod();
+    }
+
+    /**
+     * Set the writing method depending on the underlying platform.
+     */
+    private function setWriterMethod(): callable
+    {
         if (false !== strpos(PHP_OS, 'WIN')) {
-            $this->writerMethod = 'WINDOWS';
+            return function (string $str): string {
+                return ' '.preg_replace($this->regexp, '', $str);
+            };
         }
+
+        return function (string $str): string {
+            $formatter = static function (array $matches) {
+                $str = (string) preg_replace('/(\s+)/msi', ';', (string) $matches[1]);
+
+                return chr(27).'['.strtr($str, self::POSIX_COLOR_CODES).'m';
+            };
+
+            return ' '.preg_replace_callback($this->regexp, $formatter, $str);
+        };
     }
 
     /**
@@ -123,9 +137,8 @@ final class ConsoleOutput
 
         ob_start();
         foreach ($this->render($matrix) as $row) {
-            echo $row.$this->newline;
+            echo $row.PHP_EOL;
         }
-        echo $this->newline;
 
         return (string) ob_get_clean();
     }
@@ -155,7 +168,7 @@ final class ConsoleOutput
                 $line = "<<$color>>$line<<reset>>";
             }
 
-            yield $this->write($line);
+            yield ($this->writerMethod)($line);
         }
     }
 
@@ -191,41 +204,5 @@ final class ConsoleOutput
         }
 
         return implode('', $tmp);
-    }
-
-    /**
-     * @inheritdoc
-     *
-     * Inspired by Aura\Cli\Stdio\Formatter (https://github.com/auraphp/Aura.Cli).
-     */
-    private function write(string $str): string
-    {
-        if ('POSIX' === $this->writerMethod) {
-            return $this->posixWrite($str);
-        }
-
-        return $this->windowsWrite($str);
-    }
-
-    /**
-     * Write a line to windows console.
-     */
-    private function windowsWrite(string $str): string
-    {
-        return ' '.preg_replace($this->regexp, '', $str);
-    }
-
-    /**
-     * Write a line to Posix compliant console.
-     */
-    private function posixWrite(string $str): string
-    {
-        $formatter = static function (array $matches) {
-            $str = (string) preg_replace('/(\s+)/msi', ';', (string) $matches[1]);
-
-            return chr(27).'['.strtr($str, self::POSIX_COLOR_CODES).'m';
-        };
-
-        return ' '.preg_replace_callback($this->regexp, $formatter, $str);
     }
 }

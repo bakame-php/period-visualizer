@@ -15,11 +15,10 @@ It is heavily inspired from the work of [@thecrypticace](https://github.com/thec
 <?php
 
 use Bakame\Period\Visualizer\Viewer;
-use Bakame\Period\Visualizer\ConsoleOutput;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$view = new Viewer(new ConsoleOutput());
+$view = new Viewer();
 echo $view->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
     new Period('2018-01-15', '2018-02-01')
@@ -59,11 +58,10 @@ Usage
 <?php
 
 use Bakame\Period\Visualizer\Viewer;
-use Bakame\Period\Visualizer\ConsoleOutput;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$view = new Viewer(new ConsoleOutput());
+$view = new Viewer();
 echo $view->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
     new Period('2018-01-01', '2018-01-15')
@@ -80,7 +78,7 @@ results:
 ### Viewing a Sequence gaps.
 
 ~~~php
-$view = new Viewer(new ConsoleOutput());
+$view = new Viewer();
 echo $view->gaps(new Sequence(
     new Period('2018-01-01', '2018-03-01'),
     new Period('2018-05-01', '2018-08-01')
@@ -98,7 +96,7 @@ results:
 ### Viewing a Sequence intersections.
 
 ~~~php
-$view = new Viewer(new ConsoleOutput());
+$view = new Viewer();
 echo $view->intersections(new Sequence(
     new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00'),
     new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00')
@@ -116,7 +114,7 @@ results:
 ### Viewing a Period difference.
 
 ~~~php
-$view = new Viewer(new ConsoleOutput());
+$view = new Viewer();
 echo $view->diff(
     new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00'),
     new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00')
@@ -145,11 +143,11 @@ By default the class is instantiated with the letter index strategy which starts
 
 use Bakame\Period\Visualizer\Viewer;
 use Bakame\Period\Visualizer\ConsoleOutput;
-use Bakame\Period\Visualizer\Label\LetterType;
+use Bakame\Period\Visualizer\Label\LetterGenerator;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$view = new Viewer(new ConsoleOutput(), new LetterType('aa'));
+$view = new Viewer(new ConsoleOutput(), new LetterGenerator('aa'));
 echo $view->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
     new Period('2018-01-01', '2018-01-15')
@@ -170,11 +168,11 @@ results:
 
 use Bakame\Period\Visualizer\Viewer;
 use Bakame\Period\Visualizer\ConsoleOutput;
-use Bakame\Period\Visualizer\Label\IntegerType;
+use Bakame\Period\Visualizer\Label\IntegerGenerator;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$view = new Viewer(new ConsoleOutput(), new IntegerType(42));
+$view = new Viewer(new ConsoleOutput(), new IntegerGenerator(42));
 echo $view->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
     new Period('2018-01-01', '2018-01-15')
@@ -195,12 +193,12 @@ results:
 
 use Bakame\Period\Visualizer\Viewer;
 use Bakame\Period\Visualizer\ConsoleOutput;
-use Bakame\Period\Visualizer\Label\IntegerType;
-use Bakame\Period\Visualizer\Label\RomanType;
+use Bakame\Period\Visualizer\Label\IntegerGenerator;
+use Bakame\Period\Visualizer\Label\RomanGenerator;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$labelGenerator = new RomanType(new IntegerType(5), RomanType::LOWER);
+$labelGenerator = new RomanGenerator(new IntegerGenerator(5), RomanGenerator::LOWER);
 
 $view = new Viewer(new ConsoleOutput(), $labelGenerator);
 echo $view->sequence(new Sequence(
@@ -223,13 +221,13 @@ results:
 
 use Bakame\Period\Visualizer\Viewer;
 use Bakame\Period\Visualizer\ConsoleOutput;
-use Bakame\Period\Visualizer\Label\IntegerType;
-use Bakame\Period\Visualizer\Label\RomanType;
-use Bakame\Period\Visualizer\Label\AffixType;
+use Bakame\Period\Visualizer\Label\IntegerGenerator;
+use Bakame\Period\Visualizer\Label\RomanGenerator;
+use Bakame\Period\Visualizer\Label\AffixGenerator;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$labelGenerator = new AffixType(new RomanType(new IntegerType(5), RomanType::LOWER));
+$labelGenerator = new AffixGenerator(new RomanGenerator(new IntegerGenerator(5), RomanGenerator::LOWER));
 $labelGenerator = $labelGenerator->withSuffix('.');
 
 $view = new Viewer(new ConsoleOutput(), $labelGenerator);
@@ -253,15 +251,15 @@ results:
 
 use Bakame\Period\Visualizer\Viewer;
 use Bakame\Period\Visualizer\ConsoleOutput;
-use Bakame\Period\Visualizer\Label\IntegerType;
-use Bakame\Period\Visualizer\Label\RomanType;
-use Bakame\Period\Visualizer\Label\AffixType;
-use Bakame\Period\Visualizer\Label\ReverseType;
+use Bakame\Period\Visualizer\Label\IntegerGenerator;
+use Bakame\Period\Visualizer\Label\RomanGenerator;
+use Bakame\Period\Visualizer\Label\AffixGenerator;
+use Bakame\Period\Visualizer\Label\ReverseGenerator;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$labelGenerator = new AffixType(new RomanType(new IntegerType(5), RomanType::LOWER));
-$labelGenerator = new ReverserType($labelGenerator->withSuffix('.'));
+$labelGenerator = new AffixGenerator(new RomanGenerator(new IntegerGenerator(5), RomanGenerator::LOWER));
+$labelGenerator = new ReverseGenerator($labelGenerator->withSuffix('.'));
 
 $view = new Viewer(new ConsoleOutput(), $labelGenerator);
 echo $view->sequence(new Sequence(
@@ -285,21 +283,21 @@ You can create your own strategy by implementing the `Bakame\Period\Visualizer\L
 ~~~php
 use Bakame\Period\Visualizer\Viewer;
 use Bakame\Period\Visualizer\ConsoleOutput;
-use Bakame\Period\Visualizer\Label\AffixType;
+use Bakame\Period\Visualizer\Label\AffixGenerator;
 use Bakame\Period\Visualizer\Label\LabelGenerator;
 use League\Period\Period;
 use League\Period\Sequence;
 
 $samelabel = new class implements LabelGenerator {
-    public function getLabels(Sequence $sequence): array
+    public function generate(Sequence $sequence): array
     {
         return array_fill(0, count($sequence), 'foobar');
     }
 };
 
-$labelGenerator = (new AffixType($samelabel))->withSuffix('.');
+$labelGenerator = (new AffixGenerator($samelabel))->withSuffix('.');
 
-$view = new Viewer($output, $labelGenerator);
+$view = new Viewer(new ConsoleOutput(), $labelGenerator);
 echo $view->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
     new Period('2018-01-01', '2018-01-15')
@@ -337,7 +335,7 @@ results:
  last        [=====]
 ~~~
 
-The `ConsoleOutput::display` or `ConsoleOutput::render` methods excepts a tuple as its unique argument where:
+The `ConsoleOutput::display` methods excepts a tuple as its unique argument where:
 
 - the first value of the tuple represents the label name
 - the second and last value represents a `Period` or `Sequence` object.

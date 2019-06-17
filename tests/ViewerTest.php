@@ -15,8 +15,9 @@ namespace BakameTest\Period\Visualizer;
 
 use Bakame\Period\Visualizer\ConsoleConfig;
 use Bakame\Period\Visualizer\ConsoleOutput;
-use Bakame\Period\Visualizer\Label\LetterType;
+use Bakame\Period\Visualizer\Label\LetterGenerator;
 use Bakame\Period\Visualizer\Viewer;
+use League\Period\Datepoint;
 use League\Period\Period;
 use League\Period\Sequence;
 use PHPUnit\Framework\TestCase;
@@ -33,7 +34,7 @@ final class ViewerTest extends TestCase
 
     public function setUp(): void
     {
-        $this->view = new Viewer(new ConsoleOutput(new ConsoleConfig()));
+        $this->view = new Viewer();
     }
 
     /**
@@ -43,8 +44,8 @@ final class ViewerTest extends TestCase
     public function testLabelGenerator(): void
     {
         $labelGenerator = $this->view->getLabelGenerator();
-        self::assertInstanceOf(LetterType::class, $labelGenerator);
-        $this->view->setLabelGenerator(new LetterType('bb'));
+        self::assertInstanceOf(LetterGenerator::class, $labelGenerator);
+        $this->view->setLabelGenerator(new LetterGenerator('bb'));
         self::assertNotSame($labelGenerator, $this->view->getLabelGenerator());
     }
 
@@ -62,8 +63,8 @@ final class ViewerTest extends TestCase
             new Period('2018-01-15', '2018-02-01')
         ));
 
-        self::assertStringContainsString('A     [==================================)', $data);
-        self::assertStringContainsString('B                                         [=========================================)', $data);
+        self::assertStringContainsString('A    [===================================)', $data);
+        self::assertStringContainsString('B                                        [==========================================)', $data);
     }
 
     public function testDisplayEmptySequence(): void
@@ -79,9 +80,9 @@ final class ViewerTest extends TestCase
             new Period('2018-01-10', '2018-02-01')
         ));
 
-        self::assertStringContainsString('A                 [==================================)', $data);
-        self::assertStringContainsString('B                                        [======================================================)', $data);
-        self::assertStringContainsString('INTERSECTIONS                            [===========)', $data);
+        self::assertStringContainsString('A                [===================================)', $data);
+        self::assertStringContainsString('B                                       [=======================================================)', $data);
+        self::assertStringContainsString('INTERSECTIONS                           [============)', $data);
     }
 
     public function testGaps(): void
@@ -91,9 +92,9 @@ final class ViewerTest extends TestCase
             new Period('2018-01-15', '2018-02-01', Period::EXCLUDE_ALL)
         ), '');
 
-        self::assertStringContainsString('A          [=====================)', $data);
-        self::assertStringContainsString('B                                              (=========================================)', $data);
-        self::assertStringContainsString('RESULT                            [===========]', $data);
+        self::assertStringContainsString('A         [======================)', $data);
+        self::assertStringContainsString('B                                             (==========================================)', $data);
+        self::assertStringContainsString('RESULT                           [============]', $data);
     }
 
     public function testSingleUnitIntervalLength(): void
@@ -103,8 +104,8 @@ final class ViewerTest extends TestCase
             new Period('2017-01-01', '2019-01-01', Period::INCLUDE_ALL)
         ));
 
-        self::assertStringContainsString('A                                             [=)', $data);
-        self::assertStringContainsString('B     [=============================================================================]', $data);
+        self::assertStringContainsString('A                                            [==)', $data);
+        self::assertStringContainsString('B    [==============================================================================]', $data);
     }
 
     /**
@@ -120,8 +121,23 @@ final class ViewerTest extends TestCase
             new Period('2017-12-01', '2018-03-01')
         );
 
-        self::assertStringContainsString('A                                   [==========================)', $data);
-        self::assertStringContainsString('B        [=============================================================================)', $data);
-        self::assertStringContainsString('DIFF     [=========================)                            [======================)', $data);
+        self::assertStringContainsString('A                                  [===========================)', $data);
+        self::assertStringContainsString('B       [==============================================================================)', $data);
+        self::assertStringContainsString('DIFF    [==========================)                           [=======================)', $data);
+    }
+
+    public function testUnion(): void
+    {
+        $sequence = new Sequence(
+            Datepoint::create('2018-11-29')->getYear(),
+            Datepoint::create('2018-11-29')->getMonth(),
+            Period::around('2016-06-01', '3 MONTHS')
+        );
+
+        $data = $this->view->unions($sequence);
+        self::assertStringContainsString('A                                                            [===========================)', $data);
+        self::assertStringContainsString('B                                                                                    [=)', $data);
+        self::assertStringContainsString('C         [=============)', $data);
+        self::assertStringContainsString('UNIONS    [=============)                                    [===========================)', $data);
     }
 }
