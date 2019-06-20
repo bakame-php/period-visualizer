@@ -111,23 +111,20 @@ final class ConsoleOutput
     }
 
     /**
-     * Builds a string to visualize one or more
-     * periods and/or sequences in a more
-     * human readable / parsable manner.
+     * Builds a string to visualize one or more intervals.
      *
      * The submitted iterable structure represent a tuple where
-     * the first value is the identifer and the second value
+     * the first value is the identifier and the second value
      * the intervals represented as Period or Sequence instances.
      *
-     * the returned string can be represented like the following:
+     * The returned string can be represented like the following
+     * and depends on the Configuration used
      *
      * A       [========]
      * B                    [==]
      * C                            [=====]
      * D              [===============]
      * OVERLAP        [=]   [==]    [=]
-     *
-     * @param array $blocks
      */
     public function display(iterable $blocks): string
     {
@@ -150,10 +147,10 @@ final class ConsoleOutput
      * human readable / parsable manner.
      *
      * The submitted array values represent a tuple where
-     * the first value is the identifer and the second value
-     * the periods represented as Period or Sequence instances.
+     * the first value is the identifier and the second value
+     * the intervals represented as Period or Sequence instances.
      *
-     * This method returns one output line at a time.
+     * This method returns one output string line at a time.
      */
     private function render(array $matrix): iterable
     {
@@ -174,7 +171,7 @@ final class ConsoleOutput
     }
 
     /**
-     * Turns a series of boolean values into bars representing the interval.
+     * Turns the matrix values into characters representing the interval.
      */
     private function convertMatrixValue(int $token): string
     {

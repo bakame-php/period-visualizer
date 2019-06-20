@@ -28,11 +28,6 @@ use function sprintf;
  */
 final class ConsoleConfig
 {
-    /**
-     * POSIX color.
-     *
-     * @var array
-     */
     public const COLORS = ['white', 'red', 'yellow', 'green', 'cyan', 'blue', 'magenta', 'default'];
 
     private const REGEXP_UNICODE = '/\\\\u(?<unicode>[0-9A-F]{1,4})/i';
@@ -69,7 +64,7 @@ final class ConsoleConfig
     /**
      * @var string
      */
-    private $body = '=';
+    private $body = '-';
 
     /**
      * @var string

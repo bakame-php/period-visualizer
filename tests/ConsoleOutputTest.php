@@ -63,7 +63,7 @@ final class ConsoleOutputTest extends TestCase
             ['B', new Period('2018-01-15', '2018-02-01')],
         ]);
 
-        self::assertStringContainsString('A    [==========================)', $data);
-        self::assertStringContainsString('B                               [===============================)', $data);
+        self::assertStringContainsString('A    [--------------------------)', $data);
+        self::assertStringContainsString('B                               [-------------------------------)', $data);
     }
 }

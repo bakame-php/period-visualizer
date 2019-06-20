@@ -23,9 +23,7 @@ use function count;
 use function floor;
 
 /**
- * This class is heavily influence by the work of
- * https://github.com/thecrypticace on the Visualizer class
- * for Spatie/Period package.
+ * This class is influence by the work of https://github.com/thecrypticace on the Spatie/Period Visualizer class.
  */
 final class Matrix
 {
@@ -59,11 +57,11 @@ final class Matrix
     }
 
     /**
-     * Build a 2D table such that:
+     * Build a 2D table such that:.
+     *
      * - There's one row for every block.
      * - There's one column for every unit of width.
      * - Cell state depends on Period presence and boundary type.
-     *
      */
     public static function build(iterable $blocks, int $width): array
     {
@@ -89,7 +87,7 @@ final class Matrix
     }
 
     /**
-     * Gets the bounds encompassing all visualized periods.
+     * Gets the boundary encompassing all visualized intervals.
      */
     private static function getBoundaries(iterable $blocks): ?Period
     {
@@ -111,7 +109,7 @@ final class Matrix
     /**
      * Converts and add a Period to the matrix row.
      *
-     * The conversion is done depending on the period presence and boundaries.
+     * The conversion depends on the period presence and boundaries.
      *
      * @param int[] $row
      *

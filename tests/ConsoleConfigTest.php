@@ -38,7 +38,7 @@ final class ConsoleConfigTest extends TestCase
         self::assertSame('(', $this->config->startExcluded());
         self::assertSame(']', $this->config->endIncluded());
         self::assertSame(')', $this->config->endExcluded());
-        self::assertSame('=', $this->config->body());
+        self::assertSame('-', $this->config->body());
         self::assertSame(' ', $this->config->space());
         self::assertSame(60, $this->config->width());
         self::assertSame(['default'], $this->config->colors());

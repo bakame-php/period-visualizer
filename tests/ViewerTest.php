@@ -82,8 +82,8 @@ final class ViewerTest extends TestCase
             new Period('2018-01-15', '2018-02-01')
         ));
 
-        self::assertStringContainsString('A    [==========================)', $data);
-        self::assertStringContainsString('B                               [===============================)', $data);
+        self::assertStringContainsString('A    [--------------------------)', $data);
+        self::assertStringContainsString('B                               [-------------------------------)', $data);
     }
 
     /**
@@ -107,9 +107,9 @@ final class ViewerTest extends TestCase
             new Period('2018-01-10', '2018-02-01')
         ));
 
-        self::assertStringContainsString('A                [==========================)', $data);
-        self::assertStringContainsString('B                                 [=========================================)', $data);
-        self::assertStringContainsString('INTERSECTIONS                     [=========)', $data);
+        self::assertStringContainsString('A                [--------------------------)', $data);
+        self::assertStringContainsString('B                                 [-----------------------------------------)', $data);
+        self::assertStringContainsString('INTERSECTIONS                     [---------)', $data);
     }
 
     /**
@@ -124,9 +124,9 @@ final class ViewerTest extends TestCase
             new Period('2018-01-15', '2018-02-01', Period::EXCLUDE_ALL)
         ), '');
 
-        self::assertStringContainsString('A         [================)', $data);
-        self::assertStringContainsString('B                                    (===============================)', $data);
-        self::assertStringContainsString('RESULT                     [=========]', $data);
+        self::assertStringContainsString('A         [----------------)', $data);
+        self::assertStringContainsString('B                                    (-------------------------------)', $data);
+        self::assertStringContainsString('RESULT                     [---------]', $data);
     }
 
     /**
@@ -140,8 +140,8 @@ final class ViewerTest extends TestCase
             new Period('2017-01-01', '2019-01-01', Period::INCLUDE_ALL)
         ));
 
-        self::assertStringContainsString('A                                  [=)', $data);
-        self::assertStringContainsString('B    [==========================================================]', $data);
+        self::assertStringContainsString('A                                  [-)', $data);
+        self::assertStringContainsString('B    [----------------------------------------------------------]', $data);
     }
 
     /**
@@ -157,9 +157,9 @@ final class ViewerTest extends TestCase
             new Period('2017-12-01', '2018-03-01')
         );
 
-        self::assertStringContainsString('A                           [====================)', $data);
-        self::assertStringContainsString('B       [==========================================================)', $data);
-        self::assertStringContainsString('DIFF    [===================)                    [=================)', $data);
+        self::assertStringContainsString('A                           [--------------------)', $data);
+        self::assertStringContainsString('B       [----------------------------------------------------------)', $data);
+        self::assertStringContainsString('DIFF    [-------------------)                    [-----------------)', $data);
     }
 
     /**
@@ -175,9 +175,9 @@ final class ViewerTest extends TestCase
         );
 
         $data = $this->view->unions($sequence);
-        self::assertStringContainsString('A                                               [====================)', $data);
-        self::assertStringContainsString('B                                                                 [=) ', $data);
-        self::assertStringContainsString('C         [=========)', $data);
-        self::assertStringContainsString('UNIONS    [=========)                           [====================)', $data);
+        self::assertStringContainsString('A                                               [--------------------)', $data);
+        self::assertStringContainsString('B                                                                 [-) ', $data);
+        self::assertStringContainsString('C         [---------)', $data);
+        self::assertStringContainsString('UNIONS    [---------)                           [--------------------)', $data);
     }
 }

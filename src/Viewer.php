@@ -22,6 +22,7 @@ use function trim;
 final class Viewer
 {
     private const DEFAULT_RESULT_LABEL = 'RESULT';
+
     /**
      * @var ConsoleOutput
      */
@@ -34,6 +35,7 @@ final class Viewer
 
     /**
      * Create a new output.
+     *
      * @param ?LabelGenerator $label
      * @param ?ConsoleOutput  $output
      */
@@ -80,7 +82,7 @@ final class Viewer
     }
 
     /**
-     * Returns the sequence view representation.
+     * Visualizes a sequence.
      */
     public function sequence(Sequence $sequence): string
     {
@@ -90,7 +92,21 @@ final class Viewer
     }
 
     /**
-     * Returns the sequence intersections view representation.
+     * Attach the labels to the sequence.
+     */
+    private function addLabels(Sequence $sequence): array
+    {
+        $labels = $this->labelGenerator->generate($sequence);
+        $results = [];
+        foreach ($sequence as $offset => $period) {
+            $results[] = [$labels[$offset], $period];
+        }
+
+        return $results;
+    }
+
+    /**
+     * Visualizes a sequence intersections.
      */
     public function intersections(Sequence $sequence, string $resultLabel = 'INTERSECTIONS'): string
     {
@@ -114,7 +130,7 @@ final class Viewer
     }
 
     /**
-     * Returns the sequence gaps view representation.
+     * Visualizes a sequence gaps.
      */
     public function gaps(Sequence $sequence, string $resultLabel = 'GAPS'): string
     {
@@ -125,7 +141,7 @@ final class Viewer
     }
 
     /**
-     * Returns the sequence gaps view representation.
+     * Visualizes a sequence unions.
      */
     public function unions(Sequence $sequence, string $resultLabel = 'UNIONS'): string
     {
@@ -136,7 +152,7 @@ final class Viewer
     }
 
     /**
-     * Returns the sequences diff view representation.
+     * Visualizes a sequence diff.
      */
     public function diff(Period $interval1, Period $interval2, string $resultLabel = 'DIFF'): string
     {
@@ -153,19 +169,5 @@ final class Viewer
         $input[] = [$this->filterResultLabel($resultLabel), $diff];
 
         return $this->output->display($input);
-    }
-
-    /**
-     * Format the sequence data to be shown.
-     */
-    private function addLabels(Sequence $sequence): array
-    {
-        $labels = $this->labelGenerator->generate($sequence);
-        $results = [];
-        foreach ($sequence as $offset => $period) {
-            $results[] = [$labels[$offset], $period];
-        }
-
-        return $results;
     }
 }
