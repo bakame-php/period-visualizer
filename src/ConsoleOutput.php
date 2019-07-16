@@ -14,51 +14,17 @@ declare(strict_types=1);
 namespace Bakame\Period\Visualizer;
 
 use function array_column;
-use function array_keys;
 use function array_map;
-use function chr;
 use function count;
 use function implode;
 use function max;
-use function ob_get_clean;
-use function ob_start;
-use function preg_replace;
-use function preg_replace_callback;
 use function str_pad;
-use function strtr;
-use const PHP_OS;
 
 /**
  * A class to output to the console the matrix.
  */
 final class ConsoleOutput
 {
-    private const POSIX_COLOR_CODES = [
-        'reset'      => '0',
-        'bold'       => '1',
-        'dim'        => '2',
-        'underscore' => '4',
-        'blink'      => '5',
-        'reverse'    => '7',
-        'hidden'     => '8',
-        'black'      => '30',
-        'red'        => '31',
-        'green'      => '32',
-        'yellow'     => '33',
-        'blue'       => '34',
-        'magenta'    => '35',
-        'cyan'       => '36',
-        'white'      => '37',
-        'blackbg'    => '40',
-        'redbg'      => '41',
-        'greenbg'    => '42',
-        'yellowbg'   => '43',
-        'bluebg'     => '44',
-        'magentabg'  => '45',
-        'cyanbg'     => '46',
-        'whitebg'    => '47',
-    ];
-
     private const TOKEN_TO_METHOD = [
         Matrix::TOKEN_SPACE => 'space',
         Matrix::TOKEN_BODY => 'body',
@@ -69,9 +35,9 @@ final class ConsoleOutput
     ];
 
     /**
-     * @var callable
+     * @var Writer
      */
-    private static $writer;
+    private $writer;
 
     /**
      * @var ConsoleConfig
@@ -81,33 +47,10 @@ final class ConsoleOutput
     /**
      * New instance.
      */
-    public function __construct(ConsoleConfig $config = null)
+    public function __construct(ConsoleConfig $config = null, Writer $writer = null)
     {
         $this->config = $config ?? new ConsoleConfig();
-        self::$writer = self::$writer ?? self::setWriter();
-    }
-
-    /**
-     * Set the writing method depending on the underlying platform.
-     */
-    private static function setWriter(): callable
-    {
-        $regexp = ',<<\s*((('.implode('|', array_keys(self::POSIX_COLOR_CODES)).')(\s*))+)>>,Umsi';
-        if (0 === stripos(PHP_OS, 'WIN')) {
-            return function (string $str) use ($regexp): string {
-                return ' '.preg_replace($regexp, '', $str).PHP_EOL;
-            };
-        }
-
-        return function (string $str) use ($regexp): string {
-            $formatter = static function (array $matches) {
-                $str = (string) preg_replace('/(\s+)/msi', ';', (string) $matches[1]);
-
-                return chr(27).'['.strtr($str, self::POSIX_COLOR_CODES).'m';
-            };
-
-            return ' '.preg_replace_callback($regexp, $formatter, $str).PHP_EOL;
-        };
+        $this->writer = $writer ?? new Stdout(fopen('php://stdout', 'w+'));
     }
 
     /**
@@ -126,19 +69,19 @@ final class ConsoleOutput
      * D              [===============]
      * OVERLAP        [=]   [==]    [=]
      */
-    public function display(iterable $blocks): string
+    public function display(iterable $blocks): int
     {
         $matrix = Matrix::build($blocks, $this->config->width());
         if ([] === $matrix) {
-            return '';
+            return 0;
         }
 
-        ob_start();
-        foreach ($this->render($matrix) as $row) {
-            echo $row;
+        $bytes = 0;
+        foreach ($this->format($matrix) as [$line, $color]) {
+            $bytes += $this->writer->writeln($this->writer->colorize($line, $color));
         }
 
-        return (string) ob_get_clean();
+        return $bytes;
     }
 
     /**
@@ -152,21 +95,18 @@ final class ConsoleOutput
      *
      * This method returns one output string line at a time.
      */
-    private function render(array $matrix): iterable
+    private function format(array $matrix): iterable
     {
         $nameLength = max(...array_map('strlen', array_column($matrix, 0)));
         $colorOffsets = $this->config->colors();
         $key = -1;
         foreach ($matrix as [$name, $row]) {
-            $color = $colorOffsets[++$key % count($colorOffsets)];
             $prefix = str_pad($name, $nameLength, ' ');
             $data = implode('', array_map([$this, 'convertMatrixValue'], $row));
             $line = $prefix.'    '.$data;
-            if ('default' !== $color) {
-                $line = "<<$color>>$line<<reset>>";
-            }
+            $color = $colorOffsets[++$key % count($colorOffsets)];
 
-            yield (self::$writer)($line);
+            yield [$line, $color];
         }
     }
 

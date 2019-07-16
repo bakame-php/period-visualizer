@@ -123,6 +123,7 @@ final class ConsoleConfigTest extends TestCase
     public function providerChars(): array
     {
         return [
+            ['-', '-'],
             ['=', '='],
             ['[', '['],
             [']', ']'],

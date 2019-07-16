@@ -28,14 +28,14 @@ use function sprintf;
  */
 final class ConsoleConfig
 {
-    public const COLORS = ['white', 'red', 'yellow', 'green', 'cyan', 'blue', 'magenta', 'default'];
+    public const COLORS = ['black', 'white', 'red', 'yellow', 'green', 'cyan', 'blue', 'magenta', Writer::DEFAULT_COLOR_NAME];
 
     private const REGEXP_UNICODE = '/\\\\u(?<unicode>[0-9A-F]{1,4})/i';
 
     /**
      * @var string[]
      */
-    private $colorOffsets = ['default'];
+    private $colorOffsets = [Writer::DEFAULT_COLOR_NAME];
 
     /**
      * @var int

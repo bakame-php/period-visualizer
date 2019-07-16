@@ -17,6 +17,7 @@ use Bakame\Period\Visualizer\Label\LabelGenerator;
 use Bakame\Period\Visualizer\Label\LetterGenerator;
 use League\Period\Period;
 use League\Period\Sequence;
+use TypeError;
 use function trim;
 
 final class Viewer
@@ -41,54 +42,21 @@ final class Viewer
      */
     public function __construct(?LabelGenerator $label = null, ?ConsoleOutput $output = null)
     {
-        $this->setLabelGenerator($label ?? new LetterGenerator());
-        $this->setOutput($output ?? new ConsoleOutput());
+        $this->labelGenerator =  $label ?? new LetterGenerator();
+        $this->output = $output ?? new ConsoleOutput();
     }
 
     /**
-     * Returns the output.
+     * @param Sequence|Period|null $result
+     *
+     * @throws TypeError
      */
-    public function getOutput(): ConsoleOutput
-    {
-        return $this->output;
-    }
-
-    /**
-     * Returns the Label Generator.
-     */
-    public function getLabelGenerator(): LabelGenerator
-    {
-        return $this->labelGenerator;
-    }
-
-    /**
-     * Sets the output.
-     */
-    public function setOutput(ConsoleOutput $output): self
-    {
-        $this->output = $output;
-
-        return $this;
-    }
-
-    /**
-     * Sets the Label Generator.
-     */
-    public function setLabelGenerator(LabelGenerator $label): self
-    {
-        $this->labelGenerator = $label;
-
-        return $this;
-    }
-
-    /**
-     * Visualizes a sequence.
-     */
-    public function sequence(Sequence $sequence): string
+    public function view(Sequence $sequence, $result = null, string $resultLabel = ''): void
     {
         $input = $this->addLabels($sequence);
+        $input[] = [$this->filterResultLabel($resultLabel), $result];
 
-        return $this->output->display($input);
+        $this->output->display($input);
     }
 
     /**
@@ -106,17 +74,6 @@ final class Viewer
     }
 
     /**
-     * Visualizes a sequence intersections.
-     */
-    public function intersections(Sequence $sequence, string $resultLabel = 'INTERSECTIONS'): string
-    {
-        $input = $this->addLabels($sequence);
-        $input[] = [$this->filterResultLabel($resultLabel), $sequence->intersections()];
-
-        return $this->output->display($input);
-    }
-
-    /**
      * Format the result label.
      */
     private function filterResultLabel(string $label): string
@@ -130,44 +87,49 @@ final class Viewer
     }
 
     /**
+     * Visualizes a sequence.
+     */
+    public function sequence(Sequence $sequence): void
+    {
+        $this->view($sequence);
+    }
+
+    /**
+     * Visualizes a sequence intersections.
+     */
+    public function intersections(Sequence $sequence, string $resultLabel = 'INTERSECTIONS'): void
+    {
+        $this->view($sequence, $sequence->intersections(), $resultLabel);
+    }
+
+    /**
      * Visualizes a sequence gaps.
      */
-    public function gaps(Sequence $sequence, string $resultLabel = 'GAPS'): string
+    public function gaps(Sequence $sequence, string $resultLabel = 'GAPS'): void
     {
-        $input = $this->addLabels($sequence);
-        $input[] = [$this->filterResultLabel($resultLabel), $sequence->gaps()];
-
-        return $this->output->display($input);
+        $this->view($sequence, $sequence->gaps(), $resultLabel);
     }
 
     /**
      * Visualizes a sequence unions.
      */
-    public function unions(Sequence $sequence, string $resultLabel = 'UNIONS'): string
+    public function unions(Sequence $sequence, string $resultLabel = 'UNIONS'): void
     {
-        $input = $this->addLabels($sequence);
-        $input[] = [$this->filterResultLabel($resultLabel), $sequence->unions()];
-
-        return $this->output->display($input);
+        $this->view($sequence, $sequence->unions(), $resultLabel);
     }
 
     /**
      * Visualizes a sequence diff.
      */
-    public function diff(Period $interval1, Period $interval2, string $resultLabel = 'DIFF'): string
+    public function diff(Period $interval1, Period $interval2, string $resultLabel = 'DIFF'): void
     {
-        $res = $interval1->diff($interval2);
-        $sequence = new Sequence($interval1, $interval2);
         $diff = new Sequence();
-        foreach ($res as $part) {
+        foreach ($interval1->diff($interval2) as $part) {
             if (null !== $part) {
                 $diff->push($part);
             }
         }
 
-        $input = $this->addLabels($sequence);
-        $input[] = [$this->filterResultLabel($resultLabel), $diff];
-
-        return $this->output->display($input);
+        $this->view(new Sequence($interval1, $interval2), $diff, $resultLabel);
     }
 }

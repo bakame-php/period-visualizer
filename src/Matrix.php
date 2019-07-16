@@ -13,13 +13,12 @@ declare(strict_types=1);
 
 namespace Bakame\Period\Visualizer;
 
+use Closure;
 use League\Period\Period;
 use League\Period\Sequence;
 use function array_fill;
-use function array_reduce;
 use function array_splice;
 use function ceil;
-use function count;
 use function floor;
 
 /**
@@ -74,13 +73,13 @@ final class Matrix
         self::$start = $boundaries->getStartDate()->getTimestamp();
         self::$unit = $width / $boundaries->getTimestampInterval();
         $row = array_fill(0, $width, self::TOKEN_SPACE);
+        $callable = Closure::fromCallable([self::class, 'addPeriodToRow']);
         foreach ($blocks as [$name, $block]) {
             if ($block instanceof Period) {
-                $matrix[] = [$name, self::addPeriodToRow($row, $block)];
-                continue;
+                $matrix[] = [$name, $callable($row, $block)];
+            } elseif ($block instanceof Sequence) {
+                $matrix[] = [$name, $block->reduce($callable, $row)];
             }
-
-            $matrix[] = [$name, array_reduce($block->toArray(), [self::class, 'addPeriodToRow'], $row)];
         }
 
         return $matrix;
@@ -95,10 +94,7 @@ final class Matrix
         foreach ($blocks as [$name, $block]) {
             if ($block instanceof Period) {
                 $sequence->push($block);
-                continue;
-            }
-
-            if (0 !== count($block)) {
+            } elseif ($block instanceof Sequence) {
                 $sequence->push(...$block);
             }
         }

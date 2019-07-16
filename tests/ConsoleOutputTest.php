@@ -15,8 +15,12 @@ namespace BakameTest\Period\Visualizer;
 
 use Bakame\Period\Visualizer\ConsoleConfig;
 use Bakame\Period\Visualizer\ConsoleOutput;
+use Bakame\Period\Visualizer\Stdout;
 use League\Period\Period;
 use PHPUnit\Framework\TestCase;
+use function fopen;
+use function rewind;
+use function stream_get_contents;
 
 /**
  * @coversDefaultClass \Bakame\Period\Visualizer\ConsoleOutput
@@ -28,14 +32,36 @@ final class ConsoleOutputTest extends TestCase
      */
     private $output;
 
+    /**
+     * @var resource
+     */
+    private $stream;
+
     public function setUp(): void
     {
-        $this->output = new ConsoleOutput((new ConsoleConfig())->withColors('red'));
+        $this->stream = $this->setStream();
+
+        $this->output = new ConsoleOutput(
+            (new ConsoleConfig())->withColors('red'),
+            new Stdout($this->stream)
+        );
+    }
+
+    /**
+     * @return resource
+     */
+    private function setStream()
+    {
+        /** @var resource $stream */
+        $stream = fopen('php://memory', 'r+');
+
+        return $stream;
     }
 
     /**
      * @covers ::__construct
-     * @covers ::setWriter
+     * @covers \Bakame\Period\Visualizer\Stdout::__construct
+     * @covers \Bakame\Period\Visualizer\Stdout::setWriter
      */
     public function testConstructor(): void
     {
@@ -45,23 +71,34 @@ final class ConsoleOutputTest extends TestCase
 
     /**
      * @covers ::display
+     * @covers \Bakame\Period\Visualizer\Stdout::writeln
      */
     public function testDisplayEmptyTuple(): void
     {
-        self::assertSame('', $this->output->display([]));
+        $this->output->display([]);
+        rewind($this->stream);
+        $data = stream_get_contents($this->stream);
+
+        self::assertSame('', $data);
     }
 
     /**
      * @covers ::display
-     * @covers ::render
+     * @covers ::format
      * @covers ::convertMatrixValue
+     * @covers \Bakame\Period\Visualizer\Stdout::colorize
+     * @covers \Bakame\Period\Visualizer\Stdout::writeln
      */
     public function testDisplaySequence(): void
     {
-        $data = $this->output->display([
+        $this->output->display([
             ['A', new Period('2018-01-01', '2018-01-15')],
             ['B', new Period('2018-01-15', '2018-02-01')],
         ]);
+
+        rewind($this->stream);
+        /** @var string $data */
+        $data = stream_get_contents($this->stream);
 
         self::assertStringContainsString('A    [--------------------------)', $data);
         self::assertStringContainsString('B                               [-------------------------------)', $data);

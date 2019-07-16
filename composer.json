@@ -34,7 +34,8 @@
         "phpunit/phpunit" : "^8.1",
         "phpstan/phpstan": "^0.11.1",
         "phpstan/phpstan-strict-rules": "^0.11.0",
-        "phpstan/phpstan-phpunit": "^0.11.0"
+        "phpstan/phpstan-phpunit": "^0.11.0",
+        "ext-curl": "*"
     },
     "autoload": {
     	"psr-4": {
@@ -47,9 +48,9 @@
         }
     },
     "scripts": {
-        "phpcs": "php-cs-fixer fix -v --diff --dry-run --allow-risky=yes;",
-        "phpstan-src": "phpstan analyse -l max -c phpstan.src.neon src",
-        "phpstan-tests": "phpstan analyse -l max -c phpstan.tests.neon tests",
+        "phpcs": "php-cs-fixer fix -v --diff --dry-run --allow-risky=yes --ansi",
+        "phpstan-src": "phpstan analyse -l max -c phpstan.src.neon src --ansi",
+        "phpstan-tests": "phpstan analyse -l max -c phpstan.tests.neon tests --ansi",
         "phpstan": [
             "@phpstan-src",
             "@phpstan-tests"

@@ -2,6 +2,13 @@
 
 All Notable changes to `Period Visualizer` will be documented in this file
 
+# 0.5.0 - TBD
+
+- Added the `Writer` interface and the `Stdout` implementation, output is done via `fwrite` instead of `echo`
+- Added the `Viewer::view` method as the most generic method
+- Removed `Viewer::getLabelGenerator` and `Viewer::getOutput` methods 
+- Refactored the `ConsoleOutput` to improve decoupling
+
 ## 0.4.0 - 2019-06-17
 
 - Added support for boundary type in:
@@ -14,7 +21,7 @@ All Notable changes to `Period Visualizer` will be documented in this file
         - `ConsoleConfig::withStartIncluded`
     - Renamed the following `ConsoleConfig` methods:
         - `ConsoleConfig::getTail` with `ConsoleConfig::startIncluded` 
-        - `ConsoleConfig::withTead` with `ConsoleConfig::withEndExcluded` 
+        - `ConsoleConfig::withTail` with `ConsoleConfig::withEndExcluded` 
         - `ConsoleConfig::getHead` with `ConsoleConfig::endExcluded` 
         - `ConsoleConfig::withHead` with `ConsoleConfig::withEndExcluded`
 - Improve Package UX/DX

@@ -1,5 +1,5 @@
 Period Visualizer
-------=
+------
 
 [![Author][ico-author]][link-author]
 [![Build Status][ico-travis]][link-travis]
@@ -18,8 +18,8 @@ use Bakame\Period\Visualizer\Viewer;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$view = new Viewer();
-echo $view->sequence(new Sequence(
+$viewer = new Viewer();
+echo $viewer->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
     new Period('2018-01-15', '2018-02-01')
 ));
@@ -61,8 +61,8 @@ use Bakame\Period\Visualizer\Viewer;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$view = new Viewer();
-echo $view->sequence(new Sequence(
+$viewer = new Viewer();
+echo $viewer->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
     new Period('2018-01-01', '2018-01-15')
 ));
@@ -78,8 +78,8 @@ results:
 ### Viewing a Sequence gaps.
 
 ~~~php
-$view = new Viewer();
-echo $view->gaps(new Sequence(
+$viewer = new Viewer();
+echo $viewer->gaps(new Sequence(
     new Period('2018-01-01', '2018-03-01'),
     new Period('2018-05-01', '2018-08-01')
 ));
@@ -96,8 +96,8 @@ results:
 ### Viewing a Sequence intersections.
 
 ~~~php
-$view = new Viewer();
-echo $view->intersections(new Sequence(
+$viewer = new Viewer();
+echo $viewer->intersections(new Sequence(
     new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00'),
     new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00')
 ));
@@ -114,8 +114,8 @@ results:
 ### Viewing a Period difference.
 
 ~~~php
-$view = new Viewer();
-echo $view->diff(
+$viewer = new Viewer();
+echo $viewer->diff(
     new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00'),
     new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00')
 );
@@ -144,8 +144,8 @@ use Bakame\Period\Visualizer\Label\LetterGenerator;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$view = new Viewer(new LetterGenerator('aa'));
-echo $view->sequence(new Sequence(
+$viewer = new Viewer(new LetterGenerator('aa'));
+echo $viewer->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
     new Period('2018-01-01', '2018-01-15')
 ));
@@ -166,8 +166,8 @@ use Bakame\Period\Visualizer\Label\IntegerGenerator;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$view = new Viewer(new IntegerGenerator(42));
-echo $view->sequence(new Sequence(
+$viewer = new Viewer(new IntegerGenerator(42));
+echo $viewer->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
     new Period('2018-01-01', '2018-01-15')
 ));
@@ -191,8 +191,8 @@ use League\Period\Sequence;
 
 $labelGenerator = new RomanGenerator(new IntegerGenerator(5), RomanGenerator::LOWER);
 
-$view = new Viewer($labelGenerator);
-echo $view->sequence(new Sequence(
+$viewer = new Viewer($labelGenerator);
+echo $viewer->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
     new Period('2018-01-01', '2018-01-15')
 ));
@@ -220,8 +220,8 @@ $labelGenerator = new AffixGenerator(
     '*', //prefix
     '.)'    //suffix
 );
-$view = new Viewer($labelGenerator);
-echo $view->sequence(new Sequence(
+$viewer = new Viewer($labelGenerator);
+echo $viewer->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
     new Period('2018-01-01', '2018-01-15')
 ));
@@ -245,11 +245,13 @@ use Bakame\Period\Visualizer\Label\ReverseGenerator;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$labelGenerator = new AffixGenerator(new RomanGenerator(new IntegerGenerator(5), RomanGenerator::LOWER));
-$labelGenerator = new ReverseGenerator($labelGenerator->withSuffix('.'));
+$labelGenerator = new IntegerGenerator(5);
+$labelGenerator = new RomanGenerator($labelGenerator, RomanGenerator::LOWER);
+$labelGenerator = new AffixGenerator($labelGenerator, '', '.');
+$labelGenerator = new ReverseGenerator($labelGenerator);
 
-$view = new Viewer($labelGenerator);
-echo $view->sequence(new Sequence(
+$viewer = new Viewer($labelGenerator);
+echo $viewer->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
     new Period('2018-01-01', '2018-01-15')
 ));
@@ -261,7 +263,6 @@ results:
  vi.   [------------------------------------------------------------------------------)
  v.    [-----------------------------------)
 ~~~
-
 
 #### Custom strategy
 
@@ -286,10 +287,10 @@ $samelabel = new class implements LabelGenerator {
     }
 };
 
-$labelGenerator = (new AffixGenerator($samelabel))->withSuffix('.');
+$labelGenerator = new AffixGenerator($samelabel, '', '.');
+$viewer = new Viewer($labelGenerator);
 
-$view = new Viewer($labelGenerator);
-echo $view->sequence(new Sequence(
+echo $viewer->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
     new Period('2018-01-01', '2018-01-15')
 ));
@@ -310,8 +311,8 @@ Under the hood, the `Viewer` class uses the `ConsoleOutput` class to generate yo
 use Bakame\Period\Visualizer\ConsoleOutput;
 use League\Period\Period;
 
-$view = new ConsoleOutput();
-echo $view->display([
+$output = new ConsoleOutput();
+echo $output->display([
     ['first', new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00')],
     ['last', new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00')],
 ]);
