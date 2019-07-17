@@ -61,7 +61,6 @@ final class ConsoleOutputTest extends TestCase
     /**
      * @covers ::__construct
      * @covers \Bakame\Period\Visualizer\Stdout::__construct
-     * @covers \Bakame\Period\Visualizer\Stdout::setWriter
      */
     public function testConstructor(): void
     {
@@ -87,7 +86,10 @@ final class ConsoleOutputTest extends TestCase
      * @covers ::format
      * @covers ::convertMatrixValue
      * @covers \Bakame\Period\Visualizer\Stdout::colorize
+     * @covers \Bakame\Period\Visualizer\Stdout::formatter
+     * @covers \Bakame\Period\Visualizer\Stdout::write
      * @covers \Bakame\Period\Visualizer\Stdout::writeln
+     * @covers \Bakame\Period\Visualizer\Stdout::regexp
      */
     public function testDisplaySequence(): void
     {

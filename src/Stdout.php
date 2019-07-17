@@ -18,6 +18,7 @@ use function array_keys;
 use function chr;
 use function fflush;
 use function implode;
+use function is_iterable;
 use function preg_replace;
 use function preg_replace_callback;
 use function stripos;
@@ -53,11 +54,6 @@ final class Stdout implements Writer
     ];
 
     /**
-     * @var callable
-     */
-    private $writer;
-
-    /**
      * @var resource
      */
     private $stream;
@@ -78,29 +74,47 @@ final class Stdout implements Writer
         }
 
         $this->stream = $resource;
-        $this->writer = $this->setWriter();
     }
 
     /**
-     * Set the writing method depending on the underlying platform.
+     * Returns the POSIX color regexp.
      */
-    private function setWriter(): callable
+    private function regexp(): string
     {
-        $regexp = ',<<\s*((('.implode('|', array_keys(self::POSIX_COLOR_CODES)).')(\s*))+)>>,Umsi';
-        if (0 === stripos(PHP_OS, 'WIN')) {
-            return function (string $str) use ($regexp): string {
-                return ' '.preg_replace($regexp, '', $str);
-            };
-        }
+        static $regexp;
 
-        return function (string $str) use ($regexp): string {
-            $formatter = static function (array $matches) {
+        $regexp = $regexp ?? ',<<\s*((('.implode('|', array_keys(self::POSIX_COLOR_CODES)).')(\s*))+)>>,Umsi';
+
+        return $regexp;
+    }
+
+    /**
+     * Returns a formatted windows line.
+     */
+    private function write(string $str): string
+    {
+        static $formatter;
+
+        $formatter = $formatter ?? $this->formatter();
+
+        return (string) preg_replace_callback($this->regexp(), $formatter, $str);
+    }
+
+    /**
+     * Return a writer formatter depending on the OS.
+     */
+    private function formatter(): callable
+    {
+        if (0 !== stripos(PHP_OS, 'WIN')) {
+            return function (array $matches): string {
                 $str = (string) preg_replace('/(\s+)/msi', ';', (string) $matches[1]);
 
                 return chr(27).'['.strtr($str, self::POSIX_COLOR_CODES).'m';
             };
+        }
 
-            return ' '.preg_replace_callback($regexp, $formatter, $str);
+        return function (array $matches): string {
+            return (string) $matches[0];
         };
     }
 
@@ -117,18 +131,17 @@ final class Stdout implements Writer
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function writeln($message): int
     {
-        if (is_string($message)) {
+        if (!is_iterable($message)) {
             $message = [$message];
         }
 
         $bytes = 0;
         foreach ($message as $line) {
-            $str = ($this->writer)($line);
-            $bytes += fwrite($this->stream, $str.PHP_EOL);
+            $bytes += fwrite($this->stream, ' '.$this->write($line).PHP_EOL);
         }
 
         fflush($this->stream);
