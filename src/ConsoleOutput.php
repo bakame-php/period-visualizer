@@ -23,7 +23,7 @@ use function str_pad;
 /**
  * A class to output to the console the matrix.
  */
-final class ConsoleOutput
+final class ConsoleOutput implements Output
 {
     private const TOKEN_TO_METHOD = [
         Matrix::TOKEN_SPACE => 'space',
@@ -54,20 +54,7 @@ final class ConsoleOutput
     }
 
     /**
-     * Builds a string to visualize one or more intervals.
-     *
-     * The submitted iterable structure represent a tuple where
-     * the first value is the identifier and the second value
-     * the intervals represented as Period or Sequence instances.
-     *
-     * The returned string can be represented like the following
-     * and depends on the Configuration used
-     *
-     * A       [========]
-     * B                    [==]
-     * C                            [=====]
-     * D              [===============]
-     * OVERLAP        [=]   [==]    [=]
+     * {@inheritDoc}
      */
     public function display(iterable $blocks): int
     {

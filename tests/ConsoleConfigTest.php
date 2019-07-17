@@ -46,15 +46,11 @@ final class ConsoleConfigTest extends TestCase
 
     public function testCreateFromRandom(): void
     {
-        $config = ConsoleConfig::createFromRandom();
-        self::assertContains($config->colors()[0], ConsoleConfig::COLORS);
+        $config1 = ConsoleConfig::createFromRandom();
+        $config2 = ConsoleConfig::createFromRainbow();
+        self::assertContains($config1->colors()[0], $config2->colors());
     }
 
-    public function testCreateFromRainbow(): void
-    {
-        $config = ConsoleConfig::createFromRainbow();
-        self::assertSame($config->colors(), ConsoleConfig::COLORS);
-    }
     /**
      * @dataProvider widthProvider
      */
@@ -62,6 +58,7 @@ final class ConsoleConfigTest extends TestCase
     {
         self::assertSame($expected, $this->config->withWidth($size)->width());
     }
+
     public function widthProvider(): array
     {
         return [

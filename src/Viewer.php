@@ -25,7 +25,7 @@ final class Viewer
     private const DEFAULT_RESULT_LABEL = 'RESULT';
 
     /**
-     * @var ConsoleOutput
+     * @var Output
      */
     private $output;
 
@@ -40,14 +40,15 @@ final class Viewer
      * @param ?LabelGenerator $label
      * @param ?ConsoleOutput  $output
      */
-    public function __construct(?LabelGenerator $label = null, ?ConsoleOutput $output = null)
+    public function __construct(?LabelGenerator $label = null, ?Output $output = null)
     {
         $this->labelGenerator =  $label ?? new LetterGenerator();
         $this->output = $output ?? new ConsoleOutput();
     }
 
     /**
-     * @param Sequence|Period|null $result
+     * @param mixed $result can be a Period or a Sequence anything else will be
+     *                      filtered out
      *
      * @throws TypeError
      */
