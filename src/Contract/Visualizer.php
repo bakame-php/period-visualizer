@@ -20,5 +20,5 @@ interface Visualizer
     /**
      * @param mixed $result can be a Period or a Sequence anything else will be filtered out
      */
-    public function view(Sequence $sequence, $result = null, string $resultLabel = ''): void;
+    public function view(Sequence $input, $result = null, string $resultLabel = ''): void;
 }

@@ -16,7 +16,7 @@ namespace BakameTest\Period\Visualizer;
 use Bakame\Period\Visualizer\ConsoleConfig;
 use Bakame\Period\Visualizer\ConsoleOutput;
 use Bakame\Period\Visualizer\ConsoleStdout;
-use Bakame\Period\Visualizer\LetterLabel;
+use Bakame\Period\Visualizer\LatinLetter;
 use Bakame\Period\Visualizer\Viewer;
 use League\Period\Datepoint;
 use League\Period\Period;
@@ -45,7 +45,7 @@ final class ViewerTest extends TestCase
     {
         $this->stream = $this->setStream();
         $this->view = new Viewer(
-            new LetterLabel('A'),
+            new LatinLetter('A'),
             new ConsoleOutput(
                 ConsoleConfig::createFromRandom(),
                 new ConsoleStdout($this->stream)
@@ -178,7 +178,7 @@ final class ViewerTest extends TestCase
     public function testDiff(): void
     {
         $config = (new ConsoleConfig())->withColors('white');
-        $view = new Viewer(new LetterLabel(), new ConsoleOutput($config, new ConsoleStdout($this->stream)));
+        $view = new Viewer(new LatinLetter(), new ConsoleOutput($config, new ConsoleStdout($this->stream)));
         $view->diff(
             new Period('2018-01-01', '2018-02-01'),
             new Period('2017-12-01', '2018-03-01')

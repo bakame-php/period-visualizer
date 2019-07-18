@@ -39,5 +39,5 @@ interface Output
      * D              [===============]
      * RESULT         [=]   [==]    [=]
      */
-    public function display(iterable $blocks): int;
+    public function display(iterable $tuples): int;
 }

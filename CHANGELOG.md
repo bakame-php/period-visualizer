@@ -6,8 +6,12 @@ All Notable changes to `Period Visualizer` will be documented in this file
 
 - Added the `Writer` interface and the `Stdout` implementation, output is done via `fwrite` instead of `echo`
 - Added the `Viewer::view` method as the most generic method
+- Added Decimal zero fill left padding to `DecimalNumber` LabelGenerator implementing class
 - Removed `Viewer::getLabelGenerator` and `Viewer::getOutput` methods 
 - Refactored the `ConsoleOutput` to improve decoupling
+- Moved all interfaces into a `Contract` dedicated namespace
+- Renamed the `LabelGenerator` implementing classes
+- Removed the `Matrix` class
 
 ## 0.4.0 - 2019-06-17
 

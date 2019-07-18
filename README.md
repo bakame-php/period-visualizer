@@ -62,7 +62,7 @@ use League\Period\Period;
 use League\Period\Sequence;
 
 $viewer = new Viewer();
-echo $viewer->sequence(new Sequence(
+$viewer->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
     new Period('2018-01-01', '2018-01-15')
 ));
@@ -71,15 +71,15 @@ echo $viewer->sequence(new Sequence(
 results:
 
 ~~~bash
- A    [------------------------------------------------------------------------------)
- B                                        [------------------------------------------)
+ A [------------------------------------------------------------------------------)
+ B                                     [------------------------------------------)
 ~~~
 
 ### Viewing a Sequence gaps.
 
 ~~~php
 $viewer = new Viewer();
-echo $viewer->gaps(new Sequence(
+$viewer->gaps(new Sequence(
     new Period('2018-01-01', '2018-03-01'),
     new Period('2018-05-01', '2018-08-01')
 ));
@@ -88,16 +88,16 @@ echo $viewer->gaps(new Sequence(
 results:
 
 ~~~bash
- A       [---------------------)                                                         
- B                                                    [--------------------------------=)
- GAPS                          [----------------------)    
+ A    [---------------------)                                                         
+ B                                                 [--------------------------------=)
+ GAPS                       [----------------------)    
 ~~~
 
 ### Viewing a Sequence intersections.
 
 ~~~php
 $viewer = new Viewer();
-echo $viewer->intersections(new Sequence(
+$viewer->intersections(new Sequence(
     new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00'),
     new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00')
 ));
@@ -106,16 +106,16 @@ echo $viewer->intersections(new Sequence(
 results:
 
 ~~~bash
- A                [----------------------------------------------------)                          
- B                                          [----------------------------------------------------)
- INTERSECTIONS                              [--------------------------) 
+ A             [----------------------------------------------------)                          
+ B                                       [----------------------------------------------------)
+ INTERSECTIONS                           [--------------------------) 
 ~~~
 
 ### Viewing a Period difference.
 
 ~~~php
 $viewer = new Viewer();
-echo $viewer->diff(
+$viewer->diff(
     new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00'),
     new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00')
 );
@@ -124,9 +124,9 @@ echo $viewer->diff(
 results:
 
 ~~~bash
- A       [----------------------------------------------------)                          
- B                                 [----------------------------------------------------)
- DIFF    [-------------------------)                          [-------------------------)
+ A    [----------------------------------------------------)                          
+ B                              [----------------------------------------------------)
+ DIFF [-------------------------)                          [-------------------------)
 ~~~
 
 ## Advance Usage
@@ -140,12 +140,12 @@ By default the class is instantiated with the letter index strategy which starts
 
 ~~~php
 use Bakame\Period\Visualizer\Viewer;
-use Bakame\Period\Visualizer\LetterLabel;
+use Bakame\Period\Visualizer\LatinLetter;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$viewer = new Viewer(new LetterLabel('aa'));
-echo $viewer->sequence(new Sequence(
+$viewer = new Viewer(new LatinLetter('aa'));
+$viewer->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
     new Period('2018-01-01', '2018-01-15')
 ));
@@ -154,20 +154,20 @@ echo $viewer->sequence(new Sequence(
 results:
 
 ~~~bash
- aa    [------------------------------------------------------------------------------)
- ab    [-----------------------------------)     
+ aa [------------------------------------------------------------------------------)
+ ab [-----------------------------------)     
 ~~~
 
-#### Integer strategy
+#### Decimal Number Strategy
 
 ~~~php
 use Bakame\Period\Visualizer\Viewer;
-use Bakame\Period\Visualizer\IntegerLabel;
+use Bakame\Period\Visualizer\DecimalNumber;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$viewer = new Viewer(new IntegerLabel(42));
-echo $viewer->sequence(new Sequence(
+$viewer = new Viewer(new DecimalNumber(42));
+$viewer->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
     new Period('2018-01-01', '2018-01-15')
 ));
@@ -176,23 +176,23 @@ echo $viewer->sequence(new Sequence(
 results:
 
 ~~~bash
- 42    [------------------------------------------------------------------------------)
- 43    [-----------------------------------)
+ 42 [------------------------------------------------------------------------------)
+ 43 [-----------------------------------)
 ~~~
 
-#### Roman Number strategy
+#### Roman Numeral Strategy
 
 ~~~php
 use Bakame\Period\Visualizer\Viewer;
-use Bakame\Period\Visualizer\IntegerLabel;
-use Bakame\Period\Visualizer\RomanLabel;
+use Bakame\Period\Visualizer\DecimalNumber;
+use Bakame\Period\Visualizer\RomanNumber;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$labelGenerator = new RomanLabel(new IntegerLabel(5), RomanLabel::LOWER);
+$labelGenerator = new RomanNumber(new DecimalNumber(5), RomanNumber::LOWER);
 
 $viewer = new Viewer($labelGenerator);
-echo $viewer->sequence(new Sequence(
+$viewer->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
     new Period('2018-01-01', '2018-01-15')
 ));
@@ -201,27 +201,27 @@ echo $viewer->sequence(new Sequence(
 results:
 
 ~~~bash
- v     [------------------------------------------------------------------------------)
- vi    [-----------------------------------)
+ v  [------------------------------------------------------------------------------)
+ vi [-----------------------------------)
 ~~~
 
-#### Affix strategy
+#### Affix Label Strategy
 
 ~~~php
 use Bakame\Period\Visualizer\Viewer;
-use Bakame\Period\Visualizer\IntegerLabel;
-use Bakame\Period\Visualizer\RomanLabel;
+use Bakame\Period\Visualizer\DecimalNumber;
+use Bakame\Period\Visualizer\RomanNumber;
 use Bakame\Period\Visualizer\AffixLabel;
 use League\Period\Period;
 use League\Period\Sequence;
 
 $labelGenerator = new AffixLabel(
-    new RomanLabel(new IntegerLabel(5), RomanLabel::LOWER),
+    new RomanNumber(new DecimalNumber(5), RomanNumber::LOWER),
     '*', //prefix
     '.)'    //suffix
 );
 $viewer = new Viewer($labelGenerator);
-echo $viewer->sequence(new Sequence(
+$viewer->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
     new Period('2018-01-01', '2018-01-15')
 ));
@@ -230,28 +230,28 @@ echo $viewer->sequence(new Sequence(
 results:
 
 ~~~bash
- * v .)     [----------------------------------------------------------)
- * vi .)    [--------------------------) 
+ * v .)  [----------------------------------------------------------)
+ * vi .) [--------------------------) 
 ~~~
 
-#### Reverse strategy
+#### Reverse Label Strategy
 
 ~~~php
 use Bakame\Period\Visualizer\Viewer;
-use Bakame\Period\Visualizer\IntegerLabel;
-use Bakame\Period\Visualizer\RomanLabel;
+use Bakame\Period\Visualizer\DecimalNumber;
+use Bakame\Period\Visualizer\RomanNumber;
 use Bakame\Period\Visualizer\AffixLabel;
 use Bakame\Period\Visualizer\ReverseLabel;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$labelGenerator = new IntegerLabel(5);
-$labelGenerator = new RomanLabel($labelGenerator, RomanLabel::LOWER);
+$labelGenerator = new DecimalNumber(5);
+$labelGenerator = new RomanNumber($labelGenerator, RomanNumber::LOWER);
 $labelGenerator = new AffixLabel($labelGenerator, '', '.');
 $labelGenerator = new ReverseLabel($labelGenerator);
 
 $viewer = new Viewer($labelGenerator);
-echo $viewer->sequence(new Sequence(
+$viewer->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
     new Period('2018-01-01', '2018-01-15')
 ));
@@ -260,11 +260,11 @@ echo $viewer->sequence(new Sequence(
 results:
 
 ~~~bash
- vi.   [------------------------------------------------------------------------------)
- v.    [-----------------------------------)
+ vi. [------------------------------------------------------------------------------)
+ v.  [-----------------------------------)
 ~~~
 
-#### Custom strategy
+#### Custom Strategy
 
 You can create your own strategy by implementing the `Bakame\Period\Visualizer\Contract\LabelGenerator` interface like shown below:
 
@@ -290,7 +290,7 @@ $samelabel = new class implements LabelGenerator {
 $labelGenerator = new AffixLabel($samelabel, '', '.');
 $viewer = new Viewer($labelGenerator);
 
-echo $viewer->sequence(new Sequence(
+$viewer->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
     new Period('2018-01-01', '2018-01-15')
 ));
@@ -299,8 +299,8 @@ echo $viewer->sequence(new Sequence(
 results:
 
 ~~~bash
- foobar.    [------------------------------------------------------------------------------)
- foobar.    [-----------------------------------)
+ foobar. [------------------------------------------------------------------------------)
+ foobar. [-----------------------------------)
 ~~~
 
 ### Customize the output
@@ -321,13 +321,13 @@ echo $output->display([
 results:
 
 ~~~bash
- first    [----------------------------------------------------)                          
- last                               [----------------------------------------------------)
+ first [----------------------------------------------------)                          
+ last                            [----------------------------------------------------)
 ~~~
 
 The `ConsoleOutput::display` methods expects a tuple as its unique argument where:
 
-- the first value of the tuple represents the label name
+- the first value of the tuple represents the label name which must be a `string`.
 - the second and last value represents a `Period` or `Sequence` object.
 
 The `ConsoleOutput` class can be customized by providing a `ConsoleConfig` which defines the output settings.
@@ -365,7 +365,7 @@ $fixedLabels = new class implements LabelGenerator {
 $output = new ConsoleOutput($config);
 $viewer = new Viewer($fixedLabels, $output);
 
-echo $viewer->sequence(new Sequence(
+$viewer->sequence(new Sequence(
     new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00', Period::EXCLUDE_ALL),
     new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00', Period::INCLUDE_ALL)
 ));
@@ -374,8 +374,8 @@ echo $viewer->sequence(new Sequence(
 results:
 
 ~~~bash
- first    🍕😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊🎾💩💩💩💩💩💩💩💩💩💩
- last     💩💩💩💩💩💩💩💩💩💩🍅😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊🍔
+ first 🍕😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊🎾💩💩💩💩💩💩💩💩💩💩
+ last  💩💩💩💩💩💩💩💩💩💩🍅😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊🍔
 ~~~
 
 *On a POSIX compliant console the first line will be yellow and the second red*

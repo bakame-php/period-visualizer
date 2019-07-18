@@ -91,16 +91,16 @@ final class ConsoleOutput implements Output
     /**
      * {@inheritDoc}
      */
-    public function display(iterable $blocks): int
+    public function display(iterable $tuples): int
     {
-        $matrix = $this->buildMatrix($blocks);
+        $bytes = 0;
+        $matrix = $this->buildMatrix($tuples);
         if ([] === $matrix) {
-            return 0;
+            return $bytes;
         }
 
-        $bytes = 0;
-        foreach ($this->format($matrix) as [$line, $color]) {
-            $bytes += $this->writer->writeln(' '.$this->writer->colorize($line, $color));
+        foreach ($this->convert($matrix) as $line) {
+            $bytes += $this->writer->writeln($line);
         }
 
         return $bytes;
@@ -113,19 +113,20 @@ final class ConsoleOutput implements Output
      * - There's one column for every unit of width.
      * - Cell state depends on Period presence and boundary type.
      */
-    private function buildMatrix(iterable $blocks): array
+    private function buildMatrix(iterable $tuples): array
     {
         $matrix = [];
-        $boundaries = $this->getBoundaries($blocks);
+        $boundaries = $this->calculateBoundaries($tuples);
         if (null === $boundaries) {
             return $matrix;
         }
 
+        $width = $this->config->width();
+        $row = array_fill(0, $width, self::TOKEN_SPACE);
         $this->start = $boundaries->getStartDate()->getTimestamp();
-        $this->unit = $this->config->width() / $boundaries->getTimestampInterval();
-        $row = array_fill(0, $this->config->width(), self::TOKEN_SPACE);
+        $this->unit = $width / $boundaries->getTimestampInterval();
         $callable = Closure::fromCallable([$this, 'addPeriodToRow']);
-        foreach ($blocks as [$name, $block]) {
+        foreach ($tuples as [$name, $block]) {
             if ($block instanceof Period) {
                 $matrix[] = [$name, $callable($row, $block)];
             } elseif ($block instanceof Sequence) {
@@ -139,7 +140,7 @@ final class ConsoleOutput implements Output
     /**
      * Gets the boundary encompassing all visualized intervals.
      */
-    private function getBoundaries(iterable $blocks): ?Period
+    private function calculateBoundaries(iterable $blocks): ?Period
     {
         $sequence = new Sequence();
         foreach ($blocks as [$name, $block]) {
@@ -186,19 +187,18 @@ final class ConsoleOutput implements Output
      *
      * This method returns one output string line at a time.
      */
-    private function format(array $matrix): iterable
+    private function convert(array $matrix): iterable
     {
         $nameLength = max(...array_map('strlen', array_column($matrix, 0)));
         $colorCodeIndexes = $this->config->colors();
         $colorCodeCount = count($colorCodeIndexes);
         $key = -1;
         foreach ($matrix as [$name, $row]) {
-            $prefix = str_pad($name, $nameLength, ' ');
-            $data = implode('', array_map([$this, 'convertMatrixValue'], $row));
-            $line = $prefix.' '.$data;
+            $lineName = str_pad($name, $nameLength, ' ');
+            $lineContent = implode('', array_map([$this, 'convertMatrixValue'], $row));
             $color = $colorCodeIndexes[++$key % $colorCodeCount];
 
-            yield [$line, $color];
+            yield ' '.$this->writer->colorize($lineName.' '.$lineContent, $color);
         }
     }
 

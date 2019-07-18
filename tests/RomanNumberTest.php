@@ -13,23 +13,23 @@ declare(strict_types=1);
 
 namespace BakameTest\Period\Visualizer;
 
-use Bakame\Period\Visualizer\IntegerLabel;
-use Bakame\Period\Visualizer\RomanLabel;
+use Bakame\Period\Visualizer\DecimalNumber;
+use Bakame\Period\Visualizer\RomanNumber;
 use League\Period\Period;
 use League\Period\Sequence;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass \Bakame\Period\Visualizer\RomanLabel;
+ * @coversDefaultClass \Bakame\Period\Visualizer\RomanNumber;
  */
-final class RomanGeneratorTest extends TestCase
+final class RomanNumberTest extends TestCase
 {
     /**
      * @dataProvider providerLetter
      */
     public function testGetLabels(Sequence $sequence, int $label, int $lettercase, array $expected): void
     {
-        $generator = new RomanLabel(new IntegerLabel($label), $lettercase);
+        $generator = new RomanNumber(new DecimalNumber($label), $lettercase);
         self::assertSame($expected, $generator->generate($sequence));
     }
 
@@ -39,7 +39,7 @@ final class RomanGeneratorTest extends TestCase
             'empty labels' => [
                 'sequence' => new Sequence(),
                 'label' => 1,
-                'lettercase' => RomanLabel::UPPER,
+                'lettercase' => RomanNumber::UPPER,
                 'expected' => [],
             ],
             'labels starts at 3' => [
@@ -54,19 +54,19 @@ final class RomanGeneratorTest extends TestCase
                     new Period('2018-02-01', '2018-03-01')
                 ),
                 'label' => 4,
-                'lettercase' => RomanLabel::UPPER,
+                'lettercase' => RomanNumber::UPPER,
                 'expected' => ['IV', 'V'],
             ],
             'labels starts at 0 (1)' => [
                 'sequence' => new Sequence(new Period('2018-01-01', '2018-02-01')),
                 'label' => -1,
-                'lettercase' => RomanLabel::LOWER,
+                'lettercase' => RomanNumber::LOWER,
                 'expected' => ['i'],
             ],
             'labels starts at 0 (2)' => [
                 'sequence' => new Sequence(new Period('2018-01-01', '2018-02-01')),
                 'label' => 0,
-                'lettercase' => RomanLabel::LOWER,
+                'lettercase' => RomanNumber::LOWER,
                 'expected' => ['i'],
             ],
         ];
@@ -74,31 +74,31 @@ final class RomanGeneratorTest extends TestCase
 
     public function testStartWith(): void
     {
-        $generator = new RomanLabel(new IntegerLabel(42));
+        $generator = new RomanNumber(new DecimalNumber(42));
         self::assertSame(42, $generator->startingAt());
         $new = $generator->startsWith(69);
         self::assertNotSame($new, $generator);
         self::assertSame(69, $new->startingAt());
         self::assertSame($generator, $generator->startsWith(42));
-        self::assertSame(1, (new IntegerLabel(-3))->startingAt());
+        self::assertSame(1, (new DecimalNumber(-3))->startingAt());
         self::assertSame(1, $generator->startsWith(-3)->startingAt());
     }
 
     public function testLetterCase(): void
     {
-        $generator = new RomanLabel(new IntegerLabel(1));
+        $generator = new RomanNumber(new DecimalNumber(1));
         self::assertTrue($generator->isUpper());
         self::assertFalse($generator->isLower());
-        $new = $generator->withLetterCase(RomanLabel::LOWER);
+        $new = $generator->withLetterCase(RomanNumber::LOWER);
         self::assertFalse($new->isUpper());
         self::assertTrue($new->isLower());
-        $alt = $new->withLetterCase(RomanLabel::LOWER);
+        $alt = $new->withLetterCase(RomanNumber::LOWER);
         self::assertSame($alt, $new);
     }
 
     public function testFormat(): void
     {
-        $generator = new RomanLabel(new IntegerLabel(10));
+        $generator = new RomanNumber(new DecimalNumber(10));
         self::assertSame('', $generator->format([]));
     }
 }

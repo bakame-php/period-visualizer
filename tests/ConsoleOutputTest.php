@@ -85,16 +85,12 @@ final class ConsoleOutputTest extends TestCase
 
     /**
      * @covers ::display
-     * @covers ::format
+     * @covers ::convert
      * @covers ::convertMatrixValue
      * @covers ::buildMatrix
-     * @covers ::getBoundaries
+     * @covers ::calculateBoundaries
      * @covers ::addPeriodToRow
-     * @covers \Bakame\Period\Visualizer\ConsoleStdout::colorize
-     * @covers \Bakame\Period\Visualizer\ConsoleStdout::formatter
-     * @covers \Bakame\Period\Visualizer\ConsoleStdout::write
-     * @covers \Bakame\Period\Visualizer\ConsoleStdout::writeln
-     * @covers \Bakame\Period\Visualizer\ConsoleStdout::regexp
+     * @covers \Bakame\Period\Visualizer\ConsoleStdout
      */
     public function testDisplayPeriods(): void
     {
@@ -114,16 +110,12 @@ final class ConsoleOutputTest extends TestCase
 
     /**
      * @covers ::display
-     * @covers ::format
+     * @covers ::convert
      * @covers ::convertMatrixValue
      * @covers ::buildMatrix
-     * @covers ::getBoundaries
+     * @covers ::calculateBoundaries
      * @covers ::addPeriodToRow
-     * @covers \Bakame\Period\Visualizer\ConsoleStdout::colorize
-     * @covers \Bakame\Period\Visualizer\ConsoleStdout::formatter
-     * @covers \Bakame\Period\Visualizer\ConsoleStdout::write
-     * @covers \Bakame\Period\Visualizer\ConsoleStdout::writeln
-     * @covers \Bakame\Period\Visualizer\ConsoleStdout::regexp
+     * @covers \Bakame\Period\Visualizer\ConsoleStdout
      */
     public function testDisplaySequence(): void
     {

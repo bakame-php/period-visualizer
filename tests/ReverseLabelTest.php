@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace BakameTest\Period\Visualizer;
 
-use Bakame\Period\Visualizer\LetterLabel;
+use Bakame\Period\Visualizer\LatinLetter;
 use Bakame\Period\Visualizer\ReverseLabel;
 use League\Period\Period;
 use League\Period\Sequence;
@@ -22,7 +22,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * @coversDefaultClass \Bakame\Period\Visualizer\ReverseLabel;
  */
-final class ReverseGeneratorTest extends TestCase
+final class ReverseLabelTest extends TestCase
 {
     /**
      * @dataProvider providerLetter
@@ -32,7 +32,7 @@ final class ReverseGeneratorTest extends TestCase
         string $letter,
         array $expected
     ): void {
-        $generator = new ReverseLabel(new LetterLabel($letter));
+        $generator = new ReverseLabel(new LatinLetter($letter));
         self::assertSame($expected, $generator->generate($sequence));
     }
 
@@ -65,7 +65,7 @@ final class ReverseGeneratorTest extends TestCase
 
     public function testFormat(): void
     {
-        $generator = new ReverseLabel(new LetterLabel('AA'));
+        $generator = new ReverseLabel(new LatinLetter('AA'));
         self::assertSame('', $generator->format([]));
     }
 }

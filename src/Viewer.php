@@ -42,22 +42,22 @@ final class Viewer implements Visualizer
      */
     public function __construct(?LabelGenerator $labelGenerator = null, ?Output $output = null)
     {
-        $this->labelGenerator = $labelGenerator ?? new LetterLabel();
+        $this->labelGenerator = $labelGenerator ?? new LatinLetter();
         $this->output = $output ?? new ConsoleOutput();
     }
 
     /**
      * {@inheritDoc}
      */
-    public function view(Sequence $sequence, $result = null, string $resultLabel = ''): void
+    public function view(Sequence $input, $result = null, string $resultLabel = ''): void
     {
-        if ($sequence->isEmpty()) {
+        if ($input->isEmpty()) {
             return;
         }
 
         $tuples = [];
-        $labels = $this->labelGenerator->generate($sequence);
-        foreach ($sequence as $offset => $period) {
+        $labels = $this->labelGenerator->generate($input);
+        foreach ($input as $offset => $period) {
             $tuples[] = [$labels[$offset], $period];
         }
 

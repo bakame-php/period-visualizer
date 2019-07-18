@@ -14,9 +14,9 @@ declare(strict_types=1);
 namespace BakameTest\Period\Visualizer;
 
 use Bakame\Period\Visualizer\AffixLabel;
-use Bakame\Period\Visualizer\IntegerLabel;
-use Bakame\Period\Visualizer\LetterLabel;
-use Bakame\Period\Visualizer\RomanLabel;
+use Bakame\Period\Visualizer\DecimalNumber;
+use Bakame\Period\Visualizer\LatinLetter;
+use Bakame\Period\Visualizer\RomanNumber;
 use League\Period\Period;
 use League\Period\Sequence;
 use PHPUnit\Framework\TestCase;
@@ -24,7 +24,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * @coversDefaultClass \Bakame\Period\Visualizer\AffixLabel;
  */
-final class AffixGeneratorTest extends TestCase
+final class AffixLabelTest extends TestCase
 {
     /**
      * @dataProvider providerLetter
@@ -36,10 +36,10 @@ final class AffixGeneratorTest extends TestCase
         string $suffix,
         array $expected
     ): void {
-        $generator = new AffixLabel(new LetterLabel($letter), $prefix, $suffix);
+        $generator = new AffixLabel(new LatinLetter($letter), $prefix, $suffix);
         self::assertSame($expected, $generator->generate($sequence));
 
-        $generator = (new AffixLabel(new LetterLabel($letter)))->withPrefix($prefix)->withSuffix($suffix);
+        $generator = (new AffixLabel(new LatinLetter($letter)))->withPrefix($prefix)->withSuffix($suffix);
         self::assertSame($expected, $generator->generate($sequence));
     }
 
@@ -96,7 +96,7 @@ final class AffixGeneratorTest extends TestCase
 
     public function testGetter(): void
     {
-        $generator = new AffixLabel(new RomanLabel(new IntegerLabel(10)));
+        $generator = new AffixLabel(new RomanNumber(new DecimalNumber(10)));
         self::assertSame('', $generator->suffix());
         self::assertSame('', $generator->prefix());
         $new = $generator->withPrefix('o')->withSuffix('');
@@ -107,7 +107,7 @@ final class AffixGeneratorTest extends TestCase
 
     public function testFormat(): void
     {
-        $generator = new AffixLabel(new RomanLabel(new IntegerLabel(10)), ':', '.');
+        $generator = new AffixLabel(new RomanNumber(new DecimalNumber(10)), ':', '.');
         self::assertSame(':.', $generator->format([]));
     }
 }

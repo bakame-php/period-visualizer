@@ -21,7 +21,7 @@ use function method_exists;
 use function preg_match;
 use function trim;
 
-final class LetterLabel implements LabelGenerator
+final class LatinLetter implements LabelGenerator
 {
     /**
      * @var string
@@ -34,33 +34,6 @@ final class LetterLabel implements LabelGenerator
     public function __construct(string $str = 'A')
     {
         $this->str = $this->format($str);
-    }
-
-    /**
-     * Returns the starting Letter.
-     */
-    public function startingAt(): string
-    {
-        return $this->str;
-    }
-
-    /**
-     * Return an instance with the starting Letter.
-     *
-     * This method MUST retain the state of the current instance, and return
-     * an instance that contains the starting Letter.
-     */
-    public function startsWith(string $str): self
-    {
-        $str = $this->format($str);
-        if ($str === $this->str) {
-            return $this;
-        }
-
-        $clone = clone $this;
-        $clone->str = $str;
-
-        return $clone;
     }
 
     /**
@@ -103,5 +76,32 @@ final class LetterLabel implements LabelGenerator
         }
 
         return $letters;
+    }
+
+    /**
+     * Returns the starting Letter.
+     */
+    public function startingAt(): string
+    {
+        return $this->str;
+    }
+
+    /**
+     * Return an instance with the starting Letter.
+     *
+     * This method MUST retain the state of the current instance, and return
+     * an instance that contains the starting Letter.
+     */
+    public function startsWith(string $str): self
+    {
+        $str = $this->format($str);
+        if ($str === $this->str) {
+            return $this;
+        }
+
+        $clone = clone $this;
+        $clone->str = $str;
+
+        return $clone;
     }
 }

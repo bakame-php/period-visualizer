@@ -16,11 +16,12 @@ namespace Bakame\Period\Visualizer;
 use Bakame\Period\Visualizer\Contract\LabelGenerator;
 use League\Period\Sequence;
 use function array_map;
+use function filter_var;
 use function in_array;
 use function strtolower;
 use const FILTER_VALIDATE_INT;
 
-final class RomanLabel implements LabelGenerator
+final class RomanNumber implements LabelGenerator
 {
     public const UPPER = 1;
     public const LOWER = 2;
@@ -34,7 +35,7 @@ final class RomanLabel implements LabelGenerator
     ];
 
     /**
-     * @var IntegerLabel
+     * @var DecimalNumber
      */
     private $labelGenerator;
 
@@ -46,22 +47,68 @@ final class RomanLabel implements LabelGenerator
     /**
      * New instance.
      */
-    public function __construct(IntegerLabel $labelGenerator, int $lettercase = self::UPPER)
+    public function __construct(DecimalNumber $labelGenerator, int $lettercase = self::UPPER)
     {
         $this->labelGenerator = $labelGenerator;
-        $this->lettercase = $this->filter($lettercase);
+        $this->lettercase = $this->filterLetterCase($lettercase);
     }
 
     /**
-     * Formatter lettercase value.
+     * filter letter case state.
      */
-    private function filter(int $lettercase): int
+    private function filterLetterCase(int $lettercase): int
     {
         if (!in_array($lettercase, [self::UPPER, self::LOWER], true)) {
             return self::UPPER;
         }
 
         return $lettercase;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function generate(Sequence $sequence): array
+    {
+        return array_map([$this, 'format'], $this->labelGenerator->generate($sequence));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function format($str): string
+    {
+        $res = filter_var($str, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if (false === $res) {
+            return '';
+        }
+
+        return $this->convert($res);
+    }
+
+    /**
+     * Convert a integer number into its roman representation.
+     *
+     * @see https://stackoverflow.com/a/15023547
+     */
+    private function convert(int $number): string
+    {
+        $retVal = '';
+        while ($number > 0) {
+            foreach (self::CHARACTER_MAP as $roman => $int) {
+                if ($number >= $int) {
+                    $number -= $int;
+                    $retVal .= $roman;
+                    break;
+                }
+            }
+        }
+
+        if (self::LOWER === $this->lettercase) {
+            return strtolower($retVal);
+        }
+
+        return $retVal;
     }
 
     /**
@@ -115,7 +162,7 @@ final class RomanLabel implements LabelGenerator
      */
     public function withLetterCase(int $lettercase): self
     {
-        $lettercase = $this->filter($lettercase);
+        $lettercase = $this->filterLetterCase($lettercase);
         if ($lettercase === $this->lettercase) {
             return $this;
         }
@@ -124,51 +171,5 @@ final class RomanLabel implements LabelGenerator
         $clone->lettercase = $lettercase;
 
         return $clone;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function generate(Sequence $sequence): array
-    {
-        return array_map([$this, 'format'], $this->labelGenerator->generate($sequence));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function format($str): string
-    {
-        $res = filter_var($str, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
-        if (false === $res) {
-            return '';
-        }
-
-        return $this->convert($res);
-    }
-
-    /**
-     * Convert a integer number into its roman representation.
-     *
-     * @see https://stackoverflow.com/a/15023547
-     */
-    private function convert(int $number): string
-    {
-        $retVal = '';
-        while ($number > 0) {
-            foreach (self::CHARACTER_MAP as $roman => $int) {
-                if ($number >= $int) {
-                    $number -= $int;
-                    $retVal .= $roman;
-                    break;
-                }
-            }
-        }
-
-        if (self::LOWER === $this->lettercase) {
-            return strtolower($retVal);
-        }
-
-        return $retVal;
     }
 }
