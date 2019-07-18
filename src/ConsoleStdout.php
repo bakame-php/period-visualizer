@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Bakame\Period\Visualizer;
 
+use Bakame\Period\Visualizer\Contract\Writer;
 use TypeError;
 use function array_keys;
 use function chr;
@@ -25,7 +26,7 @@ use function stripos;
 use const PHP_EOL;
 use const PHP_OS;
 
-final class Stdout implements Writer
+final class ConsoleStdout implements Writer
 {
     /**
      * @var resource
@@ -95,13 +96,13 @@ final class Stdout implements Writer
     /**
      * {@inheritDoc}
      */
-    public function colorize(string $line, string $color): string
+    public function colorize(string $characters, string $colorIndex): string
     {
-        if (Writer::DEFAULT_COLOR_NAME !== $color) {
-            return "<<$color>>$line<<reset>>";
+        if (Writer::DEFAULT_COLOR_CODE_INDEX !== $colorIndex) {
+            return "<<$colorIndex>>$characters<<".Writer::DEFAULT_COLOR_CODE_INDEX.'>>';
         }
 
-        return $line;
+        return $characters;
     }
 
     /**
@@ -115,7 +116,7 @@ final class Stdout implements Writer
 
         $bytes = 0;
         foreach ($message as $line) {
-            $bytes += fwrite($this->stream, ' '.$this->write($line).PHP_EOL);
+            $bytes += fwrite($this->stream, $this->write($line).PHP_EOL);
         }
 
         fflush($this->stream);

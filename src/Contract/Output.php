@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Bakame\Period\Visualizer;
+namespace Bakame\Period\Visualizer\Contract;
 
 /**
  * A class to output to the console the matrix.
@@ -24,6 +24,8 @@ interface Output
      * The submitted iterable structure represents a tuple where
      * the first value is the identifier and the second value
      * the intervals represented as Period or Sequence instances.
+     *
+     * If the second value is not recognized the corresponding tuple is ignored.
      *
      * The generated string can be represented like the following
      * and depends on the Configuration used

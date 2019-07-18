@@ -11,24 +11,24 @@
 
 declare(strict_types=1);
 
-namespace BakameTest\Period\Visualizer\Label;
+namespace BakameTest\Period\Visualizer;
 
-use Bakame\Period\Visualizer\Label\IntegerGenerator;
+use Bakame\Period\Visualizer\LetterLabel;
 use League\Period\Period;
 use League\Period\Sequence;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass \Bakame\Period\Visualizer\Label\IntegerType;
+ * @coversDefaultClass \Bakame\Period\Visualizer\LetterLabel;
  */
-final class IntegerGeneratorTest extends TestCase
+final class LetterGeneratorTest extends TestCase
 {
     /**
      * @dataProvider providerLetter
      */
-    public function testGetLabels(Sequence $sequence, int $label, array $expected): void
+    public function testGetLabels(Sequence $sequence, string $letter, array $expected): void
     {
-        $generator = new IntegerGenerator($label);
+        $generator = new LetterLabel($letter);
         self::assertSame($expected, $generator->generate($sequence));
     }
 
@@ -37,50 +37,47 @@ final class IntegerGeneratorTest extends TestCase
         return [
             'empty labels' => [
                 'sequence' => new Sequence(),
-                'label' => 1,
+                'letter' => 'i',
                 'expected' => [],
             ],
-            'labels starts at 3' => [
+            'labels starts at i' => [
                 'sequence' => new Sequence(new Period('2018-01-01', '2018-02-01')),
-                'label' => 3,
-                'expected' => ['3'],
+                'letter' => 'i',
+                'expected' => ['i'],
             ],
-            'labels starts ends at 4' => [
+            'labels starts ends at ab' => [
                 'sequence' => new Sequence(
                     new Period('2018-01-01', '2018-02-01'),
                     new Period('2018-02-01', '2018-03-01')
                 ),
-                'label' => 4,
-                'expected' => ['4', '5'],
+                'letter' => 'aa',
+                'expected' => ['aa', 'ab'],
             ],
             'labels starts at 0 (1)' => [
                 'sequence' => new Sequence(new Period('2018-01-01', '2018-02-01')),
-                'label' => -1,
-                'expected' => ['1'],
+                'letter' => '        ',
+                'expected' => ['0'],
             ],
             'labels starts at 0 (2)' => [
                 'sequence' => new Sequence(new Period('2018-01-01', '2018-02-01')),
-                'label' => 0,
-                'expected' => ['1'],
+                'letter' => '',
+                'expected' => ['0'],
+            ],
+            'labels with an integer' => [
+                'sequence' => new Sequence(new Period('2018-01-01', '2018-02-01')),
+                'letter' => '1',
+                'expected' => ['A'],
             ],
         ];
     }
 
     public function testStartWith(): void
     {
-        $generator = new IntegerGenerator(42);
-        self::assertSame(42, $generator->getStartingAt());
-        $new = $generator->startWith(69);
+        $generator = new LetterLabel('i');
+        self::assertSame('i', $generator->startingAt());
+        $new = $generator->startsWith('o');
         self::assertNotSame($new, $generator);
-        self::assertSame(69, $new->getStartingAt());
-        self::assertSame($generator, $generator->startWith(42));
-        self::assertSame(1, (new IntegerGenerator(-3))->getStartingAt());
-        self::assertSame(1, $generator->startWith(-3)->getStartingAt());
-    }
-
-    public function testFormat(): void
-    {
-        $generator = new IntegerGenerator(42);
-        self::assertSame('', $generator->format([]));
+        self::assertSame('o', $new->startingAt());
+        self::assertSame($generator, $generator->startsWith('i'));
     }
 }

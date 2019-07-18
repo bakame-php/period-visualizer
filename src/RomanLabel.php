@@ -11,15 +11,16 @@
 
 declare(strict_types=1);
 
-namespace Bakame\Period\Visualizer\Label;
+namespace Bakame\Period\Visualizer;
 
+use Bakame\Period\Visualizer\Contract\LabelGenerator;
 use League\Period\Sequence;
 use function array_map;
 use function in_array;
 use function strtolower;
 use const FILTER_VALIDATE_INT;
 
-final class RomanGenerator implements LabelGenerator
+final class RomanLabel implements LabelGenerator
 {
     public const UPPER = 1;
     public const LOWER = 2;
@@ -33,7 +34,7 @@ final class RomanGenerator implements LabelGenerator
     ];
 
     /**
-     * @var IntegerGenerator
+     * @var IntegerLabel
      */
     private $labelGenerator;
 
@@ -45,7 +46,7 @@ final class RomanGenerator implements LabelGenerator
     /**
      * New instance.
      */
-    public function __construct(IntegerGenerator $labelGenerator, int $lettercase = self::UPPER)
+    public function __construct(IntegerLabel $labelGenerator, int $lettercase = self::UPPER)
     {
         $this->labelGenerator = $labelGenerator;
         $this->lettercase = $this->filter($lettercase);
@@ -66,17 +67,25 @@ final class RomanGenerator implements LabelGenerator
     /**
      * Returns the starting Letter.
      */
-    public function getStartingAt(): int
+    public function startingAt(): int
     {
-        return $this->labelGenerator->getStartingAt();
+        return $this->labelGenerator->startingAt();
     }
 
     /**
-     * Tells whether the roman integer will be uppercased or not.
+     * Tells whether the roman letter is upper cased.
      */
     public function isUpper(): bool
     {
         return self::UPPER === $this->lettercase;
+    }
+
+    /**
+     * Tells whether the roman letter is lower cased.
+     */
+    public function isLower(): bool
+    {
+        return self::LOWER === $this->lettercase;
     }
 
     /**
@@ -85,9 +94,9 @@ final class RomanGenerator implements LabelGenerator
      * This method MUST retain the state of the current instance, and return
      * an instance that contains the starting Letter.
      */
-    public function startWith(int $int): self
+    public function startsWith(int $int): self
     {
-        $labelGenerator = $this->labelGenerator->startWith($int);
+        $labelGenerator = $this->labelGenerator->startsWith($int);
         if ($labelGenerator === $this->labelGenerator) {
             return $this;
         }
@@ -126,6 +135,19 @@ final class RomanGenerator implements LabelGenerator
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function format($str): string
+    {
+        $res = filter_var($str, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if (false === $res) {
+            return '';
+        }
+
+        return $this->convert($res);
+    }
+
+    /**
      * Convert a integer number into its roman representation.
      *
      * @see https://stackoverflow.com/a/15023547
@@ -148,18 +170,5 @@ final class RomanGenerator implements LabelGenerator
         }
 
         return $retVal;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function format($str): string
-    {
-        $res = filter_var($str, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
-        if (false === $res) {
-            return '';
-        }
-
-        return $this->convert($res);
     }
 }

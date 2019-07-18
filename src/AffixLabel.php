@@ -11,16 +11,16 @@
 
 declare(strict_types=1);
 
-namespace Bakame\Period\Visualizer\Label;
+namespace Bakame\Period\Visualizer;
 
+use Bakame\Period\Visualizer\Contract\LabelGenerator;
 use League\Period\Sequence;
 use function array_map;
 use function is_scalar;
 use function method_exists;
 use function preg_replace;
-use function trim;
 
-final class AffixGenerator implements LabelGenerator
+final class AffixLabel implements LabelGenerator
 {
     /**
      * @var LabelGenerator
@@ -49,9 +49,7 @@ final class AffixGenerator implements LabelGenerator
 
     private function filterString(string $str): string
     {
-        $str = (string) preg_replace("/[\r\n]/", '', $str);
-
-        return trim($str);
+        return (string) preg_replace("/[\r\n]/", '', $str);
     }
 
     /**
@@ -77,7 +75,7 @@ final class AffixGenerator implements LabelGenerator
     /**
      * Returns the suffix.
      */
-    public function getSuffix(): string
+    public function suffix(): string
     {
         return $this->suffix;
     }
@@ -85,7 +83,7 @@ final class AffixGenerator implements LabelGenerator
     /**
      * Returns the prefix.
      */
-    public function getPrefix(): string
+    public function prefix(): string
     {
         return $this->prefix;
     }

@@ -15,8 +15,8 @@ namespace BakameTest\Period\Visualizer;
 
 use Bakame\Period\Visualizer\ConsoleConfig;
 use Bakame\Period\Visualizer\ConsoleOutput;
-use Bakame\Period\Visualizer\Label\LetterGenerator;
-use Bakame\Period\Visualizer\Stdout;
+use Bakame\Period\Visualizer\ConsoleStdout;
+use Bakame\Period\Visualizer\LetterLabel;
 use Bakame\Period\Visualizer\Viewer;
 use League\Period\Datepoint;
 use League\Period\Period;
@@ -45,10 +45,10 @@ final class ViewerTest extends TestCase
     {
         $this->stream = $this->setStream();
         $this->view = new Viewer(
-            new LetterGenerator('A'),
+            new LetterLabel('A'),
             new ConsoleOutput(
                 ConsoleConfig::createFromRandom(),
-                new Stdout($this->stream)
+                new ConsoleStdout($this->stream)
             )
         );
     }
@@ -86,10 +86,8 @@ final class ViewerTest extends TestCase
      * @covers ::__construct
      * @covers ::sequence
      * @covers ::view
-     * @covers ::filterResultLabel
-     * @covers ::addLabels
-     * @covers \Bakame\Period\Visualizer\Stdout::colorize
-     * @covers \Bakame\Period\Visualizer\Stdout::writeln
+     * @covers \Bakame\Period\Visualizer\ConsoleStdout::colorize
+     * @covers \Bakame\Period\Visualizer\ConsoleStdout::writeln
      */
     public function testDisplaySequence(): void
     {
@@ -102,8 +100,8 @@ final class ViewerTest extends TestCase
 
         $data = $this->getContent($this->stream);
 
-        self::assertStringContainsString('A    [--------------------------)', $data);
-        self::assertStringContainsString('B                               [-------------------------------)', $data);
+        self::assertStringContainsString('A [--------------------------)', $data);
+        self::assertStringContainsString('B                            [-------------------------------)', $data);
     }
 
     /**
@@ -122,10 +120,8 @@ final class ViewerTest extends TestCase
     /**
      * @covers ::intersections
      * @covers ::view
-     * @covers ::filterResultLabel
-     * @covers ::addLabels
-     * @covers \Bakame\Period\Visualizer\Stdout::colorize
-     * @covers \Bakame\Period\Visualizer\Stdout::writeln
+     * @covers \Bakame\Period\Visualizer\ConsoleStdout::colorize
+     * @covers \Bakame\Period\Visualizer\ConsoleStdout::writeln
      */
     public function testDisplayIntersection(): void
     {
@@ -136,16 +132,14 @@ final class ViewerTest extends TestCase
 
         $data = $this->getContent($this->stream);
 
-        self::assertStringContainsString('A                [--------------------------)', $data);
-        self::assertStringContainsString('B                                 [-----------------------------------------)', $data);
-        self::assertStringContainsString('INTERSECTIONS                     [---------)', $data);
+        self::assertStringContainsString('A             [--------------------------)', $data);
+        self::assertStringContainsString('B                              [-----------------------------------------)', $data);
+        self::assertStringContainsString('INTERSECTIONS                  [---------)', $data);
     }
 
     /**
      * @covers ::gaps
      * @covers ::view
-     * @covers ::filterResultLabel
-     * @covers ::addLabels
      */
     public function testGaps(): void
     {
@@ -156,15 +150,14 @@ final class ViewerTest extends TestCase
 
         $data = $this->getContent($this->stream);
 
-        self::assertStringContainsString('A         [----------------)', $data);
-        self::assertStringContainsString('B                                    (-------------------------------)', $data);
-        self::assertStringContainsString('RESULT                     [---------]', $data);
+        self::assertStringContainsString('A      [----------------)', $data);
+        self::assertStringContainsString('B                                 (-------------------------------)', $data);
+        self::assertStringContainsString('RESULT                  [---------]', $data);
     }
 
     /**
      * @covers ::sequence
      * @covers ::view
-     * @covers ::addLabels
      */
     public function testSingleUnitIntervalLength(): void
     {
@@ -175,18 +168,17 @@ final class ViewerTest extends TestCase
 
         $data = $this->getContent($this->stream);
 
-        self::assertStringContainsString('A                                  [-)', $data);
-        self::assertStringContainsString('B    [----------------------------------------------------------]', $data);
+        self::assertStringContainsString('A                               [-)', $data);
+        self::assertStringContainsString('B [----------------------------------------------------------]', $data);
     }
 
     /**
      * @covers ::diff
-     * @covers ::addLabels
      */
     public function testDiff(): void
     {
         $config = (new ConsoleConfig())->withColors('white');
-        $view = new Viewer(new LetterGenerator(), new ConsoleOutput($config, new Stdout($this->stream)));
+        $view = new Viewer(new LetterLabel(), new ConsoleOutput($config, new ConsoleStdout($this->stream)));
         $view->diff(
             new Period('2018-01-01', '2018-02-01'),
             new Period('2017-12-01', '2018-03-01')
@@ -194,14 +186,13 @@ final class ViewerTest extends TestCase
 
         $data = $this->getContent($this->stream);
 
-        self::assertStringContainsString('A                           [--------------------)', $data);
-        self::assertStringContainsString('B       [----------------------------------------------------------)', $data);
-        self::assertStringContainsString('DIFF    [-------------------)                    [-----------------)', $data);
+        self::assertStringContainsString('A                        [--------------------)', $data);
+        self::assertStringContainsString('B    [----------------------------------------------------------)', $data);
+        self::assertStringContainsString('DIFF [-------------------)                    [-----------------)', $data);
     }
 
     /**
      * @covers ::unions
-     * @covers ::addLabels
      */
     public function testUnion(): void
     {
@@ -215,9 +206,9 @@ final class ViewerTest extends TestCase
 
         $data = $this->getContent($this->stream);
 
-        self::assertStringContainsString('A                                               [--------------------)', $data);
-        self::assertStringContainsString('B                                                                 [-) ', $data);
-        self::assertStringContainsString('C         [---------)', $data);
-        self::assertStringContainsString('UNIONS    [---------)                           [--------------------)', $data);
+        self::assertStringContainsString('A                                            [--------------------)', $data);
+        self::assertStringContainsString('B                                                              [-) ', $data);
+        self::assertStringContainsString('C      [---------)', $data);
+        self::assertStringContainsString('UNIONS [---------)                           [--------------------)', $data);
     }
 }

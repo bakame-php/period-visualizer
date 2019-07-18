@@ -13,14 +13,14 @@ declare(strict_types=1);
 
 namespace Bakame\Period\Visualizer;
 
-use Bakame\Period\Visualizer\Label\LabelGenerator;
-use Bakame\Period\Visualizer\Label\LetterGenerator;
+use Bakame\Period\Visualizer\Contract\LabelGenerator;
+use Bakame\Period\Visualizer\Contract\Output;
+use Bakame\Period\Visualizer\Contract\Visualizer;
 use League\Period\Period;
 use League\Period\Sequence;
-use TypeError;
 use function trim;
 
-final class Viewer
+final class Viewer implements Visualizer
 {
     private const DEFAULT_RESULT_LABEL = 'RESULT';
 
@@ -37,54 +37,37 @@ final class Viewer
     /**
      * Create a new output.
      *
-     * @param ?LabelGenerator $label
-     * @param ?ConsoleOutput  $output
+     * @param ?LabelGenerator $labelGenerator
+     * @param ?Output         $output
      */
-    public function __construct(?LabelGenerator $label = null, ?Output $output = null)
+    public function __construct(?LabelGenerator $labelGenerator = null, ?Output $output = null)
     {
-        $this->labelGenerator =  $label ?? new LetterGenerator();
+        $this->labelGenerator = $labelGenerator ?? new LetterLabel();
         $this->output = $output ?? new ConsoleOutput();
     }
 
     /**
-     * @param mixed $result can be a Period or a Sequence anything else will be
-     *                      filtered out
-     *
-     * @throws TypeError
+     * {@inheritDoc}
      */
     public function view(Sequence $sequence, $result = null, string $resultLabel = ''): void
     {
-        $input = $this->addLabels($sequence);
-        $input[] = [$this->filterResultLabel($resultLabel), $result];
+        if ($sequence->isEmpty()) {
+            return;
+        }
 
-        $this->output->display($input);
-    }
-
-    /**
-     * Attach the labels to the sequence.
-     */
-    private function addLabels(Sequence $sequence): array
-    {
+        $tuples = [];
         $labels = $this->labelGenerator->generate($sequence);
-        $results = [];
         foreach ($sequence as $offset => $period) {
-            $results[] = [$labels[$offset], $period];
+            $tuples[] = [$labels[$offset], $period];
         }
 
-        return $results;
-    }
-
-    /**
-     * Format the result label.
-     */
-    private function filterResultLabel(string $label): string
-    {
-        $label = trim($label);
-        if ('' === $label) {
-            return $this->labelGenerator->format(self::DEFAULT_RESULT_LABEL);
+        if ('' === trim($resultLabel)) {
+            $resultLabel = self::DEFAULT_RESULT_LABEL;
         }
 
-        return $this->labelGenerator->format($label);
+        $tuples[] = [$this->labelGenerator->format($resultLabel), $result];
+
+        $this->output->display($tuples);
     }
 
     /**

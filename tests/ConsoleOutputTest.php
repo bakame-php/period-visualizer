@@ -15,8 +15,9 @@ namespace BakameTest\Period\Visualizer;
 
 use Bakame\Period\Visualizer\ConsoleConfig;
 use Bakame\Period\Visualizer\ConsoleOutput;
-use Bakame\Period\Visualizer\Stdout;
+use Bakame\Period\Visualizer\ConsoleStdout;
 use League\Period\Period;
+use League\Period\Sequence;
 use PHPUnit\Framework\TestCase;
 use function fopen;
 use function rewind;
@@ -43,7 +44,7 @@ final class ConsoleOutputTest extends TestCase
 
         $this->output = new ConsoleOutput(
             (new ConsoleConfig())->withColors('red'),
-            new Stdout($this->stream)
+            new ConsoleStdout($this->stream)
         );
     }
 
@@ -60,7 +61,7 @@ final class ConsoleOutputTest extends TestCase
 
     /**
      * @covers ::__construct
-     * @covers \Bakame\Period\Visualizer\Stdout::__construct
+     * @covers \Bakame\Period\Visualizer\ConsoleStdout::__construct
      */
     public function testConstructor(): void
     {
@@ -70,7 +71,8 @@ final class ConsoleOutputTest extends TestCase
 
     /**
      * @covers ::display
-     * @covers \Bakame\Period\Visualizer\Stdout::writeln
+     * @covers ::buildMatrix
+     * @covers \Bakame\Period\Visualizer\ConsoleStdout::writeln
      */
     public function testDisplayEmptyTuple(): void
     {
@@ -85,13 +87,16 @@ final class ConsoleOutputTest extends TestCase
      * @covers ::display
      * @covers ::format
      * @covers ::convertMatrixValue
-     * @covers \Bakame\Period\Visualizer\Stdout::colorize
-     * @covers \Bakame\Period\Visualizer\Stdout::formatter
-     * @covers \Bakame\Period\Visualizer\Stdout::write
-     * @covers \Bakame\Period\Visualizer\Stdout::writeln
-     * @covers \Bakame\Period\Visualizer\Stdout::regexp
+     * @covers ::buildMatrix
+     * @covers ::getBoundaries
+     * @covers ::addPeriodToRow
+     * @covers \Bakame\Period\Visualizer\ConsoleStdout::colorize
+     * @covers \Bakame\Period\Visualizer\ConsoleStdout::formatter
+     * @covers \Bakame\Period\Visualizer\ConsoleStdout::write
+     * @covers \Bakame\Period\Visualizer\ConsoleStdout::writeln
+     * @covers \Bakame\Period\Visualizer\ConsoleStdout::regexp
      */
-    public function testDisplaySequence(): void
+    public function testDisplayPeriods(): void
     {
         $this->output->display([
             ['A', new Period('2018-01-01', '2018-01-15')],
@@ -102,7 +107,36 @@ final class ConsoleOutputTest extends TestCase
         /** @var string $data */
         $data = stream_get_contents($this->stream);
 
-        self::assertStringContainsString('A    [--------------------------)', $data);
-        self::assertStringContainsString('B                               [-------------------------------)', $data);
+        self::assertStringContainsString('A [--------------------------)', $data);
+        self::assertStringContainsString('B                            [-------------------------------)', $data);
+    }
+
+
+    /**
+     * @covers ::display
+     * @covers ::format
+     * @covers ::convertMatrixValue
+     * @covers ::buildMatrix
+     * @covers ::getBoundaries
+     * @covers ::addPeriodToRow
+     * @covers \Bakame\Period\Visualizer\ConsoleStdout::colorize
+     * @covers \Bakame\Period\Visualizer\ConsoleStdout::formatter
+     * @covers \Bakame\Period\Visualizer\ConsoleStdout::write
+     * @covers \Bakame\Period\Visualizer\ConsoleStdout::writeln
+     * @covers \Bakame\Period\Visualizer\ConsoleStdout::regexp
+     */
+    public function testDisplaySequence(): void
+    {
+        $this->output->display([
+            ['A', new Sequence(new Period('2018-01-01', '2018-01-15'))],
+            ['B', new Sequence(new Period('2018-01-15', '2018-02-01'))],
+        ]);
+
+        rewind($this->stream);
+        /** @var string $data */
+        $data = stream_get_contents($this->stream);
+
+        self::assertStringContainsString('A [--------------------------)', $data);
+        self::assertStringContainsString('B                            [-------------------------------)', $data);
     }
 }

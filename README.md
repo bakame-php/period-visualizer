@@ -140,11 +140,11 @@ By default the class is instantiated with the letter index strategy which starts
 
 ~~~php
 use Bakame\Period\Visualizer\Viewer;
-use Bakame\Period\Visualizer\Label\LetterGenerator;
+use Bakame\Period\Visualizer\LetterLabel;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$viewer = new Viewer(new LetterGenerator('aa'));
+$viewer = new Viewer(new LetterLabel('aa'));
 echo $viewer->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
     new Period('2018-01-01', '2018-01-15')
@@ -162,11 +162,11 @@ results:
 
 ~~~php
 use Bakame\Period\Visualizer\Viewer;
-use Bakame\Period\Visualizer\Label\IntegerGenerator;
+use Bakame\Period\Visualizer\IntegerLabel;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$viewer = new Viewer(new IntegerGenerator(42));
+$viewer = new Viewer(new IntegerLabel(42));
 echo $viewer->sequence(new Sequence(
     new Period('2018-01-01', '2018-02-01'),
     new Period('2018-01-01', '2018-01-15')
@@ -184,12 +184,12 @@ results:
 
 ~~~php
 use Bakame\Period\Visualizer\Viewer;
-use Bakame\Period\Visualizer\Label\IntegerGenerator;
-use Bakame\Period\Visualizer\Label\RomanGenerator;
+use Bakame\Period\Visualizer\IntegerLabel;
+use Bakame\Period\Visualizer\RomanLabel;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$labelGenerator = new RomanGenerator(new IntegerGenerator(5), RomanGenerator::LOWER);
+$labelGenerator = new RomanLabel(new IntegerLabel(5), RomanLabel::LOWER);
 
 $viewer = new Viewer($labelGenerator);
 echo $viewer->sequence(new Sequence(
@@ -209,14 +209,14 @@ results:
 
 ~~~php
 use Bakame\Period\Visualizer\Viewer;
-use Bakame\Period\Visualizer\Label\IntegerGenerator;
-use Bakame\Period\Visualizer\Label\RomanGenerator;
-use Bakame\Period\Visualizer\Label\AffixGenerator;
+use Bakame\Period\Visualizer\IntegerLabel;
+use Bakame\Period\Visualizer\RomanLabel;
+use Bakame\Period\Visualizer\AffixLabel;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$labelGenerator = new AffixGenerator(
-    new RomanGenerator(new IntegerGenerator(5), RomanGenerator::LOWER),
+$labelGenerator = new AffixLabel(
+    new RomanLabel(new IntegerLabel(5), RomanLabel::LOWER),
     '*', //prefix
     '.)'    //suffix
 );
@@ -230,25 +230,25 @@ echo $viewer->sequence(new Sequence(
 results:
 
 ~~~bash
- *v.)     [------------------------------------------------------------------------------)
- *vi.)    [-----------------------------------)
+ * v .)     [----------------------------------------------------------)
+ * vi .)    [--------------------------) 
 ~~~
 
 #### Reverse strategy
 
 ~~~php
 use Bakame\Period\Visualizer\Viewer;
-use Bakame\Period\Visualizer\Label\IntegerGenerator;
-use Bakame\Period\Visualizer\Label\RomanGenerator;
-use Bakame\Period\Visualizer\Label\AffixGenerator;
-use Bakame\Period\Visualizer\Label\ReverseGenerator;
+use Bakame\Period\Visualizer\IntegerLabel;
+use Bakame\Period\Visualizer\RomanLabel;
+use Bakame\Period\Visualizer\AffixLabel;
+use Bakame\Period\Visualizer\ReverseLabel;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$labelGenerator = new IntegerGenerator(5);
-$labelGenerator = new RomanGenerator($labelGenerator, RomanGenerator::LOWER);
-$labelGenerator = new AffixGenerator($labelGenerator, '', '.');
-$labelGenerator = new ReverseGenerator($labelGenerator);
+$labelGenerator = new IntegerLabel(5);
+$labelGenerator = new RomanLabel($labelGenerator, RomanLabel::LOWER);
+$labelGenerator = new AffixLabel($labelGenerator, '', '.');
+$labelGenerator = new ReverseLabel($labelGenerator);
 
 $viewer = new Viewer($labelGenerator);
 echo $viewer->sequence(new Sequence(
@@ -266,11 +266,11 @@ results:
 
 #### Custom strategy
 
-You can create your own strategy by implementing the `Bakame\Period\Visualizer\Label\LabelGenerator` interface like shown below:
+You can create your own strategy by implementing the `Bakame\Period\Visualizer\Contract\LabelGenerator` interface like shown below:
 
 ~~~php
-use Bakame\Period\Visualizer\Label\AffixGenerator;
-use Bakame\Period\Visualizer\Label\LabelGenerator;
+use Bakame\Period\Visualizer\AffixLabel;
+use Bakame\Period\Visualizer\Contract\LabelGenerator;
 use Bakame\Period\Visualizer\Viewer;
 use League\Period\Period;
 use League\Period\Sequence;
@@ -278,7 +278,7 @@ use League\Period\Sequence;
 $samelabel = new class implements LabelGenerator {
     public function generate(Sequence $sequence): array
     {
-        return array_fill(0, count($sequence), 'foobar');
+        return array_fill(0, count($sequence), $this->format('foobar'));
     }
         
     public function format($str): string
@@ -287,7 +287,7 @@ $samelabel = new class implements LabelGenerator {
     }
 };
 
-$labelGenerator = new AffixGenerator($samelabel, '', '.');
+$labelGenerator = new AffixLabel($samelabel, '', '.');
 $viewer = new Viewer($labelGenerator);
 
 echo $viewer->sequence(new Sequence(
@@ -335,7 +335,7 @@ The `ConsoleOutput` class can be customized by providing a `ConsoleConfig` which
 ~~~php
 use Bakame\Period\Visualizer\ConsoleConfig;
 use Bakame\Period\Visualizer\ConsoleOutput;
-use Bakame\Period\Visualizer\Label\LabelGenerator;
+use Bakame\Period\Visualizer\Contract\LabelGenerator;
 use Bakame\Period\Visualizer\Viewer;
 use League\Period\Period;
 
@@ -353,7 +353,7 @@ $config = (new ConsoleConfig())
 $fixedLabels = new class implements LabelGenerator {
     public function generate(Sequence $sequence): array
     {
-        return ['first', 'last'];
+        return array_map([$this, 'format'], ['first', 'last']);
     }
     
     public function format($str): string

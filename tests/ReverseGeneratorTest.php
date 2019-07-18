@@ -11,16 +11,16 @@
 
 declare(strict_types=1);
 
-namespace BakameTest\Period\Visualizer\Label;
+namespace BakameTest\Period\Visualizer;
 
-use Bakame\Period\Visualizer\Label\LetterGenerator;
-use Bakame\Period\Visualizer\Label\ReverseGenerator;
+use Bakame\Period\Visualizer\LetterLabel;
+use Bakame\Period\Visualizer\ReverseLabel;
 use League\Period\Period;
 use League\Period\Sequence;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass \Bakame\Period\Visualizer\Label\AffixType;
+ * @coversDefaultClass \Bakame\Period\Visualizer\ReverseLabel;
  */
 final class ReverseGeneratorTest extends TestCase
 {
@@ -32,7 +32,7 @@ final class ReverseGeneratorTest extends TestCase
         string $letter,
         array $expected
     ): void {
-        $generator = new ReverseGenerator(new LetterGenerator($letter));
+        $generator = new ReverseLabel(new LetterLabel($letter));
         self::assertSame($expected, $generator->generate($sequence));
     }
 
@@ -65,7 +65,7 @@ final class ReverseGeneratorTest extends TestCase
 
     public function testFormat(): void
     {
-        $generator = new ReverseGenerator(new LetterGenerator('AA'));
+        $generator = new ReverseLabel(new LetterLabel('AA'));
         self::assertSame('', $generator->format([]));
     }
 }

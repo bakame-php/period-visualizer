@@ -11,8 +11,9 @@
 
 declare(strict_types=1);
 
-namespace Bakame\Period\Visualizer\Label;
+namespace Bakame\Period\Visualizer;
 
+use Bakame\Period\Visualizer\Contract\LabelGenerator;
 use League\Period\Sequence;
 use function count;
 use function is_scalar;
@@ -20,7 +21,7 @@ use function method_exists;
 use function preg_match;
 use function trim;
 
-final class LetterGenerator implements LabelGenerator
+final class LetterLabel implements LabelGenerator
 {
     /**
      * @var string
@@ -38,7 +39,7 @@ final class LetterGenerator implements LabelGenerator
     /**
      * Returns the starting Letter.
      */
-    public function getStartingString(): string
+    public function startingAt(): string
     {
         return $this->str;
     }
@@ -49,7 +50,7 @@ final class LetterGenerator implements LabelGenerator
      * This method MUST retain the state of the current instance, and return
      * an instance that contains the starting Letter.
      */
-    public function startWith(string $str): self
+    public function startsWith(string $str): self
     {
         $str = $this->format($str);
         if ($str === $this->str) {

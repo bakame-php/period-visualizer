@@ -13,10 +13,11 @@ declare(strict_types=1);
 
 namespace Bakame\Period\Visualizer;
 
+use Bakame\Period\Visualizer\Contract\Writer;
 use InvalidArgumentException;
 use function array_filter;
+use function array_key_exists;
 use function array_map;
-use function in_array;
 use function mb_convert_encoding;
 use function mb_strlen;
 use function preg_match;
@@ -28,14 +29,12 @@ use function sprintf;
  */
 final class ConsoleConfig
 {
-    private const COLORS = ['black', 'white', 'red', 'yellow', 'green', 'cyan', 'blue', 'magenta', Writer::DEFAULT_COLOR_NAME];
-
     private const REGEXP_UNICODE = '/\\\\u(?<unicode>[0-9A-F]{1,4})/i';
 
     /**
      * @var string[]
      */
-    private $colorOffsets = [Writer::DEFAULT_COLOR_NAME];
+    private $colorCodeIndexes = [Writer::DEFAULT_COLOR_CODE_INDEX];
 
     /**
      * @var int
@@ -78,7 +77,10 @@ final class ConsoleConfig
     {
         $config = new self();
 
-        return $config->withColors(self::COLORS[array_rand(self::COLORS)]);
+        /** @var string $colorCode */
+        $colorCode = array_rand(Writer::POSIX_COLOR_CODES);
+
+        return $config->withColors($colorCode);
     }
 
     /**
@@ -88,7 +90,7 @@ final class ConsoleConfig
     {
         $config = new self();
 
-        return $config->withColors(...self::COLORS);
+        return $config->withColors(...array_keys(Writer::POSIX_COLOR_CODES));
     }
 
     /**
@@ -153,7 +155,7 @@ final class ConsoleConfig
      */
     public function colors(): array
     {
-        return $this->colorOffsets;
+        return $this->colorCodeIndexes;
     }
 
     /**
@@ -297,26 +299,25 @@ final class ConsoleConfig
      * This method MUST retain the state of the current instance, and return
      * an instance that contains the specified color palette.
      *
-     * @param string... $optionals
+     * @param string... $colorCodeIndexes
      */
-    public function withColors(string ...$optionals): self
+    public function withColors(string ...$colorCodeIndexes): self
     {
-        $filter = function ($value) {
-            return in_array($value, self::COLORS, true);
+        $filter = static function ($value) {
+            return array_key_exists($value, Writer::POSIX_COLOR_CODES);
         };
 
-        $colorOffsets = array_filter(array_map('strtolower', $optionals), $filter);
-
-        if ([] === $colorOffsets) {
-            $colorOffsets = ['default'];
+        $colorCodeIndexes = array_filter(array_map('strtolower', $colorCodeIndexes), $filter);
+        if ([] === $colorCodeIndexes) {
+            $colorCodeIndexes = [ConsoleStdout::DEFAULT_COLOR_CODE_INDEX];
         }
 
-        if ($colorOffsets === $this->colorOffsets) {
+        if ($colorCodeIndexes === $this->colorCodeIndexes) {
             return $this;
         }
 
         $clone = clone $this;
-        $clone->colorOffsets = $colorOffsets;
+        $clone->colorCodeIndexes = $colorCodeIndexes;
 
         return $clone;
     }

@@ -41,7 +41,7 @@ final class ConsoleConfigTest extends TestCase
         self::assertSame('-', $this->config->body());
         self::assertSame(' ', $this->config->space());
         self::assertSame(60, $this->config->width());
-        self::assertSame(['default'], $this->config->colors());
+        self::assertSame(['reset'], $this->config->colors());
     }
 
     public function testCreateFromRandom(): void
@@ -147,7 +147,7 @@ final class ConsoleConfigTest extends TestCase
     public function colorsProvider(): array
     {
         return [
-            ['=', 'default'],
+            ['=', 'reset'],
             ['white', 'white'],
         ];
     }

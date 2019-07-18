@@ -11,12 +11,13 @@
 
 declare(strict_types=1);
 
-namespace Bakame\Period\Visualizer\Label;
+namespace Bakame\Period\Visualizer;
 
+use Bakame\Period\Visualizer\Contract\LabelGenerator;
 use League\Period\Sequence;
 use function array_reverse;
 
-final class ReverseGenerator implements LabelGenerator
+final class ReverseLabel implements LabelGenerator
 {
     /**
      * @var LabelGenerator

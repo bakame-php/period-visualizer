@@ -11,18 +11,18 @@
 
 declare(strict_types=1);
 
-namespace BakameTest\Period\Visualizer\Label;
+namespace BakameTest\Period\Visualizer;
 
-use Bakame\Period\Visualizer\Label\AffixGenerator;
-use Bakame\Period\Visualizer\Label\IntegerGenerator;
-use Bakame\Period\Visualizer\Label\LetterGenerator;
-use Bakame\Period\Visualizer\Label\RomanGenerator;
+use Bakame\Period\Visualizer\AffixLabel;
+use Bakame\Period\Visualizer\IntegerLabel;
+use Bakame\Period\Visualizer\LetterLabel;
+use Bakame\Period\Visualizer\RomanLabel;
 use League\Period\Period;
 use League\Period\Sequence;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass \Bakame\Period\Visualizer\Label\AffixType;
+ * @coversDefaultClass \Bakame\Period\Visualizer\AffixLabel;
  */
 final class AffixGeneratorTest extends TestCase
 {
@@ -36,10 +36,10 @@ final class AffixGeneratorTest extends TestCase
         string $suffix,
         array $expected
     ): void {
-        $generator = new AffixGenerator(new LetterGenerator($letter), $prefix, $suffix);
+        $generator = new AffixLabel(new LetterLabel($letter), $prefix, $suffix);
         self::assertSame($expected, $generator->generate($sequence));
 
-        $generator = (new AffixGenerator(new LetterGenerator($letter)))->withPrefix($prefix)->withSuffix($suffix);
+        $generator = (new AffixLabel(new LetterLabel($letter)))->withPrefix($prefix)->withSuffix($suffix);
         self::assertSame($expected, $generator->generate($sequence));
     }
 
@@ -96,18 +96,18 @@ final class AffixGeneratorTest extends TestCase
 
     public function testGetter(): void
     {
-        $generator = new AffixGenerator(new RomanGenerator(new IntegerGenerator(10)));
-        self::assertSame('', $generator->getSuffix());
-        self::assertSame('', $generator->getPrefix());
+        $generator = new AffixLabel(new RomanLabel(new IntegerLabel(10)));
+        self::assertSame('', $generator->suffix());
+        self::assertSame('', $generator->prefix());
         $new = $generator->withPrefix('o')->withSuffix('');
         self::assertNotSame($new, $generator);
-        self::assertSame('o', $new->getPrefix());
-        self::assertSame('', $new->getSuffix());
+        self::assertSame('o', $new->prefix());
+        self::assertSame('', $new->suffix());
     }
 
     public function testFormat(): void
     {
-        $generator = new AffixGenerator(new RomanGenerator(new IntegerGenerator(10)), ':', '.');
+        $generator = new AffixLabel(new RomanLabel(new IntegerLabel(10)), ':', '.');
         self::assertSame(':.', $generator->format([]));
     }
 }
