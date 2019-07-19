@@ -309,13 +309,14 @@ Under the hood, the `Viewer` class uses the `ConsoleOutput` class to generate yo
 
 ~~~php
 use Bakame\Period\Visualizer\ConsoleOutput;
+use Bakame\Period\Visualizer\Tuple;
 use League\Period\Period;
 
 $output = new ConsoleOutput();
-echo $output->display([
+echo $output->display(new Tuple([
     ['first', new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00')],
     ['last', new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00')],
-]);
+]));
 ~~~
 
 results:

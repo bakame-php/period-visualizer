@@ -15,19 +15,34 @@ namespace Bakame\Period\Visualizer;
 
 use Bakame\Period\Visualizer\Contract\Writer;
 use TypeError;
+use function array_key_exists;
 use function array_keys;
 use function chr;
 use function fflush;
+use function fwrite;
 use function implode;
 use function is_iterable;
 use function preg_replace;
 use function preg_replace_callback;
 use function stripos;
+use function strtolower;
 use const PHP_EOL;
 use const PHP_OS;
 
 final class ConsoleStdout implements Writer
 {
+    private const REGEXP_POSIX_PLACEHOLDER = '/(\s+)/msi';
+
+    /**
+     * @var callable
+     */
+    private static $formatter;
+
+    /**
+     * @var string
+     */
+    private static $regexp;
+
     /**
      * @var resource
      */
@@ -52,54 +67,17 @@ final class ConsoleStdout implements Writer
     }
 
     /**
-     * Returns the POSIX color regexp.
-     */
-    private function regexp(): string
-    {
-        static $regexp;
-
-        $regexp = $regexp ?? ',<<\s*((('.implode('|', array_keys(self::POSIX_COLOR_CODES)).')(\s*))+)>>,Umsi';
-
-        return $regexp;
-    }
-
-    /**
-     * Returns a formatted windows line.
-     */
-    private function write(string $str): string
-    {
-        static $formatter;
-
-        $formatter = $formatter ?? $this->formatter();
-
-        return (string) preg_replace_callback($this->regexp(), $formatter, $str);
-    }
-
-    /**
-     * Return a writer formatter depending on the OS.
-     */
-    private function formatter(): callable
-    {
-        if (0 !== stripos(PHP_OS, 'WIN')) {
-            return function (array $matches): string {
-                $str = (string) preg_replace('/(\s+)/msi', ';', (string) $matches[1]);
-
-                return chr(27).'['.strtr($str, self::POSIX_COLOR_CODES).'m';
-            };
-        }
-
-        return function (array $matches): string {
-            return (string) $matches[0];
-        };
-    }
-
-    /**
      * {@inheritDoc}
      */
-    public function colorize(string $characters, string $colorIndex): string
+    public function colorize(string $characters, string $colorCodeIndex): string
     {
-        if (Writer::DEFAULT_COLOR_CODE_INDEX !== $colorIndex) {
-            return "<<$colorIndex>>$characters<<".Writer::DEFAULT_COLOR_CODE_INDEX.'>>';
+        $colorCodeIndex = strtolower($colorCodeIndex);
+        if (Writer::DEFAULT_COLOR_CODE_INDEX === $colorCodeIndex) {
+            return $characters;
+        }
+
+        if (array_key_exists($colorCodeIndex, Writer::POSIX_COLOR_CODES)) {
+            return "<<$colorCodeIndex>>$characters<<".Writer::DEFAULT_COLOR_CODE_INDEX.'>>';
         }
 
         return $characters;
@@ -116,11 +94,40 @@ final class ConsoleStdout implements Writer
 
         $bytes = 0;
         foreach ($message as $line) {
-            $bytes += fwrite($this->stream, $this->write($line).PHP_EOL);
+            $bytes += fwrite($this->stream, $this->format($line).PHP_EOL);
         }
 
         fflush($this->stream);
 
         return $bytes;
+    }
+
+    /**
+     * Returns a formatted windows line.
+     */
+    private function format(string $str): string
+    {
+        self::$formatter = self::$formatter ?? $this->formatter();
+        self::$regexp = self::$regexp ?? ',<<\s*((('.implode('|', array_keys(self::POSIX_COLOR_CODES)).')(\s*))+)>>,Umsi';
+
+        return (string) preg_replace_callback(self::$regexp, self::$formatter, $str);
+    }
+
+    /**
+     * Return a writer formatter depending on the OS.
+     */
+    private function formatter(): callable
+    {
+        if (0 !== stripos(PHP_OS, 'WIN')) {
+            return function (array $matches): string {
+                $str = (string) preg_replace(self::REGEXP_POSIX_PLACEHOLDER, ';', (string) $matches[1]);
+
+                return chr(27).'['.strtr($str, self::POSIX_COLOR_CODES).'m';
+            };
+        }
+
+        return function (array $matches): string {
+            return (string) $matches[0];
+        };
     }
 }

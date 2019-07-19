@@ -91,14 +91,14 @@ final class ConsoleOutput implements Output
     /**
      * {@inheritDoc}
      */
-    public function display(Tuple $tuples): int
+    public function display(Tuple $tuple): int
     {
         $bytes = 0;
-        if ($tuples->isEmpty()) {
+        if ($tuple->isEmpty()) {
             return $bytes;
         }
 
-        $matrix = $this->buildMatrix($tuples);
+        $matrix = $this->buildMatrix($tuple);
         foreach ($this->matrixToLine($matrix) as $line) {
             $bytes += $this->writer->writeln($line);
         }
@@ -112,18 +112,20 @@ final class ConsoleOutput implements Output
      * - There's one row for every block.
      * - There's one column for every unit of width.
      * - Cell state depends on Period presence and boundary type.
+     *
+     * @return array<int, array{0:string, 1:int[]}>
      */
-    private function buildMatrix(Tuple $tuples): array
+    private function buildMatrix(Tuple $tuple): array
     {
         $matrix = [];
         /** @var Period $boundaries */
-        $boundaries = $tuples->boundaries();
+        $boundaries = $tuple->boundaries();
         $width = $this->config->width();
         $row = array_fill(0, $width, self::TOKEN_SPACE);
         $this->start = $boundaries->getStartDate()->getTimestamp();
         $this->unit = $width / $boundaries->getTimestampInterval();
         $callable = Closure::fromCallable([$this, 'addPeriodToRow']);
-        foreach ($tuples as [$name, $block]) {
+        foreach ($tuple as [$name, $block]) {
             if ($block instanceof Period) {
                 $matrix[] = [$name, $callable($row, $block)];
             } elseif ($block instanceof Sequence) {
@@ -166,6 +168,8 @@ final class ConsoleOutput implements Output
      * the intervals represented as Period or Sequence instances.
      *
      * This method returns one output string line at a time.
+     *
+     * @return string[]
      */
     private function matrixToLine(array $matrix): iterable
     {

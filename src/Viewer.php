@@ -15,12 +15,11 @@ namespace Bakame\Period\Visualizer;
 
 use Bakame\Period\Visualizer\Contract\LabelGenerator;
 use Bakame\Period\Visualizer\Contract\Output;
-use Bakame\Period\Visualizer\Contract\Visualizer;
 use League\Period\Period;
 use League\Period\Sequence;
 use function trim;
 
-final class Viewer implements Visualizer
+final class Viewer
 {
     private const DEFAULT_RESULT_LABEL = 'RESULT';
 
@@ -47,7 +46,7 @@ final class Viewer implements Visualizer
     }
 
     /**
-     * {@inheritDoc}
+     * @param mixed $result can be a Period or a Sequence anything else will be filtered out
      */
     public function view(Sequence $input, $result = null, string $resultLabel = ''): void
     {
@@ -60,7 +59,7 @@ final class Viewer implements Visualizer
             $resultLabel = self::DEFAULT_RESULT_LABEL;
         }
 
-        $tuple->addPair($this->labelGenerator->format($resultLabel), $result);
+        $tuple->append($this->labelGenerator->format($resultLabel), $result);
 
         $this->output->display($tuple);
     }

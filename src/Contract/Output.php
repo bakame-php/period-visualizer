@@ -35,5 +35,5 @@ interface Output
      * D              [---------------)
      * RESULT         [-)   [--)    [-)
      */
-    public function display(Tuple $tuples): int;
+    public function display(Tuple $tuple): int;
 }

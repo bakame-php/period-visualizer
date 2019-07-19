@@ -86,8 +86,6 @@ final class ViewerTest extends TestCase
      * @covers ::__construct
      * @covers ::sequence
      * @covers ::view
-     * @covers \Bakame\Period\Visualizer\ConsoleStdout
-     * @covers \Bakame\Period\Visualizer\Tuple
      */
     public function testDisplaySequence(): void
     {
@@ -105,8 +103,6 @@ final class ViewerTest extends TestCase
     /**
      * @covers ::sequence
      * @covers ::view
-     * @covers \Bakame\Period\Visualizer\ConsoleStdout
-     * @covers \Bakame\Period\Visualizer\Tuple
      */
     public function testDisplayEmptySequence(): void
     {
@@ -120,8 +116,6 @@ final class ViewerTest extends TestCase
     /**
      * @covers ::intersections
      * @covers ::view
-     * @covers \Bakame\Period\Visualizer\ConsoleStdout
-     * @covers \Bakame\Period\Visualizer\Tuple
      */
     public function testDisplayIntersection(): void
     {

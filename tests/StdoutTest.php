@@ -18,21 +18,14 @@ use PHPUnit\Framework\TestCase;
 use TypeError;
 use function curl_init;
 use function fopen;
+use function rewind;
+use function stream_get_contents;
 
 /**
  * @coversDefaultClass \Bakame\Period\Visualizer\ConsoleStdout
  */
 final class StdoutTest extends TestCase
 {
-    public function testConstructor(): void
-    {
-        $stream = $this->setStream();
-        $stdout = new ConsoleStdout($stream);
-        $toto = $stdout->colorize('toto', \Bakame\Period\Visualizer\Contract\Writer::DEFAULT_COLOR_CODE_INDEX);
-
-        self::assertSame('toto', $toto);
-    }
-
     /**
      * @return resource
      */
@@ -54,5 +47,86 @@ final class StdoutTest extends TestCase
     {
         self::expectException(TypeError::class);
         new ConsoleStdout(curl_init());
+    }
+
+    /**
+     * @dataProvider provideTextToColorize
+     */
+    public function testColorize(string $string, string $colorCodeIndex, string $expected): void
+    {
+        $stream = $this->setStream();
+        $stdout = new ConsoleStdout($stream);
+
+        self::assertSame($expected, $stdout->colorize($string, $colorCodeIndex));
+    }
+
+    public function provideTextToColorize(): iterable
+    {
+        return [
+            'default text' => [
+                'string' => 'toto',
+                'colorCodeIndex' => 'white',
+                'expected' => '<<white>>toto<<reset>>',
+            ],
+            'text with reset' => [
+                'string' => 'toto',
+                'colorCodeIndex' => 'reset',
+                'expected' => 'toto',
+            ],
+            'text with different casing for color code Index' => [
+                'string' => 'toto',
+                'colorCodeIndex' => 'WhITe',
+                'expected' => '<<white>>toto<<reset>>',
+            ],
+            'text with invalid color code Index' => [
+                'string' => 'toto',
+                'colorCodeIndex' => 'foobar',
+                'expected' => 'toto',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider provideWritelnTexts
+     * @param string|string[] $message
+     */
+    public function testWriteln($message, string $expected): void
+    {
+        $stream = $this->setStream();
+        $stdout = new ConsoleStdout($stream);
+        $stdout->writeln($message);
+        rewind($stream);
+        /** @var string $data */
+        $data = stream_get_contents($stream);
+
+        self::assertStringContainsString($expected, $data);
+    }
+
+    public function provideWritelnTexts(): iterable
+    {
+        $stream = $this->setStream();
+        $stdout = new ConsoleStdout($stream);
+
+        return [
+            'empty message' => [
+                'message' => '',
+                'expected' => '',
+            ],
+            'simple message' => [
+                'message' => "I'm the king of the world",
+                'expected' => "I'm the king of the world".PHP_EOL,
+            ],
+            'multiple string message' => [
+                'message' => [
+                    "I'm the king",
+                    'Of the casa',
+                ],
+                'expected' => "I'm the king".PHP_EOL.'Of the casa'.PHP_EOL,
+            ],
+            'message with color' => [
+                'message' => $stdout->colorize('foobar', 'magenta'),
+                'expected' => 'foobar',
+            ],
+        ];
     }
 }

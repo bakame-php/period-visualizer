@@ -17,7 +17,6 @@ use Bakame\Period\Visualizer\ConsoleConfig;
 use Bakame\Period\Visualizer\ConsoleOutput;
 use Bakame\Period\Visualizer\ConsoleStdout;
 use Bakame\Period\Visualizer\Tuple;
-use DateTimeImmutable;
 use League\Period\Period;
 use League\Period\Sequence;
 use PHPUnit\Framework\TestCase;
@@ -63,7 +62,6 @@ final class ConsoleOutputTest extends TestCase
 
     /**
      * @covers ::__construct
-     * @covers \Bakame\Period\Visualizer\ConsoleStdout::__construct
      */
     public function testConstructor(): void
     {
@@ -74,8 +72,6 @@ final class ConsoleOutputTest extends TestCase
     /**
      * @covers ::display
      * @covers ::buildMatrix
-     * @covers \Bakame\Period\Visualizer\ConsoleStdout::writeln
-     * @covers \Bakame\Period\Visualizer\Tuple
      */
     public function testDisplayEmptyTuple(): void
     {
@@ -93,7 +89,6 @@ final class ConsoleOutputTest extends TestCase
      * @covers ::buildMatrix
      * @covers ::addPeriodToRow
      * @covers \Bakame\Period\Visualizer\ConsoleStdout
-     * @covers \Bakame\Period\Visualizer\Tuple
      */
     public function testDisplayPeriods(): void
     {
@@ -117,19 +112,14 @@ final class ConsoleOutputTest extends TestCase
      * @covers ::tokenToCharacters
      * @covers ::buildMatrix
      * @covers ::addPeriodToRow
-     * @covers \Bakame\Period\Visualizer\ConsoleStdout
-     * @covers \Bakame\Period\Visualizer\Tuple
      */
     public function testDisplaySequence(): void
     {
         $tuple = new Tuple([
             ['A', new Sequence(new Period('2018-01-01', '2018-01-15'))],
             ['B', new Sequence(new Period('2018-01-15', '2018-02-01'))],
-            [new DateTimeImmutable(), new Sequence(new Period('2018-01-15', '2018-02-01'))],
-            ['C', 'foo bar'],
         ]);
 
-        self::assertCount(2, $tuple);
         $this->output->display($tuple);
 
         rewind($this->stream);
@@ -138,6 +128,5 @@ final class ConsoleOutputTest extends TestCase
 
         self::assertStringContainsString('A [--------------------------)', $data);
         self::assertStringContainsString('B                            [-------------------------------)', $data);
-        self::assertStringNotContainsString('C', $data);
     }
 }

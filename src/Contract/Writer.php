@@ -41,5 +41,5 @@ interface Writer
     /**
      * Returns a colorize line if the underlying console allows it.
      */
-    public function colorize(string $characters, string $colorIndex): string;
+    public function colorize(string $characters, string $colorCodeIndex): string;
 }
