@@ -63,11 +63,12 @@ final class DecimalNumber implements LabelGenerator
      */
     public function generate(Sequence $sequence): array
     {
-        if ($sequence->isEmpty()) {
+        $nbItems = count($sequence);
+        if (0 === $nbItems) {
             return [];
         }
 
-        $end = $this->int + count($sequence) - 1;
+        $end = $this->int + $nbItems - 1;
         $values = range($this->int, $end);
 
         if (self::NO_PADDING === $this->padding) {

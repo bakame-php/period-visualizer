@@ -64,9 +64,6 @@ final class LatinLetter implements LabelGenerator
     public function generate(Sequence $sequence): array
     {
         $letters = [];
-        if ($sequence->isEmpty()) {
-            return $letters;
-        }
         $nbItems = count($sequence);
         $count = 0;
         $letter = $this->str;
