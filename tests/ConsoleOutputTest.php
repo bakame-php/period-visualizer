@@ -16,6 +16,8 @@ namespace BakameTest\Period\Visualizer;
 use Bakame\Period\Visualizer\ConsoleConfig;
 use Bakame\Period\Visualizer\ConsoleOutput;
 use Bakame\Period\Visualizer\ConsoleStdout;
+use Bakame\Period\Visualizer\Tuple;
+use DateTimeImmutable;
 use League\Period\Period;
 use League\Period\Sequence;
 use PHPUnit\Framework\TestCase;
@@ -73,10 +75,11 @@ final class ConsoleOutputTest extends TestCase
      * @covers ::display
      * @covers ::buildMatrix
      * @covers \Bakame\Period\Visualizer\ConsoleStdout::writeln
+     * @covers \Bakame\Period\Visualizer\Tuple
      */
     public function testDisplayEmptyTuple(): void
     {
-        $this->output->display([]);
+        $this->output->display(new Tuple());
         rewind($this->stream);
         $data = stream_get_contents($this->stream);
 
@@ -85,19 +88,19 @@ final class ConsoleOutputTest extends TestCase
 
     /**
      * @covers ::display
-     * @covers ::convert
-     * @covers ::convertMatrixValue
+     * @covers ::matrixToLine
+     * @covers ::tokenToCharacters
      * @covers ::buildMatrix
-     * @covers ::calculateBoundaries
      * @covers ::addPeriodToRow
      * @covers \Bakame\Period\Visualizer\ConsoleStdout
+     * @covers \Bakame\Period\Visualizer\Tuple
      */
     public function testDisplayPeriods(): void
     {
-        $this->output->display([
+        $this->output->display(new Tuple([
             ['A', new Period('2018-01-01', '2018-01-15')],
             ['B', new Period('2018-01-15', '2018-02-01')],
-        ]);
+        ]));
 
         rewind($this->stream);
         /** @var string $data */
@@ -110,19 +113,24 @@ final class ConsoleOutputTest extends TestCase
 
     /**
      * @covers ::display
-     * @covers ::convert
-     * @covers ::convertMatrixValue
+     * @covers ::matrixToLine
+     * @covers ::tokenToCharacters
      * @covers ::buildMatrix
-     * @covers ::calculateBoundaries
      * @covers ::addPeriodToRow
      * @covers \Bakame\Period\Visualizer\ConsoleStdout
+     * @covers \Bakame\Period\Visualizer\Tuple
      */
     public function testDisplaySequence(): void
     {
-        $this->output->display([
+        $tuple = new Tuple([
             ['A', new Sequence(new Period('2018-01-01', '2018-01-15'))],
             ['B', new Sequence(new Period('2018-01-15', '2018-02-01'))],
+            [new DateTimeImmutable(), new Sequence(new Period('2018-01-15', '2018-02-01'))],
+            ['C', 'foo bar'],
         ]);
+
+        self::assertCount(2, $tuple);
+        $this->output->display($tuple);
 
         rewind($this->stream);
         /** @var string $data */
@@ -130,5 +138,6 @@ final class ConsoleOutputTest extends TestCase
 
         self::assertStringContainsString('A [--------------------------)', $data);
         self::assertStringContainsString('B                            [-------------------------------)', $data);
+        self::assertStringNotContainsString('C', $data);
     }
 }

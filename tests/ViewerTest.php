@@ -86,13 +86,11 @@ final class ViewerTest extends TestCase
      * @covers ::__construct
      * @covers ::sequence
      * @covers ::view
-     * @covers \Bakame\Period\Visualizer\ConsoleStdout::colorize
-     * @covers \Bakame\Period\Visualizer\ConsoleStdout::writeln
+     * @covers \Bakame\Period\Visualizer\ConsoleStdout
+     * @covers \Bakame\Period\Visualizer\Tuple
      */
     public function testDisplaySequence(): void
     {
-        $viewer = new Viewer();
-
         $this->view->sequence(new Sequence(
             new Period('2018-01-01', '2018-01-15'),
             new Period('2018-01-15', '2018-02-01')
@@ -107,6 +105,8 @@ final class ViewerTest extends TestCase
     /**
      * @covers ::sequence
      * @covers ::view
+     * @covers \Bakame\Period\Visualizer\ConsoleStdout
+     * @covers \Bakame\Period\Visualizer\Tuple
      */
     public function testDisplayEmptySequence(): void
     {
@@ -120,8 +120,8 @@ final class ViewerTest extends TestCase
     /**
      * @covers ::intersections
      * @covers ::view
-     * @covers \Bakame\Period\Visualizer\ConsoleStdout::colorize
-     * @covers \Bakame\Period\Visualizer\ConsoleStdout::writeln
+     * @covers \Bakame\Period\Visualizer\ConsoleStdout
+     * @covers \Bakame\Period\Visualizer\Tuple
      */
     public function testDisplayIntersection(): void
     {

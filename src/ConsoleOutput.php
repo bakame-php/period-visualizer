@@ -91,15 +91,15 @@ final class ConsoleOutput implements Output
     /**
      * {@inheritDoc}
      */
-    public function display(iterable $tuples): int
+    public function display(Tuple $tuples): int
     {
         $bytes = 0;
-        $matrix = $this->buildMatrix($tuples);
-        if ([] === $matrix) {
+        if ($tuples->isEmpty()) {
             return $bytes;
         }
 
-        foreach ($this->convert($matrix) as $line) {
+        $matrix = $this->buildMatrix($tuples);
+        foreach ($this->matrixToLine($matrix) as $line) {
             $bytes += $this->writer->writeln($line);
         }
 
@@ -113,14 +113,11 @@ final class ConsoleOutput implements Output
      * - There's one column for every unit of width.
      * - Cell state depends on Period presence and boundary type.
      */
-    private function buildMatrix(iterable $tuples): array
+    private function buildMatrix(Tuple $tuples): array
     {
         $matrix = [];
-        $boundaries = $this->calculateBoundaries($tuples);
-        if (null === $boundaries) {
-            return $matrix;
-        }
-
+        /** @var Period $boundaries */
+        $boundaries = $tuples->boundaries();
         $width = $this->config->width();
         $row = array_fill(0, $width, self::TOKEN_SPACE);
         $this->start = $boundaries->getStartDate()->getTimestamp();
@@ -135,23 +132,6 @@ final class ConsoleOutput implements Output
         }
 
         return $matrix;
-    }
-
-    /**
-     * Gets the boundary encompassing all visualized intervals.
-     */
-    private function calculateBoundaries(iterable $blocks): ?Period
-    {
-        $sequence = new Sequence();
-        foreach ($blocks as [$name, $block]) {
-            if ($block instanceof Period) {
-                $sequence->push($block);
-            } elseif ($block instanceof Sequence) {
-                $sequence->push(...$block);
-            }
-        }
-
-        return $sequence->boundaries();
     }
 
     /**
@@ -187,7 +167,7 @@ final class ConsoleOutput implements Output
      *
      * This method returns one output string line at a time.
      */
-    private function convert(array $matrix): iterable
+    private function matrixToLine(array $matrix): iterable
     {
         $nameLength = max(...array_map('strlen', array_column($matrix, 0)));
         $colorCodeIndexes = $this->config->colors();
@@ -195,7 +175,7 @@ final class ConsoleOutput implements Output
         $key = -1;
         foreach ($matrix as [$name, $row]) {
             $lineName = str_pad($name, $nameLength, ' ');
-            $lineContent = implode('', array_map([$this, 'convertMatrixValue'], $row));
+            $lineContent = implode('', array_map([$this, 'tokenToCharacters'], $row));
             $color = $colorCodeIndexes[++$key % $colorCodeCount];
 
             yield ' '.$this->writer->colorize($lineName.' '.$lineContent, $color);
@@ -205,7 +185,7 @@ final class ConsoleOutput implements Output
     /**
      * Turns the matrix values into characters representing the interval.
      */
-    private function convertMatrixValue(int $token): string
+    private function tokenToCharacters(int $token): string
     {
         return $this->config->{self::TOKEN_TO_METHOD[$token]}();
     }

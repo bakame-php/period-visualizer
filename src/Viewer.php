@@ -51,23 +51,18 @@ final class Viewer implements Visualizer
      */
     public function view(Sequence $input, $result = null, string $resultLabel = ''): void
     {
-        if ($input->isEmpty()) {
+        $tuple = Tuple::fromSequence($input, $this->labelGenerator);
+        if ($tuple->isEmpty()) {
             return;
-        }
-
-        $tuples = [];
-        $labels = $this->labelGenerator->generate($input);
-        foreach ($input as $offset => $period) {
-            $tuples[] = [$labels[$offset], $period];
         }
 
         if ('' === trim($resultLabel)) {
             $resultLabel = self::DEFAULT_RESULT_LABEL;
         }
 
-        $tuples[] = [$this->labelGenerator->format($resultLabel), $result];
+        $tuple->addPair($this->labelGenerator->format($resultLabel), $result);
 
-        $this->output->display($tuples);
+        $this->output->display($tuple);
     }
 
     /**
