@@ -86,20 +86,17 @@ final class ConsoleStdout implements Writer
     /**
      * {@inheritDoc}
      */
-    public function writeln($message): int
+    public function writeln($message): void
     {
         if (!is_iterable($message)) {
             $message = [$message];
         }
 
-        $bytes = 0;
         foreach ($message as $line) {
-            $bytes += fwrite($this->stream, $this->format($line).PHP_EOL);
+            fwrite($this->stream, $this->format($line).PHP_EOL);
         }
 
         fflush($this->stream);
-
-        return $bytes;
     }
 
     /**

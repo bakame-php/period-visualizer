@@ -19,6 +19,8 @@ use Iterator;
 use IteratorAggregate;
 use League\Period\Period;
 use League\Period\Sequence;
+use function array_column;
+use function count;
 use function is_scalar;
 use function method_exists;
 
@@ -34,24 +36,24 @@ final class Tuple implements Countable, IteratorAggregate
      */
     public function __construct(iterable $pairs = [])
     {
-        foreach ($pairs as [$offset, $value]) {
-            $this->append($offset, $value);
+        foreach ($pairs as [$label, $item]) {
+            $this->append($label, $item);
         }
     }
 
     /**
-     * Creates a new collection from a Sequence and a LabelGenerator.
+     * Creates a new collection from a countable iterable structure.
+     *
+     * @param array|(Countable&iterable) $sequence
      */
-    public static function fromSequence(Sequence $sequence, LabelGenerator $labelGenerator): self
+    public static function fromSequence($sequence, LabelGenerator $labelGenerator): self
     {
         $tuple = new self();
-        if ($sequence->isEmpty()) {
-            return $tuple;
-        }
-
-        $labels = $labelGenerator->generate($sequence);
-        foreach ($sequence as $offset => $period) {
-            $tuple->append($labels[$offset], $period);
+        $labels = $labelGenerator->generate(count($sequence));
+        $index = 0;
+        foreach ($sequence as $item) {
+            $tuple->append($labels[$index], $item);
+            ++$index;
         }
 
         return $tuple;
@@ -60,11 +62,11 @@ final class Tuple implements Countable, IteratorAggregate
     /**
      * Creates a new collection from a generic iterable structure.
      */
-    public static function fromIterable(iterable $iterable): self
+    public static function fromCollection(iterable $iterable): self
     {
         $tuple = new self();
-        foreach ($iterable as $offset => $value) {
-            $tuple->append($offset, $value);
+        foreach ($iterable as $label => $item) {
+            $tuple->append($label, $item);
         }
 
         return $tuple;
@@ -102,7 +104,7 @@ final class Tuple implements Countable, IteratorAggregate
     public function boundaries(): ?Period
     {
         $sequence = new Sequence();
-        foreach ($this->pairs as [$name, $item]) {
+        foreach ($this->pairs as [$label, $item]) {
             if ($item instanceof Period) {
                 $sequence->push($item);
                 continue;
@@ -114,19 +116,47 @@ final class Tuple implements Countable, IteratorAggregate
     }
 
     /**
+     * @return string[]
+     */
+    public function labels(): array
+    {
+        return array_column($this->pairs, 0);
+    }
+
+    /**
+     * @return array<Period|Sequence>
+     */
+    public function items(): array
+    {
+        return array_column($this->pairs, 1);
+    }
+
+    /**
      * Add a new pair to the collection.
      *
      * @param mixed $label any stringable structure.
-     * @param mixed $input if the input is not a Period or a Sequence instance it is not added.
+     * @param mixed $item  if the input is not a Period or a Sequence instance it is not added.
      */
-    public function append($label, $input): void
+    public function append($label, $item): void
     {
         if (!is_scalar($label) && !method_exists($label, '__toString')) {
             return;
         }
 
-        if ($input instanceof Period || $input instanceof Sequence) {
-            $this->pairs[] = [(string) $label, $input];
+        $label = (string) $label;
+        if ($item instanceof Period || $item instanceof Sequence) {
+            $this->pairs[] = [$label, $item];
         }
+    }
+
+    /**
+     * Update the labels used for the tuple.
+     *
+     * This method MUST retain the state of the current instance, and return
+     * an instance that contains the newly specified labels.
+     */
+    public function labelize(LabelGenerator $labelGenerator): self
+    {
+        return self::fromSequence($this->items(), $labelGenerator);
     }
 }

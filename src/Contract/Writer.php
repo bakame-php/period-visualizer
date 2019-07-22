@@ -36,7 +36,7 @@ interface Writer
      *
      * @throws TypeError If the message type is not supported.
      */
-    public function writeln($message): int;
+    public function writeln($message): void;
 
     /**
      * Returns a colorize line if the underlying console allows it.

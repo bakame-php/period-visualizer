@@ -15,8 +15,6 @@ namespace BakameTest\Period\Visualizer;
 
 use Bakame\Period\Visualizer\LatinLetter;
 use Bakame\Period\Visualizer\ReverseLabel;
-use League\Period\Period;
-use League\Period\Sequence;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -27,36 +25,27 @@ final class ReverseLabelTest extends TestCase
     /**
      * @dataProvider providerLetter
      */
-    public function testGetLabels(
-        Sequence $sequence,
-        string $letter,
-        array $expected
-    ): void {
+    public function testGetLabels(int $nbLabels, string $letter, array $expected): void
+    {
         $generator = new ReverseLabel(new LatinLetter($letter));
-        self::assertSame($expected, $generator->generate($sequence));
+        self::assertSame($expected, $generator->generate($nbLabels));
     }
 
     public function providerLetter(): iterable
     {
         return [
             'empty labels' => [
-                'sequence' => new Sequence(),
+                'nbLabels' => 0,
                 'letter' => 'i',
                 'expected' => [],
             ],
             'labels starts at i' => [
-                'sequence' => new Sequence(
-                    new Period('2018-01-01', '2018-02-01'),
-                    new Period('2018-01-01', '2018-02-01')
-                ),
+                'nbLabels' => 2,
                 'letter' => 'i',
                 'expected' => ['j', 'i'],
             ],
             'labels starts ends at ab' => [
-                'sequence' => new Sequence(
-                    new Period('2018-01-01', '2018-02-01'),
-                    new Period('2018-02-01', '2018-03-01')
-                ),
+                'nbLabels' => 2,
                 'letter' => 'aa',
                 'expected' => ['ab', 'aa'],
             ],

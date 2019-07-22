@@ -14,8 +14,6 @@ declare(strict_types=1);
 namespace Bakame\Period\Visualizer;
 
 use Bakame\Period\Visualizer\Contract\LabelGenerator;
-use League\Period\Sequence;
-use function count;
 use function is_scalar;
 use function method_exists;
 use function preg_match;
@@ -61,13 +59,16 @@ final class LatinLetter implements LabelGenerator
     /**
      * {@inheritdoc}
      */
-    public function generate(Sequence $sequence): array
+    public function generate(int $nbLabels): array
     {
+        if (0 >= $nbLabels) {
+            $nbLabels = 0;
+        }
+
         $letters = [];
-        $nbItems = count($sequence);
         $count = 0;
         $letter = $this->str;
-        while ($count < $nbItems) {
+        while ($count < $nbLabels) {
             $letters[] = $letter++;
             ++$count;
         }

@@ -17,8 +17,6 @@ use Bakame\Period\Visualizer\AffixLabel;
 use Bakame\Period\Visualizer\DecimalNumber;
 use Bakame\Period\Visualizer\LatinLetter;
 use Bakame\Period\Visualizer\RomanNumber;
-use League\Period\Period;
-use League\Period\Sequence;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -30,62 +28,59 @@ final class AffixLabelTest extends TestCase
      * @dataProvider providerLetter
      */
     public function testGetLabels(
-        Sequence $sequence,
+        int $nbLabels,
         string $letter,
         string $prefix,
         string $suffix,
         array $expected
     ): void {
         $generator = new AffixLabel(new LatinLetter($letter), $prefix, $suffix);
-        self::assertSame($expected, $generator->generate($sequence));
+        self::assertSame($expected, $generator->generate($nbLabels));
 
         $generator = (new AffixLabel(new LatinLetter($letter)))->withPrefix($prefix)->withSuffix($suffix);
-        self::assertSame($expected, $generator->generate($sequence));
+        self::assertSame($expected, $generator->generate($nbLabels));
     }
 
     public function providerLetter(): iterable
     {
         return [
             'empty labels' => [
-                'sequence' => new Sequence(),
+                'nbLabels' => 0,
                 'letter' => 'i',
                 'prefix' => '',
                 'suffix' => '',
                 'expected' => [],
             ],
             'labels starts at i' => [
-                'sequence' => new Sequence(new Period('2018-01-01', '2018-02-01')),
+                'nbLabels' => 1,
                 'letter' => 'i',
                 'prefix' => '',
                 'suffix' => '.',
                 'expected' => ['i.'],
             ],
             'labels starts ends at ab' => [
-                'sequence' => new Sequence(
-                    new Period('2018-01-01', '2018-02-01'),
-                    new Period('2018-02-01', '2018-03-01')
-                ),
+                'nbLabels' => 2,
                 'letter' => 'aa',
                 'prefix' => '-',
                 'suffix' => '',
                 'expected' => ['-aa', '-ab'],
             ],
             'labels starts at 0 (1)' => [
-                'sequence' => new Sequence(new Period('2018-01-01', '2018-02-01')),
+                'nbLabels' => 1,
                 'letter' => '        ',
                 'prefix' => '.',
                 'suffix' => '.',
                 'expected' => ['.0.'],
             ],
             'labels starts at 0 (2)' => [
-                'sequence' => new Sequence(new Period('2018-01-01', '2018-02-01')),
+                'nbLabels' => 1,
                 'letter' => '',
                 'prefix' => '.'.PHP_EOL,
                 'suffix' => PHP_EOL.'.',
                 'expected' => ['.0.'],
             ],
             'labels with an integer' => [
-                'sequence' => new Sequence(new Period('2018-01-01', '2018-02-01')),
+                'nbLabels' => 1,
                 'letter' => '1',
                 'prefix' => '.'.PHP_EOL,
                 'suffix' => PHP_EOL,

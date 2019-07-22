@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Bakame\Period\Visualizer;
 
 use Bakame\Period\Visualizer\Contract\LabelGenerator;
-use League\Period\Sequence;
 use function array_map;
 use function filter_var;
 use function in_array;
@@ -68,9 +67,9 @@ final class RomanNumber implements LabelGenerator
     /**
      * {@inheritdoc}
      */
-    public function generate(Sequence $sequence): array
+    public function generate(int $nbLabels): array
     {
-        return array_map([$this, 'format'], $this->labelGenerator->generate($sequence));
+        return array_map([$this, 'format'], $this->labelGenerator->generate($nbLabels));
     }
 
     /**

@@ -35,7 +35,9 @@
         "phpstan/phpstan": "^0.11.1",
         "phpstan/phpstan-strict-rules": "^0.11.0",
         "phpstan/phpstan-phpunit": "^0.11.0",
-        "ext-curl": "*"
+        "ext-curl": "*",
+        "league/climate": "^3.5",
+        "symfony/console": "^4.3"
     },
     "autoload": {
     	"psr-4": {
@@ -62,6 +64,10 @@
             "@phpcs",
             "@phpunit"
         ]
+    },
+    "suggest": {
+        "league/climate": "to implement a better CLI console output",
+        "symfony/console": "to implement a better CLI console output"
     },
     "extra": {
         "branch-alias": {

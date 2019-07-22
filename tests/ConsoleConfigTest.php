@@ -16,6 +16,8 @@ namespace BakameTest\Period\Visualizer;
 use Bakame\Period\Visualizer\ConsoleConfig;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use const STR_PAD_BOTH;
+use const STR_PAD_LEFT;
 
 /**
  * @coversDefaultClass \Bakame\Period\Visualizer\ConsoleConfig
@@ -41,7 +43,9 @@ final class ConsoleConfigTest extends TestCase
         self::assertSame('-', $this->config->body());
         self::assertSame(' ', $this->config->space());
         self::assertSame(60, $this->config->width());
+        self::assertSame(' ', $this->config->gap());
         self::assertSame(['reset'], $this->config->colors());
+        self::assertSame(STR_PAD_RIGHT, $this->config->padding());
     }
 
     public function testCreateFromRandom(): void
@@ -164,6 +168,7 @@ final class ConsoleConfigTest extends TestCase
             ['\uD83D\uDE00\uD83D\uDE00'],
         ];
     }
+
     /**
      * @dataProvider providerInvalidChars
      */
@@ -171,5 +176,58 @@ final class ConsoleConfigTest extends TestCase
     {
         self::expectException(InvalidArgumentException::class);
         $this->config->withBody($input);
+    }
+
+    /**
+     * @dataProvider providerGaps
+     */
+    public function testGap(string $gap, string $expected): void
+    {
+        self::assertSame($expected, $this->config->withGap($gap)->gap());
+    }
+
+    public function providerGaps(): iterable
+    {
+        return [
+            'single gap' => [
+                'gap' => ' ',
+                'expected' => ' ',
+            ],
+            'empty gap' => [
+                'gap' => '',
+                'expected' => '',
+            ],
+            'sequence with invalid chars' => [
+                'gap' => '  toto
+                ',
+                'expected' => '  toto                 ',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider providerPaddings
+     */
+    public function testPadding(int $padding, int $expected): void
+    {
+        self::assertSame($expected, $this->config->withPadding($padding)->padding());
+    }
+
+    public function providerPaddings(): iterable
+    {
+        return [
+            'default' => [
+                'padding' => STR_PAD_LEFT,
+                'expected' => STR_PAD_LEFT,
+            ],
+            'changing wit a defined config' => [
+                'padding' => STR_PAD_BOTH,
+                'expected' => STR_PAD_BOTH,
+            ],
+            'changing wit a unknown config' => [
+                'padding' => 42,
+                'expected' => STR_PAD_RIGHT,
+            ],
+        ];
     }
 }

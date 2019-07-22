@@ -15,8 +15,6 @@ namespace BakameTest\Period\Visualizer;
 
 use Bakame\Period\Visualizer\DecimalNumber;
 use Bakame\Period\Visualizer\RomanNumber;
-use League\Period\Period;
-use League\Period\Sequence;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -27,44 +25,41 @@ final class RomanNumberTest extends TestCase
     /**
      * @dataProvider providerLetter
      */
-    public function testGetLabels(Sequence $sequence, int $label, int $lettercase, array $expected): void
+    public function testGetLabels(int $nbLabels, int $label, int $lettercase, array $expected): void
     {
         $generator = new RomanNumber(new DecimalNumber($label), $lettercase);
-        self::assertSame($expected, $generator->generate($sequence));
+        self::assertSame($expected, $generator->generate($nbLabels));
     }
 
     public function providerLetter(): iterable
     {
         return [
             'empty labels' => [
-                'sequence' => new Sequence(),
+                'nbLabels' => 0,
                 'label' => 1,
                 'lettercase' => RomanNumber::UPPER,
                 'expected' => [],
             ],
             'labels starts at 3' => [
-                'sequence' => new Sequence(new Period('2018-01-01', '2018-02-01')),
+                'nbLabels' => 1,
                 'label' => 3,
                 'lettercase' => 42,
                 'expected' => ['III'],
             ],
             'labels starts ends at 4' => [
-                'sequence' => new Sequence(
-                    new Period('2018-01-01', '2018-02-01'),
-                    new Period('2018-02-01', '2018-03-01')
-                ),
+                'nbLabels' => 2,
                 'label' => 4,
                 'lettercase' => RomanNumber::UPPER,
                 'expected' => ['IV', 'V'],
             ],
             'labels starts at 0 (1)' => [
-                'sequence' => new Sequence(new Period('2018-01-01', '2018-02-01')),
+                'nbLabels' => 1,
                 'label' => -1,
                 'lettercase' => RomanNumber::LOWER,
                 'expected' => ['i'],
             ],
             'labels starts at 0 (2)' => [
-                'sequence' => new Sequence(new Period('2018-01-01', '2018-02-01')),
+                'nbLabels' => 1,
                 'label' => 0,
                 'lettercase' => RomanNumber::LOWER,
                 'expected' => ['i'],

@@ -13,16 +13,12 @@ declare(strict_types=1);
 
 namespace Bakame\Period\Visualizer\Contract;
 
-use League\Period\Sequence;
-
 interface LabelGenerator
 {
     /**
-     * Returns the label to associate with each view row.
-     *
-     * @return string[]
+     * Returns the labels to associate with all items.
      */
-    public function generate(Sequence $sequence): array;
+    public function generate(int $nbLabels): array;
 
     /**
      * Returns a formatted label according to the generator.

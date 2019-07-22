@@ -23,6 +23,9 @@ use function mb_strlen;
 use function preg_match;
 use function preg_replace;
 use function sprintf;
+use const STR_PAD_BOTH;
+use const STR_PAD_LEFT;
+use const STR_PAD_RIGHT;
 
 /**
  * A class to configure the console output settings.
@@ -71,6 +74,16 @@ final class ConsoleConfig
     private $space = ' ';
 
     /**
+     * @var string
+     */
+    private $gap = ' ';
+
+    /**
+     * @var int
+     */
+    private $padding = STR_PAD_RIGHT;
+
+    /**
      * Create a Cli Renderer to Display the millipede in Rainbow.
      */
     public static function createFromRandom(): self
@@ -99,6 +112,22 @@ final class ConsoleConfig
     public function width(): int
     {
         return $this->width;
+    }
+
+    /**
+     * Retrieve the gap sequence between the label and the line.
+     */
+    public function gap(): string
+    {
+        return $this->gap;
+    }
+
+    /**
+     * Tell whether left padding is applied.
+     */
+    public function padding(): int
+    {
+        return $this->padding;
     }
 
     /**
@@ -237,25 +266,6 @@ final class ConsoleConfig
     }
 
     /**
-     * Return an instance with the start included pattern.
-     *
-     * This method MUST retain the state of the current instance, and return
-     * an instance that contains the specified start included character.
-     */
-    public function withStartIncluded(string $startIncluded): self
-    {
-        $startIncluded = $this->filterPattern($startIncluded, 'startIncluded');
-        if ($startIncluded === $this->startIncluded) {
-            return $this;
-        }
-
-        $clone = clone $this;
-        $clone->startIncluded = $startIncluded;
-
-        return $clone;
-    }
-
-    /**
      * Return an instance with the start excluded pattern.
      *
      * This method MUST retain the state of the current instance, and return
@@ -275,7 +285,26 @@ final class ConsoleConfig
     }
 
     /**
-     * Return an instance with the head pattern.
+     * Return an instance with the start included pattern.
+     *
+     * This method MUST retain the state of the current instance, and return
+     * an instance that contains the specified start included character.
+     */
+    public function withStartIncluded(string $startIncluded): self
+    {
+        $startIncluded = $this->filterPattern($startIncluded, 'startIncluded');
+        if ($startIncluded === $this->startIncluded) {
+            return $this;
+        }
+
+        $clone = clone $this;
+        $clone->startIncluded = $startIncluded;
+
+        return $clone;
+    }
+
+    /**
+     * Return an instance with the space pattern.
      *
      * This method MUST retain the state of the current instance, and return
      * an instance that contains the specified space character.
@@ -289,6 +318,25 @@ final class ConsoleConfig
 
         $clone = clone $this;
         $clone->space = $space;
+
+        return $clone;
+    }
+
+    /**
+     * Return an instance with a new gap sequence.
+     *
+     * This method MUST retain the state of the current instance, and return
+     * an instance that contains the specified gap sequence.
+     */
+    public function withGap(string $gap): self
+    {
+        $gap = (string) preg_replace('/[\r\n]/', ' ', $gap);
+        if ($gap === $this->gap) {
+            return $this;
+        }
+
+        $clone = clone $this;
+        $clone->gap = $gap;
 
         return $clone;
     }
@@ -318,6 +366,28 @@ final class ConsoleConfig
 
         $clone = clone $this;
         $clone->colorCodeIndexes = $colorCodeIndexes;
+
+        return $clone;
+    }
+
+    /**
+     * Return an instance with a left padding.
+     *
+     * This method MUST retain the state of the current instance, and return
+     * an instance that set a left padding to the line label.
+     */
+    public function withPadding(int $padding): self
+    {
+        if (!in_array($padding, [STR_PAD_LEFT, STR_PAD_RIGHT, STR_PAD_BOTH], true)) {
+            $padding = STR_PAD_RIGHT;
+        }
+
+        if ($this->padding === $padding) {
+            return $this;
+        }
+
+        $clone = clone $this;
+        $clone->padding = $padding;
 
         return $clone;
     }

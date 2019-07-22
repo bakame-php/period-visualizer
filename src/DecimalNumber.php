@@ -14,23 +14,13 @@ declare(strict_types=1);
 namespace Bakame\Period\Visualizer;
 
 use Bakame\Period\Visualizer\Contract\LabelGenerator;
-use League\Period\Sequence;
 use function array_map;
-use function count;
-use function in_array;
 use function is_scalar;
 use function method_exists;
 use function range;
-use function str_pad;
-use function strlen;
-use const STR_PAD_LEFT;
 
 final class DecimalNumber implements LabelGenerator
 {
-    public const NO_PADDING = 0;
-
-    public const LEFT_PAD = 1;
-
     /**
      * @var int
      */
@@ -44,43 +34,28 @@ final class DecimalNumber implements LabelGenerator
     /**
      * New instance.
      */
-    public function __construct(int $int = 1, int $padding = self::NO_PADDING)
+    public function __construct(int $int = 1)
     {
         if (0 >= $int) {
             $int = 1;
         }
 
-        if (!in_array($padding, [self::NO_PADDING, self::LEFT_PAD], true)) {
-            $padding = self::NO_PADDING;
-        }
-
         $this->int = $int;
-        $this->padding = $padding;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function generate(Sequence $sequence): array
+    public function generate(int $nbLabels): array
     {
-        $nbItems = count($sequence);
-        if (0 === $nbItems) {
+        if (0 >= $nbLabels) {
             return [];
         }
 
-        $end = $this->int + $nbItems - 1;
+        $end = $this->int + $nbLabels - 1;
         $values = range($this->int, $end);
 
-        if (self::NO_PADDING === $this->padding) {
-            return array_map([$this, 'format'], $values);
-        }
-
-        $pad_length = strlen((string) $end);
-        $mapper = function (int $value) use ($pad_length) {
-            return $this->format(str_pad((string) $value, $pad_length, '0', STR_PAD_LEFT));
-        };
-
-        return array_map($mapper, $values);
+        return array_map([$this, 'format'], $values);
     }
 
     /**
@@ -104,14 +79,6 @@ final class DecimalNumber implements LabelGenerator
     }
 
     /**
-     * Tell whether left padding with zerofill value is used.
-     */
-    public function isPadded(): bool
-    {
-        return $this->padding === self::LEFT_PAD;
-    }
-
-    /**
      * Return an instance with the starting Letter.
      *
      * This method MUST retain the state of the current instance, and return
@@ -129,42 +96,6 @@ final class DecimalNumber implements LabelGenerator
 
         $clone = clone $this;
         $clone->int = $int;
-
-        return $clone;
-    }
-
-    /**
-     * Return an instance with the new padding setting.
-     *
-     * This method MUST retain the state of the current instance, and return
-     * an instance with padding.
-     */
-    public function withPadding(): self
-    {
-        if (self::LEFT_PAD === $this->padding) {
-            return $this;
-        }
-
-        $clone = clone $this;
-        $clone->padding = self::LEFT_PAD;
-
-        return $clone;
-    }
-
-    /**
-     * Return an instance with the new padding setting.
-     *
-     * This method MUST retain the state of the current instance, and return
-     * an instance without padding.
-     */
-    public function withoutPadding(): self
-    {
-        if (self::NO_PADDING === $this->padding) {
-            return $this;
-        }
-
-        $clone = clone $this;
-        $clone->padding = self::NO_PADDING;
 
         return $clone;
     }

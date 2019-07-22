@@ -5,12 +5,13 @@ All Notable changes to `Period Visualizer` will be documented in this file
 # 0.5.0 - TBD
 
 - Added the `Tuple` class.
-- Added the `Writer` interface and the `Stdout` implementation, output is done via `fwrite` instead of `echo`
+- Added the `Writer` interface and the `ConsoleStdout` implementation, output is no longer done using `echo`
 - Added the `Viewer::view` method as the most generic method
-- Added Decimal zero fill left padding to `DecimalNumber` LabelGenerator implementing class
+- Added gap and padding configuration settings in `ConsoleConfig` class
 - Removed `Viewer::getLabelGenerator` and `Viewer::getOutput` methods 
 - Refactored the `ConsoleOutput` to improve decoupling
 - Moved all interfaces into a `Contract` dedicated namespace
+- Refactored the interfaces to make them simpler to implement
 - Renamed the `LabelGenerator` implementing classes
 - Removed the `Matrix` class
 

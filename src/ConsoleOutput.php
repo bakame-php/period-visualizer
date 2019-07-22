@@ -91,19 +91,16 @@ final class ConsoleOutput implements Output
     /**
      * {@inheritDoc}
      */
-    public function display(Tuple $tuple): int
+    public function display(Tuple $tuple): void
     {
-        $bytes = 0;
         if ($tuple->isEmpty()) {
-            return $bytes;
+            return;
         }
 
         $matrix = $this->buildMatrix($tuple);
         foreach ($this->matrixToLine($matrix) as $line) {
-            $bytes += $this->writer->writeln($line);
+            $this->writer->writeln($line);
         }
-
-        return $bytes;
     }
 
     /**
@@ -177,12 +174,14 @@ final class ConsoleOutput implements Output
         $colorCodeIndexes = $this->config->colors();
         $colorCodeCount = count($colorCodeIndexes);
         $key = -1;
+        $padding = $this->config->padding();
+        $gap = $this->config->gap();
         foreach ($matrix as [$name, $row]) {
-            $lineName = str_pad($name, $nameLength, ' ');
+            $lineName = str_pad($name, $nameLength, ' ', $padding);
             $lineContent = implode('', array_map([$this, 'tokenToCharacters'], $row));
             $color = $colorCodeIndexes[++$key % $colorCodeCount];
 
-            yield ' '.$this->writer->colorize($lineName.' '.$lineContent, $color);
+            yield ' '.$this->writer->colorize($lineName.$gap.$lineContent, $color);
         }
     }
 

@@ -14,8 +14,6 @@ declare(strict_types=1);
 namespace BakameTest\Period\Visualizer;
 
 use Bakame\Period\Visualizer\DecimalNumber;
-use League\Period\Period;
-use League\Period\Sequence;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -26,40 +24,37 @@ final class DecimalNumberTest extends TestCase
     /**
      * @dataProvider providerLetter
      */
-    public function testGetLabels(Sequence $sequence, int $label, array $expected): void
+    public function testGetLabels(int $nbLabels, int $label, array $expected): void
     {
         $generator = new DecimalNumber($label);
-        self::assertSame($expected, $generator->generate($sequence));
+        self::assertSame($expected, $generator->generate($nbLabels));
     }
 
     public function providerLetter(): iterable
     {
         return [
             'empty labels' => [
-                'sequence' => new Sequence(),
+                'nbLabels' => 0,
                 'label' => 1,
                 'expected' => [],
             ],
             'labels starts at 3' => [
-                'sequence' => new Sequence(new Period('2018-01-01', '2018-02-01')),
+                'nbLabels' => 1,
                 'label' => 3,
                 'expected' => ['3'],
             ],
             'labels starts ends at 4' => [
-                'sequence' => new Sequence(
-                    new Period('2018-01-01', '2018-02-01'),
-                    new Period('2018-02-01', '2018-03-01')
-                ),
+                'nbLabels' => 2,
                 'label' => 4,
                 'expected' => ['4', '5'],
             ],
             'labels starts at 0 (1)' => [
-                'sequence' => new Sequence(new Period('2018-01-01', '2018-02-01')),
+                'nbLabels' => 1,
                 'label' => -1,
                 'expected' => ['1'],
             ],
             'labels starts at 0 (2)' => [
-                'sequence' => new Sequence(new Period('2018-01-01', '2018-02-01')),
+                'nbLabels' => 1,
                 'label' => 0,
                 'expected' => ['1'],
             ],
@@ -82,34 +77,5 @@ final class DecimalNumberTest extends TestCase
     {
         $generator = new DecimalNumber(42);
         self::assertSame('', $generator->format([]));
-    }
-
-    public function testZeroLeftPaddingSetterAndStatus(): void
-    {
-        $generator = new DecimalNumber(42, 42);
-        self::assertFalse($generator->isPadded());
-
-        $newGenerator = $generator->withPadding();
-        self::assertTrue($newGenerator->isPadded());
-        self::assertSame($newGenerator, $newGenerator->withPadding());
-
-        $wrongGenerator = $newGenerator->withoutPadding();
-        self::assertFalse($wrongGenerator->isPadded());
-        self::assertSame($wrongGenerator, $wrongGenerator->withoutPadding());
-    }
-
-    public function testAddingLeadingZero(): void
-    {
-        $generator = new DecimalNumber(98, DecimalNumber::LEFT_PAD);
-        $labels = $generator->generate(new Sequence(
-            Period::before('yesterday', '1 DAY'),
-            Period::after('yesterday', '1 DAY'),
-            Period::around('yesterday', '1 DAY')
-        ));
-
-        /** @var string $label */
-        foreach ($labels as $label) {
-            self::assertSame(3, strlen($label));
-        }
     }
 }

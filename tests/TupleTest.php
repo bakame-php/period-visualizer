@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace BakameTest\Period\Visualizer;
 
 use ArrayObject;
+use Bakame\Period\Visualizer\DecimalNumber;
 use Bakame\Period\Visualizer\LatinLetter;
 use Bakame\Period\Visualizer\Tuple;
 use DateTimeImmutable;
@@ -50,7 +51,7 @@ final class TupleTest extends TestCase
      */
     public function testFromIterableConstructor(iterable $input, int $expectedCount, bool $isEmpty, bool $boundaryIsNull): void
     {
-        $tuple = Tuple::fromIterable($input);
+        $tuple = Tuple::fromCollection($input);
         self::assertCount($expectedCount, $tuple);
         self::assertSame($isEmpty, $tuple->isEmpty());
         self::assertSame($boundaryIsNull, null === $tuple->boundaries());
@@ -108,5 +109,31 @@ final class TupleTest extends TestCase
         ]);
 
         self::assertCount(2, $tuple);
+    }
+
+    public function testLabelizePairs(): void
+    {
+        $tuple = new Tuple([
+            ['A', new Sequence(new Period('2018-01-01', '2018-01-15'))],
+            ['B', new Sequence(new Period('2018-01-15', '2018-02-01'))],
+        ]);
+        self::assertSame(['A', 'B'], $tuple->labels());
+
+        $newTuple = $tuple->labelize(new DecimalNumber(42));
+        self::assertSame(['42', '43'], $newTuple->labels());
+        self::assertSame($tuple->items(), $newTuple->items());
+    }
+
+    public function testLabelizePairsReturnsSameInstance(): void
+    {
+        $tuple = new Tuple([
+            ['A', new Sequence(new Period('2018-01-01', '2018-01-15'))],
+            ['B', new Sequence(new Period('2018-01-15', '2018-02-01'))],
+        ]);
+
+        self::assertEquals($tuple, $tuple->labelize(new LatinLetter()));
+
+        $emptyTuple = new Tuple();
+        self::assertEquals($emptyTuple, $emptyTuple->labelize(new DecimalNumber(42)));
     }
 }

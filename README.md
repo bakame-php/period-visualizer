@@ -273,12 +273,11 @@ use Bakame\Period\Visualizer\AffixLabel;
 use Bakame\Period\Visualizer\Contract\LabelGenerator;
 use Bakame\Period\Visualizer\Viewer;
 use League\Period\Period;
-use League\Period\Sequence;
 
 $samelabel = new class implements LabelGenerator {
-    public function generate(Sequence $sequence): array
+    public function generate(int $nbLabels): array
     {
-        return array_fill(0, count($sequence), $this->format('foobar'));
+        return array_fill(0, $nbLabels, $this->format('foobar'));
     }
         
     public function format($str): string
@@ -352,7 +351,7 @@ $config = (new ConsoleConfig())
 ;
 
 $fixedLabels = new class implements LabelGenerator {
-    public function generate(Sequence $sequence): array
+    public function generate(int $nbLabels): array
     {
         return array_map([$this, 'format'], ['first', 'last']);
     }
