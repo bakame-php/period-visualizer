@@ -302,17 +302,17 @@ results:
  foobar. [-----------------------------------)
 ~~~
 
-### Customize the output
+### Customize the console
 
-Under the hood, the `Viewer` class uses the `ConsoleOutput` class to generate your graph.
+Under the hood, the `Viewer` class uses the `Console` class to generate your graph.
 
 ~~~php
-use Bakame\Period\Visualizer\ConsoleOutput;
+use Bakame\Period\Visualizer\Console;
 use Bakame\Period\Visualizer\Tuple;
 use League\Period\Period;
 
-$output = new ConsoleOutput();
-echo $output->display(new Tuple([
+$console = new Console();
+echo $console->display(new Tuple([
     ['first', new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00')],
     ['last', new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00')],
 ]));
@@ -325,16 +325,16 @@ results:
  last                            [----------------------------------------------------)
 ~~~
 
-The `ConsoleOutput::display` methods expects a tuple as its unique argument where:
+The `Console::display` methods expects a tuple as its unique argument where:
 
 - the first value of the tuple represents the label name which must be a `string`.
 - the second and last value represents a `Period` or `Sequence` object.
 
-The `ConsoleOutput` class can be customized by providing a `ConsoleConfig` which defines the output settings.
+The `Console` class can be customized by providing a `ConsoleConfig` which defines the console settings.
 
 ~~~php
 use Bakame\Period\Visualizer\ConsoleConfig;
-use Bakame\Period\Visualizer\ConsoleOutput;
+use Bakame\Period\Visualizer\Console;
 use Bakame\Period\Visualizer\Contract\LabelGenerator;
 use Bakame\Period\Visualizer\Viewer;
 use League\Period\Period;
@@ -362,8 +362,8 @@ $fixedLabels = new class implements LabelGenerator {
     }
 };
 
-$output = new ConsoleOutput($config);
-$viewer = new Viewer($fixedLabels, $output);
+$console = new Console($config);
+$viewer = new Viewer($fixedLabels, $console);
 
 $viewer->sequence(new Sequence(
     new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00', Period::EXCLUDE_ALL),

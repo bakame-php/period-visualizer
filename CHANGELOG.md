@@ -5,7 +5,7 @@ All Notable changes to `Period Visualizer` will be documented in this file
 # 0.5.0 - TBD
 
 - Added the `Tuple` class.
-- Added the `Writer` interface and the `ConsoleStdout` implementation, output is no longer done using `echo`
+- Added the `Writer` interface and the `ConsoleStdout` implementation, console is no longer done using `echo`
 - Added the `Viewer::view` method as the most generic method
 - Added gap and padding configuration settings in `ConsoleConfig` class
 - Removed `Viewer::getLabelGenerator` and `Viewer::getOutput` methods 
@@ -68,7 +68,7 @@ The array format is that of a tuple where:
 	- the second value represents the period or the sequence
 
 - The `Matrix` and the `Viewer` class are updated accordingly with refactoring to improve the calculation speed.
-- The `ConsoleConfig` accepts a `default` color keywords to tell that the output should fellow the default colors from the console.
+- The `ConsoleConfig` accepts a `default` color keywords to tell that the console should fellow the default colors from the console.
 - The `default` color keyword replaces the `white` color keyword as the default keyword used if no color is specified.
 
 ## 0.1.0 - 2018-12-19

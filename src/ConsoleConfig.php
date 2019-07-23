@@ -74,9 +74,9 @@ final class ConsoleConfig
     private $space = ' ';
 
     /**
-     * @var string
+     * @var int
      */
-    private $gap = ' ';
+    private $gapSize = 1;
 
     /**
      * @var int
@@ -117,9 +117,9 @@ final class ConsoleConfig
     /**
      * Retrieve the gap sequence between the label and the line.
      */
-    public function gap(): string
+    public function gapSize(): int
     {
-        return $this->gap;
+        return $this->gapSize;
     }
 
     /**
@@ -328,15 +328,18 @@ final class ConsoleConfig
      * This method MUST retain the state of the current instance, and return
      * an instance that contains the specified gap sequence.
      */
-    public function withGap(string $gap): self
+    public function withGapSize(int $size): self
     {
-        $gap = (string) preg_replace('/[\r\n]/', ' ', $gap);
-        if ($gap === $this->gap) {
+        if ($size === $this->gapSize) {
             return $this;
         }
 
+        if ($size < 0) {
+            $size = 1;
+        }
+
         $clone = clone $this;
-        $clone->gap = $gap;
+        $clone->gapSize = $size;
 
         return $clone;
     }

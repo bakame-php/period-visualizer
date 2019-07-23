@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace BakameTest\Period\Visualizer;
 
+use Bakame\Period\Visualizer\Console;
 use Bakame\Period\Visualizer\ConsoleConfig;
-use Bakame\Period\Visualizer\ConsoleOutput;
 use Bakame\Period\Visualizer\ConsoleStdout;
 use Bakame\Period\Visualizer\Tuple;
 use League\Period\Period;
@@ -25,12 +25,12 @@ use function rewind;
 use function stream_get_contents;
 
 /**
- * @coversDefaultClass \Bakame\Period\Visualizer\ConsoleOutput
+ * @coversDefaultClass \Bakame\Period\Visualizer\Console
  */
-final class ConsoleOutputTest extends TestCase
+final class ConsoleTest extends TestCase
 {
     /**
-     * @var ConsoleOutput
+     * @var Console
      */
     private $output;
 
@@ -43,7 +43,7 @@ final class ConsoleOutputTest extends TestCase
     {
         $this->stream = $this->setStream();
 
-        $this->output = new ConsoleOutput(
+        $this->output = new Console(
             (new ConsoleConfig())->withColors('red'),
             new ConsoleStdout($this->stream)
         );
@@ -65,7 +65,7 @@ final class ConsoleOutputTest extends TestCase
      */
     public function testConstructor(): void
     {
-        $output = new ConsoleOutput();
+        $output = new Console();
         self::assertNotEquals($this->output, $output);
     }
 

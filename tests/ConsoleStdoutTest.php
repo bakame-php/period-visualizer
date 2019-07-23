@@ -24,7 +24,7 @@ use function stream_get_contents;
 /**
  * @coversDefaultClass \Bakame\Period\Visualizer\ConsoleStdout
  */
-final class StdoutTest extends TestCase
+final class ConsoleStdoutTest extends TestCase
 {
     /**
      * @return resource

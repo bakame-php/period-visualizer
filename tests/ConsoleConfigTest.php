@@ -43,7 +43,7 @@ final class ConsoleConfigTest extends TestCase
         self::assertSame('-', $this->config->body());
         self::assertSame(' ', $this->config->space());
         self::assertSame(60, $this->config->width());
-        self::assertSame(' ', $this->config->gap());
+        self::assertSame(1, $this->config->gapSize());
         self::assertSame(['reset'], $this->config->colors());
         self::assertSame(STR_PAD_RIGHT, $this->config->padding());
     }
@@ -181,26 +181,25 @@ final class ConsoleConfigTest extends TestCase
     /**
      * @dataProvider providerGaps
      */
-    public function testGap(string $gap, string $expected): void
+    public function testGap(int $gap, int $expected): void
     {
-        self::assertSame($expected, $this->config->withGap($gap)->gap());
+        self::assertSame($expected, $this->config->withGapSize($gap)->gapSize());
     }
 
     public function providerGaps(): iterable
     {
         return [
             'single gap' => [
-                'gap' => ' ',
-                'expected' => ' ',
+                'gap' => 1,
+                'expected' => 1,
             ],
             'empty gap' => [
-                'gap' => '',
-                'expected' => '',
+                'gap' => 0,
+                'expected' => 0,
             ],
             'sequence with invalid chars' => [
-                'gap' => '  toto
-                ',
-                'expected' => '  toto                 ',
+                'gap' => -42,
+                'expected' => 1,
             ],
         ];
     }

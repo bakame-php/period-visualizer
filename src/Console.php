@@ -28,12 +28,13 @@ use function floor;
 use function implode;
 use function max;
 use function str_pad;
+use function str_repeat;
 use const STDOUT;
 
 /**
  * A class to output to the console the matrix.
  */
-final class ConsoleOutput implements Output
+final class Console implements Output
 {
     private const TOKEN_SPACE = 0;
 
@@ -175,7 +176,7 @@ final class ConsoleOutput implements Output
         $colorCodeCount = count($colorCodeIndexes);
         $key = -1;
         $padding = $this->config->padding();
-        $gap = $this->config->gap();
+        $gap = str_repeat(' ', $this->config->gapSize());
         foreach ($matrix as [$name, $row]) {
             $lineName = str_pad($name, $nameLength, ' ', $padding);
             $lineContent = implode('', array_map([$this, 'tokenToCharacters'], $row));

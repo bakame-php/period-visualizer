@@ -42,7 +42,7 @@ final class Viewer
     public function __construct(?LabelGenerator $labelGenerator = null, ?Output $output = null)
     {
         $this->labelGenerator = $labelGenerator ?? new LatinLetter();
-        $this->output = $output ?? new ConsoleOutput();
+        $this->output = $output ?? new Console();
     }
 
     /**
