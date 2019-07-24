@@ -160,7 +160,7 @@ The `LatinLetter` also exposes the following methods:
 <?php
 
 public function LatinLetter::startingAt(): string; //returns the first letter to be used
-public function LatinLetter::sstartsWith(): self;  //returns a new object with a new starting letter
+public function LatinLetter::startsWith(): self;  //returns a new object with a new starting letter
 ~~~
 
 ### Decimal Number Strategy
@@ -194,7 +194,7 @@ The `DecimalNumber` also exposes the following methods:
 <?php
 
 public function DecimalNumber::startingAt(): string; //returns the first decimal number to be used
-public function DecimalNumber::sstartsWith(): self;  //returns a new object with a new starting decimal number
+public function DecimalNumber::startsWith(): self;  //returns a new object with a new starting decimal number
 ~~~
 
 ### Roman Numeral Strategy
@@ -232,7 +232,7 @@ The `RomanNumber` also exposes the following methods:
 const RomanNumber::UPPER = 1;
 const RomanNumber::LOWER = 2;
 public function RomanNumber::startingAt(): string; //returns the first decimal number to be used
-public function RomanNumber::sstartsWith(): self;  //returns a new object with a new starting decimal number
+public function RomanNumber::startsWith(): self;  //returns a new object with a new starting decimal number
 public function RomanNumber::withLetterCase(int $lettercase): self;  //returns a new object with a new letter casing
 public function RomanNumber::isUpper(): bool;  //Tells whether the roman letter is upper cased.
 public function RomanNumber::isLower(): bool;  //Tells whether the roman letter is lower cased.
