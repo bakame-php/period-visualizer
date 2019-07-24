@@ -18,7 +18,6 @@ use Bakame\Period\Visualizer\Contract\OutputWriter;
 use Closure;
 use League\Period\Period;
 use League\Period\Sequence;
-use function array_column;
 use function array_fill;
 use function array_map;
 use function array_splice;
@@ -26,7 +25,6 @@ use function ceil;
 use function count;
 use function floor;
 use function implode;
-use function max;
 use function str_pad;
 use function str_repeat;
 use const STDOUT;
@@ -99,8 +97,9 @@ final class Console implements Output
         }
 
         $matrix = $this->buildMatrix($tuple);
-
-        $this->writer->writeln($this->matrixToLine($matrix));
+        $this->writer->writeln(
+            $this->matrixToLine($matrix, $tuple->labelMaxLength())
+        );
     }
 
     /**
@@ -110,11 +109,10 @@ final class Console implements Output
      * - There's one column for every unit of width.
      * - Cell state depends on Period presence and boundary type.
      *
-     * @return array<int, array{0:string, 1:int[]}>
+     * @return iterable<array{0:string, 1:int[]}>
      */
-    private function buildMatrix(Tuple $tuple): array
+    private function buildMatrix(Tuple $tuple): iterable
     {
-        $matrix = [];
         /** @var Period $boundaries */
         $boundaries = $tuple->boundaries();
         $width = $this->config->width();
@@ -124,13 +122,11 @@ final class Console implements Output
         $callable = Closure::fromCallable([$this, 'addPeriodToRow']);
         foreach ($tuple as [$name, $block]) {
             if ($block instanceof Period) {
-                $matrix[] = [$name, $callable($row, $block)];
+                yield [$name, $callable($row, $block)];
             } elseif ($block instanceof Sequence) {
-                $matrix[] = [$name, $block->reduce($callable, $row)];
+                yield [$name, $block->reduce($callable, $row)];
             }
         }
-
-        return $matrix;
     }
 
     /**
@@ -168,9 +164,8 @@ final class Console implements Output
      *
      * @return iterable<string>
      */
-    private function matrixToLine(array $matrix): iterable
+    private function matrixToLine(iterable $matrix, int $nameLength): iterable
     {
-        $nameLength = max(...array_map('strlen', array_column($matrix, 0)));
         $colorCodeIndexes = $this->config->colors();
         $colorCodeCount = count($colorCodeIndexes);
         $key = -1;

@@ -20,8 +20,10 @@ use IteratorAggregate;
 use League\Period\Period;
 use League\Period\Sequence;
 use function array_column;
+use function array_map;
 use function count;
 use function is_scalar;
+use function max;
 use function method_exists;
 
 final class Tuple implements Countable, IteratorAggregate
@@ -123,6 +125,14 @@ final class Tuple implements Countable, IteratorAggregate
     public function labels(): array
     {
         return array_column($this->pairs, 0);
+    }
+
+    /**
+     * Returns the label maximum length.
+     */
+    public function labelMaxLength(): int
+    {
+        return  max(...array_map('strlen', array_column($this->pairs, 0)));
     }
 
     /**

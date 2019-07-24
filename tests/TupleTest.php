@@ -118,10 +118,12 @@ final class TupleTest extends TestCase
             ['B', new Sequence(new Period('2018-01-15', '2018-02-01'))],
         ]);
         self::assertSame(['A', 'B'], $tuple->labels());
+        self::assertSame(1, $tuple->labelMaxLength());
 
         $newTuple = $tuple->labelize(new DecimalNumber(42));
         self::assertSame(['42', '43'], $newTuple->labels());
         self::assertSame($tuple->items(), $newTuple->items());
+        self::assertSame(2, $newTuple->labelMaxLength());
     }
 
     public function testLabelizePairsReturnsSameInstance(): void
