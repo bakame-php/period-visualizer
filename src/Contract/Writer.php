@@ -32,7 +32,7 @@ interface Writer
     ];
 
     /**
-     * @param string[]|string $message
+     * @param iterable|string $message
      *
      * @throws TypeError If the message type is not supported.
      */

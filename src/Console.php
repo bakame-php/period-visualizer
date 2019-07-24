@@ -99,9 +99,8 @@ final class Console implements Output
         }
 
         $matrix = $this->buildMatrix($tuple);
-        foreach ($this->matrixToLine($matrix) as $line) {
-            $this->writer->writeln($line);
-        }
+
+        $this->writer->writeln($this->matrixToLine($matrix));
     }
 
     /**
@@ -167,7 +166,7 @@ final class Console implements Output
      *
      * This method returns one output string line at a time.
      *
-     * @return string[]
+     * @return iterable<string>
      */
     private function matrixToLine(array $matrix): iterable
     {
