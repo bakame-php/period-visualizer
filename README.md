@@ -52,7 +52,12 @@ Usage
 
 ## Basic Usage
 
-### Viewing a Sequence.
+### Generate a simple graph.
+
+To generate a graph you need to give to the `Tuple` constructor a list of pairs. Each pair is an `array` containing 2 values:
+
+- the value at key `0` represents the label
+- the value at key `1` is a `League\Period\Period` or a `League\Period\Sequence` object 
 
 ~~~php
 <?php
@@ -60,11 +65,11 @@ Usage
 use Bakame\Period\Visualizer\Console;
 use Bakame\Period\Visualizer\Tuple;
 use League\Period\Period;
-use League\Period\Sequence;
 
-$tuple = Tuple::fromSequence(
-    new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01'))
-);
+$tuple = new Tuple([
+    ['A', new Period('2018-01-01', '2018-02-01')],
+    ['B', new Period('2018-01-15', '2018-02-01')], 
+]);
 (new Console())->display($tuple);
 ~~~
 
@@ -75,7 +80,9 @@ results:
  B                                     [------------------------------------------)
 ~~~
 
-### Appending more items to display
+### Appending items to display
+
+If you want to display a `Sequence` and some of its operations. You can append the operation results using the `Tuple::append` method.
 
 ~~~php
 <?php
@@ -94,6 +101,8 @@ $tuple->append('GAPS', $sequence->gaps());
 (new Console())->display($tuple);
 ~~~
 
+*Of Note: We are using the `Tuple::fromSequence` which is a handy named constructor to inject the `Sequence` members into the `Tuple` object*
+
 results:
 
 ~~~bash
@@ -106,7 +115,6 @@ The `Tuple` implements the `Countable` and the `IteratorAggregate` interface. It
 
 ~~~php
 <?php
-public function Tuple::__construct(array $pairs): self; //Creates a new Tuple from a iterable structure of pairs.
 public function Tuple::fromCollection(): self; //Creates a new Tuple from a generic iterable structure.
 public function Tuple::labels(): string[]; //the current labels used
 public function Tuple::items(): array<Period|Sequence>; //the current objects inside the Tuple
