@@ -199,15 +199,15 @@ final class ConsoleConfig
      * This method MUST retain the state of the current instance, and return
      * an instance that contains the specified start excluded character.
      */
-    public function withStartExcluded(string $startExcluded): self
+    public function withStartExcluded(string $startExcludedChar): self
     {
-        $startExcluded = $this->filterPattern($startExcluded, 'startExcluded');
-        if ($startExcluded === $this->startExcluded) {
+        $startExcludedChar = $this->filterPattern($startExcludedChar, 'startExcluded');
+        if ($startExcludedChar === $this->startExcluded) {
             return $this;
         }
 
         $clone = clone $this;
-        $clone->startExcluded = $startExcluded;
+        $clone->startExcluded = $startExcludedChar;
 
         return $clone;
     }
@@ -255,15 +255,15 @@ final class ConsoleConfig
      * This method MUST retain the state of the current instance, and return
      * an instance that contains the specified start included character.
      */
-    public function withStartIncluded(string $startIncluded): self
+    public function withStartIncluded(string $startIncludedChar): self
     {
-        $startIncluded = $this->filterPattern($startIncluded, 'startIncluded');
-        if ($startIncluded === $this->startIncluded) {
+        $startIncludedChar = $this->filterPattern($startIncludedChar, 'startIncluded');
+        if ($startIncludedChar === $this->startIncluded) {
             return $this;
         }
 
         $clone = clone $this;
-        $clone->startIncluded = $startIncluded;
+        $clone->startIncluded = $startIncludedChar;
 
         return $clone;
     }
@@ -274,15 +274,15 @@ final class ConsoleConfig
      * This method MUST retain the state of the current instance, and return
      * an instance that contains the specified end excluded character.
      */
-    public function withEndExcluded(string $endExcluded): self
+    public function withEndExcluded(string $endExcludedChar): self
     {
-        $endExcluded = $this->filterPattern($endExcluded, 'endExcluded');
-        if ($endExcluded === $this->endExcluded) {
+        $endExcludedChar = $this->filterPattern($endExcludedChar, 'endExcluded');
+        if ($endExcludedChar === $this->endExcluded) {
             return $this;
         }
 
         $clone = clone $this;
-        $clone->endExcluded = $endExcluded;
+        $clone->endExcluded = $endExcludedChar;
 
         return $clone;
     }
@@ -293,15 +293,15 @@ final class ConsoleConfig
      * This method MUST retain the state of the current instance, and return
      * an instance that contains the specified end included character.
      */
-    public function withEndIncluded(string $endIncluded): self
+    public function withEndIncluded(string $endIncludedChar): self
     {
-        $endIncluded = $this->filterPattern($endIncluded, 'endIncluded');
-        if ($endIncluded === $this->endIncluded) {
+        $endIncludedChar = $this->filterPattern($endIncludedChar, 'endIncluded');
+        if ($endIncludedChar === $this->endIncluded) {
             return $this;
         }
 
         $clone = clone $this;
-        $clone->endIncluded = $endIncluded;
+        $clone->endIncluded = $endIncludedChar;
 
         return $clone;
     }
@@ -334,15 +334,15 @@ final class ConsoleConfig
      * This method MUST retain the state of the current instance, and return
      * an instance that contains the specified body pattern.
      */
-    public function withBody(string $body): self
+    public function withBody(string $bodyChar): self
     {
-        $body = $this->filterPattern($body, 'body');
-        if ($body === $this->body) {
+        $bodyChar = $this->filterPattern($bodyChar, 'body');
+        if ($bodyChar === $this->body) {
             return $this;
         }
 
         $clone = clone $this;
-        $clone->body = $body;
+        $clone->body = $bodyChar;
 
         return $clone;
     }
@@ -353,15 +353,15 @@ final class ConsoleConfig
      * This method MUST retain the state of the current instance, and return
      * an instance that contains the specified space character.
      */
-    public function withSpace(string $space): self
+    public function withSpace(string $spaceChar): self
     {
-        $space = $this->filterPattern($space, 'space');
-        if ($space === $this->space) {
+        $spaceChar = $this->filterPattern($spaceChar, 'space');
+        if ($spaceChar === $this->space) {
             return $this;
         }
 
         $clone = clone $this;
-        $clone->space = $space;
+        $clone->space = $spaceChar;
 
         return $clone;
     }
@@ -401,18 +401,18 @@ final class ConsoleConfig
      * This method MUST retain the state of the current instance, and return
      * an instance that contains the specified gap sequence.
      */
-    public function withGapSize(int $size): self
+    public function withGapSize(int $gapSize): self
     {
-        if ($size === $this->gapSize) {
+        if ($gapSize === $this->gapSize) {
             return $this;
         }
 
-        if ($size < 0) {
-            $size = 1;
+        if ($gapSize < 0) {
+            $gapSize = 1;
         }
 
         $clone = clone $this;
-        $clone->gapSize = $size;
+        $clone->gapSize = $gapSize;
 
         return $clone;
     }
