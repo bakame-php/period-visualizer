@@ -14,11 +14,10 @@ declare(strict_types=1);
 namespace Bakame\Period\Visualizer;
 
 use Bakame\Period\Visualizer\Contract\LabelGenerator;
-use function array_map;
-use function filter_var;
 use function in_array;
+use function is_scalar;
+use function method_exists;
 use function strtolower;
-use const FILTER_VALIDATE_INT;
 
 final class RomanNumber implements LabelGenerator
 {
@@ -69,7 +68,12 @@ final class RomanNumber implements LabelGenerator
      */
     public function generate(int $nbLabels): array
     {
-        return array_map([$this, 'format'], $this->labelGenerator->generate($nbLabels));
+        $labels = [];
+        foreach ($this->labelGenerator->generate($nbLabels) as $label) {
+            $labels[] = $this->convert($label);
+        }
+
+        return $labels;
     }
 
     /**
@@ -77,12 +81,11 @@ final class RomanNumber implements LabelGenerator
      */
     public function format($str): string
     {
-        $res = filter_var($str, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
-        if (false === $res) {
-            return '';
+        if (is_scalar($str) || method_exists($str, '__toString') || null === $str) {
+            return (string) $str;
         }
 
-        return $this->convert($res);
+        return '';
     }
 
     /**
@@ -90,7 +93,7 @@ final class RomanNumber implements LabelGenerator
      *
      * @see https://stackoverflow.com/a/15023547
      */
-    private function convert(int $number): string
+    private function convert(string $number): string
     {
         $retVal = '';
         while ($number > 0) {

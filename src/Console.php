@@ -175,7 +175,7 @@ final class Console implements Output
         $colorCodeIndexes = $this->config->colors();
         $colorCodeCount = count($colorCodeIndexes);
         $key = -1;
-        $padding = $this->config->padding();
+        $padding = $this->config->labelAlign();
         $gap = str_repeat(' ', $this->config->gapSize());
         foreach ($matrix as [$name, $row]) {
             $lineName = str_pad($name, $nameLength, ' ', $padding);

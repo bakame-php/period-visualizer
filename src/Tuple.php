@@ -45,12 +45,14 @@ final class Tuple implements Countable, IteratorAggregate
      * Creates a new collection from a countable iterable structure.
      *
      * @param array|(Countable&iterable) $sequence
+     * @param ?LabelGenerator            $labelGenerator
      */
-    public static function fromSequence($sequence, LabelGenerator $labelGenerator): self
+    public static function fromSequence($sequence, ?LabelGenerator $labelGenerator = null): self
     {
-        $tuple = new self();
+        $labelGenerator = $labelGenerator ?? new LatinLetter();
         $labels = $labelGenerator->generate(count($sequence));
         $index = 0;
+        $tuple = new self();
         foreach ($sequence as $item) {
             $tuple->append($labels[$index], $item);
             ++$index;

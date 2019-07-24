@@ -14,15 +14,15 @@ It is inspired from the work of [@thecrypticace](https://github.com/thecrypticac
 ~~~php
 <?php
 
-use Bakame\Period\Visualizer\Viewer;
+use Bakame\Period\Visualizer\Console;
+use Bakame\Period\Visualizer\Tuple;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$viewer = new Viewer();
-echo $viewer->sequence(new Sequence(
-    new Period('2018-01-01', '2018-02-01'),
-    new Period('2018-01-15', '2018-02-01')
-));
+$tuple = Tuple::fromSequence(
+    new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01'))
+);
+(new Console())->display($tuple);
 ~~~
 
 results:
@@ -52,20 +52,20 @@ Usage
 
 ## Basic Usage
 
-### Viewing a Sequence collection.
+### Viewing a Sequence.
 
 ~~~php
 <?php
 
-use Bakame\Period\Visualizer\Viewer;
+use Bakame\Period\Visualizer\Console;
+use Bakame\Period\Visualizer\Tuple;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$viewer = new Viewer();
-$viewer->sequence(new Sequence(
-    new Period('2018-01-01', '2018-02-01'),
-    new Period('2018-01-01', '2018-01-15')
-));
+$tuple = Tuple::fromSequence(
+    new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01'))
+);
+(new Console())->display($tuple);
 ~~~
 
 results:
@@ -75,14 +75,23 @@ results:
  B                                     [------------------------------------------)
 ~~~
 
-### Viewing a Sequence gaps.
+### Appending more items to display
 
 ~~~php
-$viewer = new Viewer();
-$viewer->gaps(new Sequence(
+<?php
+
+use Bakame\Period\Visualizer\Console;
+use Bakame\Period\Visualizer\Tuple;
+use League\Period\Period;
+use League\Period\Sequence;
+
+$sequence = new Sequence(
     new Period('2018-01-01', '2018-03-01'),
     new Period('2018-05-01', '2018-08-01')
-));
+);
+$tuple = Tuple::fromSequence($sequence);
+$tuple->append('GAPS', $sequence->gaps());
+(new Console())->display($tuple);
 ~~~
 
 results:
@@ -93,62 +102,41 @@ results:
  GAPS                       [----------------------)    
 ~~~
 
-### Viewing a Sequence intersections.
+The `Tuple` implements the `Countable` and the `IteratorAggregate` interface. It also exposes the following methods:
 
 ~~~php
-$viewer = new Viewer();
-$viewer->intersections(new Sequence(
-    new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00'),
-    new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00')
-));
+<?php
+public function Tuple::__construct(array $pairs): self; //Creates a new Tuple from a iterable structure of pairs.
+public function Tuple::fromCollection(): self; //Creates a new Tuple from a generic iterable structure.
+public function Tuple::labels(): string[]; //the current labels used
+public function Tuple::items(): array<Period|Sequence>; //the current objects inside the Tuple
+public function Tuple::isEmpty(): bool; //Tells whether the collection is empty.
+public function Tuple::labelize(LabelGenerator $labelGenerator): self; //Update the labels used for the tuple.
+public function Tuple::boundaries(): ?Period;  //Returns the collection boundaries or null if it is empty.
 ~~~
 
-results:
+## Customize the line labels
 
-~~~bash
- A             [----------------------------------------------------)                          
- B                                       [----------------------------------------------------)
- INTERSECTIONS                           [--------------------------) 
-~~~
+The `Bakame\Period\Visualizer\Tuple::fromSequence` can be further formatted by providing a object to improve line index generation.
+By default the class is instantiated with the letter index strategy which starts incrementing the labels from  the 'A' index. 
+You can choose between the following strategies to modify the default behaviour:
 
-### Viewing a Period difference.
+### Letter strategy
 
 ~~~php
-$viewer = new Viewer();
-$viewer->diff(
-    new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00'),
-    new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00')
-);
-~~~
+<?php
 
-results:
-
-~~~bash
- A    [----------------------------------------------------)                          
- B                              [----------------------------------------------------)
- DIFF [-------------------------)                          [-------------------------)
-~~~
-
-## Advance Usage
-
-### Customize the line labels
-
-The `Bakame\Period\Visualizer\Viewer` class can be further formatter by providing a object to improve line index generation.
-By default the class is instantiated with the letter index strategy which starts incrementing the labels from  the 'A' index. You can choose between the following strategies to modify the default behaviour
-
-#### Letter strategy
-
-~~~php
-use Bakame\Period\Visualizer\Viewer;
+use Bakame\Period\Visualizer\Console;
 use Bakame\Period\Visualizer\LatinLetter;
+use Bakame\Period\Visualizer\Tuple;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$viewer = new Viewer(new LatinLetter('aa'));
-$viewer->sequence(new Sequence(
-    new Period('2018-01-01', '2018-02-01'),
-    new Period('2018-01-01', '2018-01-15')
-));
+$tuple = Tuple::fromSequence(
+    new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
+    new LatinLetter('aa')
+);
+(new Console())->display($tuple);
 ~~~
 
 results:
@@ -158,19 +146,31 @@ results:
  ab [-----------------------------------)     
 ~~~
 
-#### Decimal Number Strategy
+The `LatinLetter` also exposes the following methods:
 
 ~~~php
-use Bakame\Period\Visualizer\Viewer;
+<?php
+
+public function LatinLetter::startingAt(): string; //returns the first letter to be used
+public function LatinLetter::sstartsWith(): self;  //returns a new object with a new starting letter
+~~~
+
+### Decimal Number Strategy
+
+~~~php
+<?php
+
+use Bakame\Period\Visualizer\Console;
 use Bakame\Period\Visualizer\DecimalNumber;
+use Bakame\Period\Visualizer\Tuple;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$viewer = new Viewer(new DecimalNumber(42));
-$viewer->sequence(new Sequence(
-    new Period('2018-01-01', '2018-02-01'),
-    new Period('2018-01-01', '2018-01-15')
-));
+$tuple = Tuple::fromSequence(
+    new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
+    new DecimalNumber(42)
+);
+(new Console())->display($tuple);
 ~~~
 
 results:
@@ -180,22 +180,34 @@ results:
  43 [-----------------------------------)
 ~~~
 
-#### Roman Numeral Strategy
+The `DecimalNumber` also exposes the following methods:
 
 ~~~php
-use Bakame\Period\Visualizer\Viewer;
+<?php
+
+public function DecimalNumber::startingAt(): string; //returns the first decimal number to be used
+public function DecimalNumber::sstartsWith(): self;  //returns a new object with a new starting decimal number
+~~~
+
+### Roman Numeral Strategy
+
+~~~php
+<?php
+
+use Bakame\Period\Visualizer\Console;
 use Bakame\Period\Visualizer\DecimalNumber;
 use Bakame\Period\Visualizer\RomanNumber;
+use Bakame\Period\Visualizer\Tuple;
 use League\Period\Period;
 use League\Period\Sequence;
 
 $labelGenerator = new RomanNumber(new DecimalNumber(5), RomanNumber::LOWER);
 
-$viewer = new Viewer($labelGenerator);
-$viewer->sequence(new Sequence(
-    new Period('2018-01-01', '2018-02-01'),
-    new Period('2018-01-01', '2018-01-15')
-));
+$tuple = Tuple::fromSequence(
+    new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
+    $labelGenerator
+);
+(new Console())->display($tuple);
 ~~~
 
 results:
@@ -205,13 +217,29 @@ results:
  vi [-----------------------------------)
 ~~~
 
-#### Affix Label Strategy
+The `RomanNumber` also exposes the following methods:
 
 ~~~php
-use Bakame\Period\Visualizer\Viewer;
+<?php
+const RomanNumber::UPPER = 1;
+const RomanNumber::LOWER = 2;
+public function RomanNumber::startingAt(): string; //returns the first decimal number to be used
+public function RomanNumber::sstartsWith(): self;  //returns a new object with a new starting decimal number
+public function RomanNumber::withLetterCase(int $lettercase): self;  //returns a new object with a new letter casing
+public function RomanNumber::isUpper(): bool;  //Tells whether the roman letter is upper cased.
+public function RomanNumber::isLower(): bool;  //Tells whether the roman letter is lower cased.
+~~~
+
+### Affix Label Strategy
+
+~~~php
+<?php
+
+use Bakame\Period\Visualizer\AffixLabel;
+use Bakame\Period\Visualizer\Console;
 use Bakame\Period\Visualizer\DecimalNumber;
 use Bakame\Period\Visualizer\RomanNumber;
-use Bakame\Period\Visualizer\AffixLabel;
+use Bakame\Period\Visualizer\Tuple;
 use League\Period\Period;
 use League\Period\Sequence;
 
@@ -220,11 +248,11 @@ $labelGenerator = new AffixLabel(
     '*', //prefix
     '.)'    //suffix
 );
-$viewer = new Viewer($labelGenerator);
-$viewer->sequence(new Sequence(
-    new Period('2018-01-01', '2018-02-01'),
-    new Period('2018-01-01', '2018-01-15')
-));
+$tuple = Tuple::fromSequence(
+    new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
+    $labelGenerator
+);
+(new Console())->display($tuple);
 ~~~
 
 results:
@@ -234,14 +262,28 @@ results:
  * vi .) [--------------------------) 
 ~~~
 
-#### Reverse Label Strategy
+The `AffixLabel` also exposes the following methods:
 
 ~~~php
-use Bakame\Period\Visualizer\Viewer;
-use Bakame\Period\Visualizer\DecimalNumber;
-use Bakame\Period\Visualizer\RomanNumber;
+<?php
+
+public function AffixLabel::prefix(): string; //returns the current prefix
+public function AffixLabel::suffix(): string;  //returns the current suffix
+public function AffixLabel::withPrefix(string $prefix): self;  //returns a new object with a new prefix
+public function AffixLabel::withSuffix(string $suffix): self;  //returns a new object with a new suffix
+~~~
+
+### Reverse Label Strategy
+
+~~~php
+<?php
+
 use Bakame\Period\Visualizer\AffixLabel;
+use Bakame\Period\Visualizer\Console;
+use Bakame\Period\Visualizer\DecimalNumber;
 use Bakame\Period\Visualizer\ReverseLabel;
+use Bakame\Period\Visualizer\RomanNumber;
+use Bakame\Period\Visualizer\Tuple;
 use League\Period\Period;
 use League\Period\Sequence;
 
@@ -250,11 +292,11 @@ $labelGenerator = new RomanNumber($labelGenerator, RomanNumber::LOWER);
 $labelGenerator = new AffixLabel($labelGenerator, '', '.');
 $labelGenerator = new ReverseLabel($labelGenerator);
 
-$viewer = new Viewer($labelGenerator);
-$viewer->sequence(new Sequence(
-    new Period('2018-01-01', '2018-02-01'),
-    new Period('2018-01-01', '2018-01-15')
-));
+$tuple = Tuple::fromSequence(
+    new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
+    $labelGenerator
+);
+(new Console())->display($tuple);
 ~~~
 
 results:
@@ -264,15 +306,19 @@ results:
  v.  [-----------------------------------)
 ~~~
 
-#### Custom Strategy
+### Custom Strategy
 
 You can create your own strategy by implementing the `Bakame\Period\Visualizer\Contract\LabelGenerator` interface like shown below:
 
 ~~~php
+<?php
+
 use Bakame\Period\Visualizer\AffixLabel;
 use Bakame\Period\Visualizer\Contract\LabelGenerator;
-use Bakame\Period\Visualizer\Viewer;
+use Bakame\Period\Visualizer\Console;
+use Bakame\Period\Visualizer\Tuple;
 use League\Period\Period;
+use League\Period\Sequence;
 
 $samelabel = new class implements LabelGenerator {
     public function generate(int $nbLabels): array
@@ -287,12 +333,11 @@ $samelabel = new class implements LabelGenerator {
 };
 
 $labelGenerator = new AffixLabel($samelabel, '', '.');
-$viewer = new Viewer($labelGenerator);
-
-$viewer->sequence(new Sequence(
-    new Period('2018-01-01', '2018-02-01'),
-    new Period('2018-01-01', '2018-01-15')
-));
+$tuple = Tuple::fromSequence(
+    new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
+    $labelGenerator
+);
+(new Console())->display($tuple);
 ~~~
 
 results:
@@ -302,11 +347,13 @@ results:
  foobar. [-----------------------------------)
 ~~~
 
-### Customize the console
+## Output
 
-Under the hood, the `Viewer` class uses the `Console` class to generate your graph.
+The `Console` class is responsible for outputting your graph.
 
 ~~~php
+<?php
+
 use Bakame\Period\Visualizer\Console;
 use Bakame\Period\Visualizer\Tuple;
 use League\Period\Period;
@@ -325,19 +372,19 @@ results:
  last                            [----------------------------------------------------)
 ~~~
 
-The `Console::display` methods expects a tuple as its unique argument where:
-
-- the first value of the tuple represents the label name which must be a `string`.
-- the second and last value represents a `Period` or `Sequence` object.
+The `Console::display` methods expects a `Tuple` object as its unique argument where:
 
 The `Console` class can be customized by providing a `ConsoleConfig` which defines the console settings.
 
 ~~~php
+<?php
+
 use Bakame\Period\Visualizer\ConsoleConfig;
 use Bakame\Period\Visualizer\Console;
 use Bakame\Period\Visualizer\Contract\LabelGenerator;
-use Bakame\Period\Visualizer\Viewer;
+use Bakame\Period\Visualizer\Tuple;
 use League\Period\Period;
+use League\Period\Sequence;
 
 $config = (new ConsoleConfig())
     ->withStartExcluded('🍕')
@@ -348,37 +395,55 @@ $config = (new ConsoleConfig())
     ->withSpace('💩')
     ->withBody('😊')
     ->withColors('yellow', 'red')
+    ->withGapSize(2)
+    ->withLabelAlign(ConsoleConfig::ALIGN_RIGHT)
 ;
 
 $fixedLabels = new class implements LabelGenerator {
     public function generate(int $nbLabels): array
     {
-        return array_map([$this, 'format'], ['first', 'last']);
+        return ['first one', 'last'];
     }
-    
+
     public function format($str): string
     {
         return (string) $str;
     }
 };
 
-$console = new Console($config);
-$viewer = new Viewer($fixedLabels, $console);
-
-$viewer->sequence(new Sequence(
+$tuple = Tuple::fromSequence(new Sequence(
     new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00', Period::EXCLUDE_ALL),
     new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00', Period::INCLUDE_ALL)
-));
+), $fixedLabels);
+
+$console = new Console($config);
+$console->display($tuple);
 ~~~
 
 results:
 
 ~~~bash
- first 🍕😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊🎾💩💩💩💩💩💩💩💩💩💩
- last  💩💩💩💩💩💩💩💩💩💩🍅😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊🍔
+ first one  🍕😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊🎾💩💩💩💩💩💩💩💩💩💩
+      last  💩💩💩💩💩💩💩💩💩💩🍅😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊🍔
 ~~~
 
 *On a POSIX compliant console the first line will be yellow and the second red*
+
+The `ConsoleConfig` class exposes the following additionals methods:
+
+~~~php
+<?php
+public function ConsoleConfig::startExcluded(): string; //Retrieves the excluded start block character.
+public function ConsoleConfig::startIncluded(): string; //Retrieves the included start block character.
+public function ConsoleConfig::endExcluded(): string;   //Retrieves the excluded end block character.
+public function ConsoleConfig::endIncluded(): string;   //Retrieves the included end block character.
+public function ConsoleConfig::width(): int;            //Retrieves the max size width.
+public function ConsoleConfig::body(): string;          //Retrieves the body block character.
+public function ConsoleConfig::space(): string;         //Retrieves the space block character.
+public function ConsoleConfig::colors(): string[];      //The selected colors for each row.
+public function ConsoleConfig::gapSize(): int;          //Retrieves the gap sequence between the label and the line.
+public function ConsoleConfig::labelAlign(): int;       //Returns how label should be aligned.
+~~~
 
 **`ConsoleConfig` is immutable, modifying its properties returns a new instance with the updated values.**
 

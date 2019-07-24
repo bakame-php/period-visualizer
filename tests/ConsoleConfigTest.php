@@ -16,8 +16,6 @@ namespace BakameTest\Period\Visualizer;
 use Bakame\Period\Visualizer\ConsoleConfig;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use const STR_PAD_BOTH;
-use const STR_PAD_LEFT;
 
 /**
  * @coversDefaultClass \Bakame\Period\Visualizer\ConsoleConfig
@@ -45,7 +43,7 @@ final class ConsoleConfigTest extends TestCase
         self::assertSame(60, $this->config->width());
         self::assertSame(1, $this->config->gapSize());
         self::assertSame(['reset'], $this->config->colors());
-        self::assertSame(STR_PAD_RIGHT, $this->config->padding());
+        self::assertSame(ConsoleConfig::ALIGN_LEFT, $this->config->labelAlign());
     }
 
     public function testCreateFromRandom(): void
@@ -209,23 +207,23 @@ final class ConsoleConfigTest extends TestCase
      */
     public function testPadding(int $padding, int $expected): void
     {
-        self::assertSame($expected, $this->config->withPadding($padding)->padding());
+        self::assertSame($expected, $this->config->withLabelAlign($padding)->labelAlign());
     }
 
     public function providerPaddings(): iterable
     {
         return [
             'default' => [
-                'padding' => STR_PAD_LEFT,
-                'expected' => STR_PAD_LEFT,
+                'padding' => ConsoleConfig::ALIGN_LEFT,
+                'expected' => ConsoleConfig::ALIGN_LEFT,
             ],
             'changing wit a defined config' => [
-                'padding' => STR_PAD_BOTH,
-                'expected' => STR_PAD_BOTH,
+                'padding' => ConsoleConfig::ALIGN_RIGHT,
+                'expected' => ConsoleConfig::ALIGN_RIGHT,
             ],
             'changing wit a unknown config' => [
                 'padding' => 42,
-                'expected' => STR_PAD_RIGHT,
+                'expected' => ConsoleConfig::ALIGN_LEFT,
             ],
         ];
     }

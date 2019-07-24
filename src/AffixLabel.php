@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Bakame\Period\Visualizer;
 
 use Bakame\Period\Visualizer\Contract\LabelGenerator;
-use function array_map;
 use function is_scalar;
 use function method_exists;
 use function preg_replace;
@@ -56,7 +55,12 @@ final class AffixLabel implements LabelGenerator
      */
     public function generate(int $nbLabels): array
     {
-        return array_map([$this, 'format'], $this->labelGenerator->generate($nbLabels));
+        $labels = [];
+        foreach ($this->labelGenerator->generate($nbLabels) as $label) {
+            $labels[] = $this->prefix.$label.$this->suffix;
+        }
+
+        return $labels;
     }
 
     /**
@@ -65,7 +69,7 @@ final class AffixLabel implements LabelGenerator
     public function format($str): string
     {
         if (is_scalar($str) || method_exists($str, '__toString') || null === $str) {
-            return $this->prefix.$str.$this->suffix;
+            return $this->prefix.$this->labelGenerator->format($str).$this->suffix;
         }
 
         return $this->prefix.$this->suffix;

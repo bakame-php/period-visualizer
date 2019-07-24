@@ -34,6 +34,12 @@ final class ConsoleConfig
 {
     private const REGEXP_UNICODE = '/\\\\u(?<unicode>[0-9A-F]{1,4})/i';
 
+    public const ALIGN_LEFT = STR_PAD_RIGHT;
+
+    public const ALIGN_RIGHT = STR_PAD_LEFT;
+
+    public const ALIGN_CENTER = STR_PAD_BOTH;
+
     /**
      * @var string[]
      */
@@ -81,7 +87,7 @@ final class ConsoleConfig
     /**
      * @var int
      */
-    private $padding = STR_PAD_RIGHT;
+    private $alignLabel = self::ALIGN_LEFT;
 
     /**
      * Create a Cli Renderer to Display the millipede in Rainbow.
@@ -107,38 +113,14 @@ final class ConsoleConfig
     }
 
     /**
-     * Retrieve the row width.
-     */
-    public function width(): int
-    {
-        return $this->width;
-    }
-
-    /**
-     * Retrieve the gap sequence between the label and the line.
-     */
-    public function gapSize(): int
-    {
-        return $this->gapSize;
-    }
-
-    /**
-     * Tell whether left padding is applied.
-     */
-    public function padding(): int
-    {
-        return $this->padding;
-    }
-
-    /**
-     * Retrieve the start excluded block character.
+     * Retrieves the start excluded block character.
      */
     public function startExcluded(): string
     {
         return $this->startExcluded;
     }
     /**
-     * Retrieve the start included block character.
+     * Retrieves the start included block character.
      */
     public function startIncluded(): string
     {
@@ -146,15 +128,7 @@ final class ConsoleConfig
     }
 
     /**
-     * Retrieve the body block character.
-     */
-    public function body(): string
-    {
-        return $this->body;
-    }
-
-    /**
-     * Retrieve the excluded end block character.
+     * Retrieves the excluded end block character.
      */
     public function endExcluded(): string
     {
@@ -162,7 +136,7 @@ final class ConsoleConfig
     }
 
     /**
-     * Retrieve the excluded end block character.
+     * Retrieves the excluded end block character.
      */
     public function endIncluded(): string
     {
@@ -170,7 +144,23 @@ final class ConsoleConfig
     }
 
     /**
-     * Retrieve the row space character.
+     * Retrieves the row width.
+     */
+    public function width(): int
+    {
+        return $this->width;
+    }
+
+    /**
+     * Retrieves the body block character.
+     */
+    public function body(): string
+    {
+        return $this->body;
+    }
+
+    /**
+     * Retrieves the row space character.
      */
     public function space(): string
     {
@@ -188,23 +178,92 @@ final class ConsoleConfig
     }
 
     /**
-     * Return an instance with the specified row width.
+     * Retrieves the gap sequence between the label and the line.
+     */
+    public function gapSize(): int
+    {
+        return $this->gapSize;
+    }
+
+    /**
+     * Returns how label should be aligned.
+     */
+    public function labelAlign(): int
+    {
+        return $this->alignLabel;
+    }
+
+    /**
+     * Return an instance with the start excluded pattern.
      *
      * This method MUST retain the state of the current instance, and return
-     * an instance that contains the specified width.
+     * an instance that contains the specified start excluded character.
      */
-    public function withWidth(int $width): self
+    public function withStartExcluded(string $startExcluded): self
     {
-        if ($width < 10) {
-            $width = 10;
-        }
-
-        if ($width === $this->width) {
+        $startExcluded = $this->filterPattern($startExcluded, 'startExcluded');
+        if ($startExcluded === $this->startExcluded) {
             return $this;
         }
 
         $clone = clone $this;
-        $clone->width = $width;
+        $clone->startExcluded = $startExcluded;
+
+        return $clone;
+    }
+
+    /**
+     * Filter the submitted string.
+     *
+     * @throws InvalidArgumentException if the pattern is invalid
+     */
+    private function filterPattern(string $str, string $part): string
+    {
+        if (1 === mb_strlen($str)) {
+            return $str;
+        }
+
+        if (1 === preg_match(self::REGEXP_UNICODE, $str)) {
+            return $this->filterUnicodeCharacter($str);
+        }
+
+        throw new InvalidArgumentException(sprintf('The %s pattern must be a single character', $part));
+    }
+
+    /**
+     * Decode unicode characters.
+     *
+     * @see http://stackoverflow.com/a/37415135/2316257
+     *
+     * @throws InvalidArgumentException if the character is not valid.
+     */
+    private function filterUnicodeCharacter(string $str): string
+    {
+        $replaced = (string) preg_replace(self::REGEXP_UNICODE, '&#x$1;', $str);
+        $result = mb_convert_encoding($replaced, 'UTF-16', 'HTML-ENTITIES');
+        $result = mb_convert_encoding($result, 'UTF-8', 'UTF-16');
+        if (1 === mb_strlen($result)) {
+            return $result;
+        }
+
+        throw new InvalidArgumentException(sprintf('The given string `%s` is not a valid unicode string', $str));
+    }
+
+    /**
+     * Return an instance with the start included pattern.
+     *
+     * This method MUST retain the state of the current instance, and return
+     * an instance that contains the specified start included character.
+     */
+    public function withStartIncluded(string $startIncluded): self
+    {
+        $startIncluded = $this->filterPattern($startIncluded, 'startIncluded');
+        if ($startIncluded === $this->startIncluded) {
+            return $this;
+        }
+
+        $clone = clone $this;
+        $clone->startIncluded = $startIncluded;
 
         return $clone;
     }
@@ -246,6 +305,29 @@ final class ConsoleConfig
 
         return $clone;
     }
+
+    /**
+     * Return an instance with the specified row width.
+     *
+     * This method MUST retain the state of the current instance, and return
+     * an instance that contains the specified width.
+     */
+    public function withWidth(int $width): self
+    {
+        if ($width < 10) {
+            $width = 10;
+        }
+
+        if ($width === $this->width) {
+            return $this;
+        }
+
+        $clone = clone $this;
+        $clone->width = $width;
+
+        return $clone;
+    }
+
     /**
      * Return an instance with the specified body block.
      *
@@ -266,44 +348,6 @@ final class ConsoleConfig
     }
 
     /**
-     * Return an instance with the start excluded pattern.
-     *
-     * This method MUST retain the state of the current instance, and return
-     * an instance that contains the specified start excluded character.
-     */
-    public function withStartExcluded(string $startExcluded): self
-    {
-        $startExcluded = $this->filterPattern($startExcluded, 'startExcluded');
-        if ($startExcluded === $this->startExcluded) {
-            return $this;
-        }
-
-        $clone = clone $this;
-        $clone->startExcluded = $startExcluded;
-
-        return $clone;
-    }
-
-    /**
-     * Return an instance with the start included pattern.
-     *
-     * This method MUST retain the state of the current instance, and return
-     * an instance that contains the specified start included character.
-     */
-    public function withStartIncluded(string $startIncluded): self
-    {
-        $startIncluded = $this->filterPattern($startIncluded, 'startIncluded');
-        if ($startIncluded === $this->startIncluded) {
-            return $this;
-        }
-
-        $clone = clone $this;
-        $clone->startIncluded = $startIncluded;
-
-        return $clone;
-    }
-
-    /**
      * Return an instance with the space pattern.
      *
      * This method MUST retain the state of the current instance, and return
@@ -318,28 +362,6 @@ final class ConsoleConfig
 
         $clone = clone $this;
         $clone->space = $space;
-
-        return $clone;
-    }
-
-    /**
-     * Return an instance with a new gap sequence.
-     *
-     * This method MUST retain the state of the current instance, and return
-     * an instance that contains the specified gap sequence.
-     */
-    public function withGapSize(int $size): self
-    {
-        if ($size === $this->gapSize) {
-            return $this;
-        }
-
-        if ($size < 0) {
-            $size = 1;
-        }
-
-        $clone = clone $this;
-        $clone->gapSize = $size;
 
         return $clone;
     }
@@ -374,61 +396,46 @@ final class ConsoleConfig
     }
 
     /**
-     * Return an instance with a left padding.
+     * Return an instance with a new gap sequence.
      *
      * This method MUST retain the state of the current instance, and return
-     * an instance that set a left padding to the line label.
+     * an instance that contains the specified gap sequence.
      */
-    public function withPadding(int $padding): self
+    public function withGapSize(int $size): self
     {
-        if (!in_array($padding, [STR_PAD_LEFT, STR_PAD_RIGHT, STR_PAD_BOTH], true)) {
-            $padding = STR_PAD_RIGHT;
-        }
-
-        if ($this->padding === $padding) {
+        if ($size === $this->gapSize) {
             return $this;
         }
 
+        if ($size < 0) {
+            $size = 1;
+        }
+
         $clone = clone $this;
-        $clone->padding = $padding;
+        $clone->gapSize = $size;
 
         return $clone;
     }
 
     /**
-     * Filter the submitted string.
+     * Return an instance with a left padding.
      *
-     * @throws InvalidArgumentException if the pattern is invalid
+     * This method MUST retain the state of the current instance, and return
+     * an instance that set a left padding to the line label.
      */
-    private function filterPattern(string $str, string $part): string
+    public function withLabelAlign(int $align): self
     {
-        if (1 === mb_strlen($str)) {
-            return $str;
+        if (!in_array($align, [STR_PAD_LEFT, STR_PAD_RIGHT, STR_PAD_BOTH], true)) {
+            $align = STR_PAD_RIGHT;
         }
 
-        if (1 === preg_match(self::REGEXP_UNICODE, $str)) {
-            return $this->filterUnicodeCharacter($str);
+        if ($this->alignLabel === $align) {
+            return $this;
         }
 
-        throw new InvalidArgumentException(sprintf('The %s pattern must be a single character', $part));
-    }
+        $clone = clone $this;
+        $clone->alignLabel = $align;
 
-    /**
-     * Decode unicode characters.
-     *
-     * @see http://stackoverflow.com/a/37415135/2316257
-     *
-     * @throws InvalidArgumentException if the character is not valid.
-     */
-    private function filterUnicodeCharacter(string $str): string
-    {
-        $replaced = (string) preg_replace(self::REGEXP_UNICODE, '&#x$1;', $str);
-        $result = mb_convert_encoding($replaced, 'UTF-16', 'HTML-ENTITIES');
-        $result = mb_convert_encoding($result, 'UTF-8', 'UTF-16');
-        if (1 === mb_strlen($result)) {
-            return $result;
-        }
-
-        throw new InvalidArgumentException(sprintf('The given string `%s` is not a valid unicode string', $str));
+        return $clone;
     }
 }

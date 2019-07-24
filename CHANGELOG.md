@@ -5,15 +5,14 @@ All Notable changes to `Period Visualizer` will be documented in this file
 # 0.5.0 - TBD
 
 - Added the `Tuple` class.
-- Added the `Writer` interface and the `ConsoleStdout` implementation, console is no longer done using `echo`
-- Added the `Viewer::view` method as the most generic method
-- Added gap and padding configuration settings in `ConsoleConfig` class
-- Removed `Viewer::getLabelGenerator` and `Viewer::getOutput` methods 
-- Refactored the `ConsoleOutput` to improve decoupling
-- Moved all interfaces into a `Contract` dedicated namespace
-- Refactored the interfaces to make them simpler to implement
+- Added the `Writer` interface and the `ConsoleStdout` implementation, `Console` no longer relies on `echo`
+- Added support for label and graph gutter in `ConsoleConfig` class
+- Added support for label alignment in `ConsoleConfig` class
+- Moved all interfaces into a `Contract` dedicated namespace and made them simpler to implement
+- Renamed the `ConsoleOutput` to `Console`
 - Renamed the `LabelGenerator` implementing classes
 - Removed the `Matrix` class
+- Removed the `Viewer` class
 
 ## 0.4.0 - 2019-06-17
 

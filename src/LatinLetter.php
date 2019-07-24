@@ -31,7 +31,21 @@ final class LatinLetter implements LabelGenerator
      */
     public function __construct(string $str = 'A')
     {
-        $this->str = $this->format($str);
+        $this->str = $this->filterLetter($str);
+    }
+
+    public function filterLetter(string $str): string
+    {
+        $str = trim($str);
+        if ('' === $str) {
+            return '0';
+        }
+
+        if (1 !== preg_match('/^[A-Za-z]+$/', $str)) {
+            return 'A';
+        }
+
+        return $str;
     }
 
     /**
@@ -43,17 +57,7 @@ final class LatinLetter implements LabelGenerator
             return '';
         }
 
-        $str = (string) $str;
-        $str = trim($str);
-        if ('' === $str) {
-            return '0';
-        }
-
-        if (1 !== preg_match('/^[A-Za-z]+$/', $str)) {
-            return 'A';
-        }
-
-        return $str;
+        return (string) $str;
     }
 
     /**
@@ -92,7 +96,7 @@ final class LatinLetter implements LabelGenerator
      */
     public function startsWith(string $str): self
     {
-        $str = $this->format($str);
+        $str = $this->filterLetter($str);
         if ($str === $this->str) {
             return $this;
         }

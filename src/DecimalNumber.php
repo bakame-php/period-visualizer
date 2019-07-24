@@ -27,11 +27,6 @@ final class DecimalNumber implements LabelGenerator
     private $int;
 
     /**
-     * @var int
-     */
-    private $padding;
-
-    /**
      * New instance.
      */
     public function __construct(int $int = 1)
