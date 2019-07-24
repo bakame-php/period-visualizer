@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Bakame\Period\Visualizer;
 
-use Bakame\Period\Visualizer\Contract\Writer;
+use Bakame\Period\Visualizer\Contract\OutputWriter;
 use InvalidArgumentException;
 use function array_filter;
 use function array_key_exists;
@@ -43,7 +43,7 @@ final class ConsoleConfig
     /**
      * @var string[]
      */
-    private $colorCodeIndexes = [Writer::DEFAULT_COLOR_CODE_INDEX];
+    private $colorCodeIndexes = [OutputWriter::DEFAULT_COLOR_CODE_INDEX];
 
     /**
      * @var int
@@ -97,7 +97,7 @@ final class ConsoleConfig
         $config = new self();
 
         /** @var string $colorCode */
-        $colorCode = array_rand(Writer::POSIX_COLOR_CODES);
+        $colorCode = array_rand(OutputWriter::POSIX_COLOR_CODES);
 
         return $config->withColors($colorCode);
     }
@@ -109,7 +109,7 @@ final class ConsoleConfig
     {
         $config = new self();
 
-        return $config->withColors(...array_keys(Writer::POSIX_COLOR_CODES));
+        return $config->withColors(...array_keys(OutputWriter::POSIX_COLOR_CODES));
     }
 
     /**
@@ -377,7 +377,7 @@ final class ConsoleConfig
     public function withColors(string ...$colorCodeIndexes): self
     {
         $filter = static function ($value) {
-            return array_key_exists($value, Writer::POSIX_COLOR_CODES);
+            return array_key_exists($value, OutputWriter::POSIX_COLOR_CODES);
         };
 
         $colorCodeIndexes = array_filter(array_map('strtolower', $colorCodeIndexes), $filter);

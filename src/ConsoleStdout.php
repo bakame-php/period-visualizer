@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Bakame\Period\Visualizer;
 
-use Bakame\Period\Visualizer\Contract\Writer;
+use Bakame\Period\Visualizer\Contract\OutputWriter;
 use TypeError;
 use function array_key_exists;
 use function array_keys;
@@ -29,7 +29,7 @@ use function strtolower;
 use const PHP_EOL;
 use const PHP_OS;
 
-final class ConsoleStdout implements Writer
+final class ConsoleStdout implements OutputWriter
 {
     private const REGEXP_POSIX_PLACEHOLDER = '/(\s+)/msi';
 
@@ -72,12 +72,12 @@ final class ConsoleStdout implements Writer
     public function colorize(string $characters, string $colorCodeIndex): string
     {
         $colorCodeIndex = strtolower($colorCodeIndex);
-        if (Writer::DEFAULT_COLOR_CODE_INDEX === $colorCodeIndex) {
+        if (OutputWriter::DEFAULT_COLOR_CODE_INDEX === $colorCodeIndex) {
             return $characters;
         }
 
-        if (array_key_exists($colorCodeIndex, Writer::POSIX_COLOR_CODES)) {
-            return "<<$colorCodeIndex>>$characters<<".Writer::DEFAULT_COLOR_CODE_INDEX.'>>';
+        if (array_key_exists($colorCodeIndex, OutputWriter::POSIX_COLOR_CODES)) {
+            return "<<$colorCodeIndex>>$characters<<".OutputWriter::DEFAULT_COLOR_CODE_INDEX.'>>';
         }
 
         return $characters;

@@ -15,7 +15,7 @@ namespace Bakame\Period\Visualizer\Contract;
 
 use TypeError;
 
-interface Writer
+interface OutputWriter
 {
     public const DEFAULT_COLOR_CODE_INDEX = 'reset';
 

@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Bakame\Period\Visualizer;
 
 use Bakame\Period\Visualizer\Contract\Output;
-use Bakame\Period\Visualizer\Contract\Writer;
+use Bakame\Period\Visualizer\Contract\OutputWriter;
 use Closure;
 use League\Period\Period;
 use League\Period\Sequence;
@@ -58,7 +58,7 @@ final class Console implements Output
     ];
 
     /**
-     * @var Writer
+     * @var OutputWriter
      */
     private $writer;
 
@@ -81,9 +81,9 @@ final class Console implements Output
      * New instance.
      *
      * @param ?ConsoleConfig $config
-     * @param ?Writer        $writer
+     * @param ?OutputWriter  $writer
      */
-    public function __construct(?ConsoleConfig $config = null, ?Writer $writer = null)
+    public function __construct(?ConsoleConfig $config = null, ?OutputWriter $writer = null)
     {
         $this->config = $config ?? new ConsoleConfig();
         $this->writer = $writer ?? new ConsoleStdout(STDOUT);
