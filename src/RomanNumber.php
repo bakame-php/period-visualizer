@@ -18,6 +18,7 @@ use function in_array;
 use function is_scalar;
 use function method_exists;
 use function strtolower;
+use function strtoupper;
 
 final class RomanNumber implements LabelGenerator
 {
@@ -81,11 +82,16 @@ final class RomanNumber implements LabelGenerator
      */
     public function format($str): string
     {
-        if (is_scalar($str) || method_exists($str, '__toString') || null === $str) {
-            return (string) $str;
+        if (!is_scalar($str) && !method_exists($str, '__toString') && null !== $str) {
+            return '';
         }
 
-        return '';
+        $str = (string) $str;
+        if (self::UPPER === $this->lettercase) {
+            return strtoupper($str);
+        }
+
+        return strtolower($str);
     }
 
     /**

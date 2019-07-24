@@ -95,5 +95,8 @@ final class RomanNumberTest extends TestCase
     {
         $generator = new RomanNumber(new DecimalNumber(10));
         self::assertSame('', $generator->format([]));
+        $newGenerator = $generator->withLetterCase(RomanNumber::LOWER);
+        self::assertSame('FOOBAR', $generator->format('fOoBaR'));
+        self::assertSame('foobar', $newGenerator->format('fOoBaR'));
     }
 }
