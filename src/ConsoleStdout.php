@@ -86,7 +86,7 @@ final class ConsoleStdout implements OutputWriter
     /**
      * {@inheritDoc}
      */
-    public function writeln($message): void
+    public function writeln($message = ''): void
     {
         if (!is_iterable($message)) {
             $message = [$message];
