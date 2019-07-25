@@ -400,7 +400,7 @@ use Bakame\Period\Visualizer\Dataset;
 use League\Period\Period;
 
 $graph = new ConsoleGraph();
-echo $graph->display(new Dataset([
+$graph->display(new Dataset([
     ['first', new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00')],
     ['last', new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00')],
 ]));
@@ -483,12 +483,15 @@ result:
   GAPS.  💩💩💩💩💩🍕😊😊🍔💩💩🍅😊😊😊😊😊😊😊🍔💩💩💩💩💩💩💩💩💩💩
 ~~~
 
-*On a POSIX compliant graph all lines have different colors*
+*On a POSIX compliant console all lines have different colors*
 
-The `ConsoleConfig` class exposes the following additional methods:
+The `ConsoleConfig` class exposes the following additional constants and methods:
 
 ~~~php
 <?php
+const ConsoleConfig::ALIGN_LEFT = 1;
+const ConsoleConfig::ALIGN_RIGHT = 0;
+const ConsoleConfig::ALIGN_CENTER = 2;
 public function ConsoleConfig::startExcluded(): string; //Retrieves the excluded start block character.
 public function ConsoleConfig::startIncluded(): string; //Retrieves the included start block character.
 public function ConsoleConfig::endExcluded(): string;   //Retrieves the excluded end block character.
