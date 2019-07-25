@@ -13,12 +13,12 @@ declare(strict_types=1);
 
 namespace Bakame\Period\Visualizer\Contract;
 
-use Bakame\Period\Visualizer\Tuple;
+use Bakame\Period\Visualizer\Dataset;
 
 /**
  * A class to output to the console the matrix.
  */
-interface Output
+interface Graph
 {
     /**
      * Builds a string to visualize one or more intervals.
@@ -35,5 +35,5 @@ interface Output
      * D              [---------------)
      * RESULT         [-)   [--)    [-)
      */
-    public function display(Tuple $tuple): void;
+    public function display(Dataset $dataset): void;
 }

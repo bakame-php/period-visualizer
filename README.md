@@ -15,14 +15,14 @@ It is inspired from the work of [@thecrypticace](https://github.com/thecrypticac
 <?php
 
 use Bakame\Period\Visualizer\Console;
-use Bakame\Period\Visualizer\Tuple;
+use Bakame\Period\Visualizer\Dataset;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$tuple = Tuple::fromSequence(
+$dataset = Dataset::fromSequence(
     new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01'))
 );
-(new Console())->display($tuple);
+(new Console())->display($dataset);
 ~~~
 
 results:
@@ -54,7 +54,7 @@ Usage
 
 ### Generate a simple graph.
 
-To generate a graph you need to give to the `Tuple` constructor a list of pairs. Each pair is an `array` containing 2 values:
+To generate a graph you need to give to the `Dataset` constructor a list of pairs. Each pair is an `array` containing 2 values:
 
 - the value at key `0` represents the label
 - the value at key `1` is a `League\Period\Period` or a `League\Period\Sequence` object 
@@ -63,14 +63,14 @@ To generate a graph you need to give to the `Tuple` constructor a list of pairs.
 <?php
 
 use Bakame\Period\Visualizer\Console;
-use Bakame\Period\Visualizer\Tuple;
+use Bakame\Period\Visualizer\Dataset;
 use League\Period\Period;
 
-$tuple = new Tuple([
+$dataset = new Dataset([
     ['A', new Period('2018-01-01', '2018-02-01')],
     ['B', new Period('2018-01-15', '2018-02-01')], 
 ]);
-(new Console())->display($tuple);
+(new Console())->display($dataset);
 ~~~
 
 results:
@@ -82,13 +82,13 @@ results:
 
 ### Appending items to display
 
-If you want to display a `Sequence` and some of its operations. You can append the operation results using the `Tuple::append` method.
+If you want to display a `Sequence` and some of its operations. You can append the operation results using the `Dataset::append` method.
 
 ~~~php
 <?php
 
 use Bakame\Period\Visualizer\Console;
-use Bakame\Period\Visualizer\Tuple;
+use Bakame\Period\Visualizer\Dataset;
 use League\Period\Period;
 use League\Period\Sequence;
 
@@ -96,12 +96,12 @@ $sequence = new Sequence(
     new Period('2018-01-01', '2018-03-01'),
     new Period('2018-05-01', '2018-08-01')
 );
-$tuple = Tuple::fromSequence($sequence);
-$tuple->append('GAPS', $sequence->gaps());
-(new Console())->display($tuple);
+$dataset = Dataset::fromSequence($sequence);
+$dataset->append('GAPS', $sequence->gaps());
+(new Console())->display($dataset);
 ~~~
 
-*Of Note: We are using the `Tuple::fromSequence` which is a handy named constructor to inject the `Sequence` members into the `Tuple` object*
+*Of Note: We are using the `Dataset::fromSequence` which is a handy named constructor to inject the `Sequence` members into the `Dataset` object*
 
 results:
 
@@ -111,21 +111,21 @@ results:
  GAPS                       [----------------------)    
 ~~~
 
-The `Tuple` implements the `Countable` and the `IteratorAggregate` interface. It also exposes the following methods:
+The `Dataset` implements the `Countable` and the `IteratorAggregate` interface. It also exposes the following methods:
 
 ~~~php
 <?php
-public function Tuple::fromCollection(): self; //Creates a new Tuple from a generic iterable structure.
-public function Tuple::labels(): string[]; //the current labels used
-public function Tuple::items(): array<Period|Sequence>; //the current objects inside the Tuple
-public function Tuple::isEmpty(): bool; //Tells whether the collection is empty.
-public function Tuple::labelize(LabelGenerator $labelGenerator): self; //Update the labels used for the tuple.
-public function Tuple::boundaries(): ?Period;  //Returns the collection boundaries or null if it is empty.
+public function Dataset::fromCollection(): self; //Creates a new Dataset from a generic iterable structure.
+public function Dataset::labels(): string[]; //the current labels used
+public function Dataset::items(): array<Period|Sequence>; //the current objects inside the Dataset
+public function Dataset::isEmpty(): bool; //Tells whether the collection is empty.
+public function Dataset::labelize(LabelGenerator $labelGenerator): self; //Update the labels used for the tuple.
+public function Dataset::boundaries(): ?Period;  //Returns the collection boundaries or null if it is empty.
 ~~~
 
 ## Customize the line labels
 
-The `Bakame\Period\Visualizer\Tuple::fromSequence` can be further formatted by providing a object to improve line index generation.
+The `Bakame\Period\Visualizer\Dataset::fromSequence` can be further formatted by providing a object to improve line index generation.
 By default the class is instantiated with the letter index strategy which starts incrementing the labels from  the 'A' index. 
 You can choose between the following strategies to modify the default behaviour:
 
@@ -136,15 +136,15 @@ You can choose between the following strategies to modify the default behaviour:
 
 use Bakame\Period\Visualizer\Console;
 use Bakame\Period\Visualizer\LatinLetter;
-use Bakame\Period\Visualizer\Tuple;
+use Bakame\Period\Visualizer\Dataset;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$tuple = Tuple::fromSequence(
+$dataset = Dataset::fromSequence(
     new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
     new LatinLetter('aa')
 );
-(new Console())->display($tuple);
+(new Console())->display($dataset);
 ~~~
 
 results:
@@ -170,15 +170,15 @@ public function LatinLetter::startsWith(): self;  //returns a new object with a 
 
 use Bakame\Period\Visualizer\Console;
 use Bakame\Period\Visualizer\DecimalNumber;
-use Bakame\Period\Visualizer\Tuple;
+use Bakame\Period\Visualizer\Dataset;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$tuple = Tuple::fromSequence(
+$dataset = Dataset::fromSequence(
     new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
     new DecimalNumber(42)
 );
-(new Console())->display($tuple);
+(new Console())->display($dataset);
 ~~~
 
 results:
@@ -205,17 +205,17 @@ public function DecimalNumber::startsWith(): self;  //returns a new object with 
 use Bakame\Period\Visualizer\Console;
 use Bakame\Period\Visualizer\DecimalNumber;
 use Bakame\Period\Visualizer\RomanNumber;
-use Bakame\Period\Visualizer\Tuple;
+use Bakame\Period\Visualizer\Dataset;
 use League\Period\Period;
 use League\Period\Sequence;
 
 $labelGenerator = new RomanNumber(new DecimalNumber(5), RomanNumber::LOWER);
 
-$tuple = Tuple::fromSequence(
+$dataset = Dataset::fromSequence(
     new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
     $labelGenerator
 );
-(new Console())->display($tuple);
+(new Console())->display($dataset);
 ~~~
 
 results:
@@ -247,7 +247,7 @@ use Bakame\Period\Visualizer\AffixLabel;
 use Bakame\Period\Visualizer\Console;
 use Bakame\Period\Visualizer\DecimalNumber;
 use Bakame\Period\Visualizer\RomanNumber;
-use Bakame\Period\Visualizer\Tuple;
+use Bakame\Period\Visualizer\Dataset;
 use League\Period\Period;
 use League\Period\Sequence;
 
@@ -256,11 +256,11 @@ $labelGenerator = new AffixLabel(
     '*', //prefix
     '.)'    //suffix
 );
-$tuple = Tuple::fromSequence(
+$dataset = Dataset::fromSequence(
     new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
     $labelGenerator
 );
-(new Console())->display($tuple);
+(new Console())->display($dataset);
 ~~~
 
 results:
@@ -291,7 +291,7 @@ use Bakame\Period\Visualizer\Console;
 use Bakame\Period\Visualizer\DecimalNumber;
 use Bakame\Period\Visualizer\ReverseLabel;
 use Bakame\Period\Visualizer\RomanNumber;
-use Bakame\Period\Visualizer\Tuple;
+use Bakame\Period\Visualizer\Dataset;
 use League\Period\Period;
 use League\Period\Sequence;
 
@@ -300,11 +300,11 @@ $labelGenerator = new RomanNumber($labelGenerator, RomanNumber::LOWER);
 $labelGenerator = new AffixLabel($labelGenerator, '', '.');
 $labelGenerator = new ReverseLabel($labelGenerator);
 
-$tuple = Tuple::fromSequence(
+$dataset = Dataset::fromSequence(
     new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
     $labelGenerator
 );
-(new Console())->display($tuple);
+(new Console())->display($dataset);
 ~~~
 
 results:
@@ -324,7 +324,7 @@ You can create your own strategy by implementing the `Bakame\Period\Visualizer\C
 use Bakame\Period\Visualizer\AffixLabel;
 use Bakame\Period\Visualizer\Contract\LabelGenerator;
 use Bakame\Period\Visualizer\Console;
-use Bakame\Period\Visualizer\Tuple;
+use Bakame\Period\Visualizer\Dataset;
 use League\Period\Period;
 use League\Period\Sequence;
 
@@ -341,11 +341,11 @@ $samelabel = new class implements LabelGenerator {
 };
 
 $labelGenerator = new AffixLabel($samelabel, '', '.');
-$tuple = Tuple::fromSequence(
+$dataset = Dataset::fromSequence(
     new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
     $labelGenerator
 );
-(new Console())->display($tuple);
+(new Console())->display($dataset);
 ~~~
 
 results:
@@ -363,11 +363,11 @@ The `Console` class is responsible for outputting your graph.
 <?php
 
 use Bakame\Period\Visualizer\Console;
-use Bakame\Period\Visualizer\Tuple;
+use Bakame\Period\Visualizer\Dataset;
 use League\Period\Period;
 
 $console = new Console();
-echo $console->display(new Tuple([
+echo $console->display(new Dataset([
     ['first', new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00')],
     ['last', new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00')],
 ]));
@@ -380,7 +380,7 @@ results:
  last                            [----------------------------------------------------)
 ~~~
 
-The `Console::display` methods expects a `Tuple` object as its unique argument where:
+The `Console::display` methods expects a `Dataset` object as its unique argument where:
 
 The `Console` class can be customized by providing a `ConsoleConfig` which defines the console settings.
 
@@ -390,7 +390,7 @@ The `Console` class can be customized by providing a `ConsoleConfig` which defin
 use Bakame\Period\Visualizer\ConsoleConfig;
 use Bakame\Period\Visualizer\Console;
 use Bakame\Period\Visualizer\Contract\LabelGenerator;
-use Bakame\Period\Visualizer\Tuple;
+use Bakame\Period\Visualizer\Dataset;
 use League\Period\Period;
 use League\Period\Sequence;
 
@@ -419,13 +419,13 @@ $fixedLabels = new class implements LabelGenerator {
     }
 };
 
-$tuple = Tuple::fromSequence(new Sequence(
+$dataset = Dataset::fromSequence(new Sequence(
     new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00', Period::EXCLUDE_ALL),
     new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00', Period::INCLUDE_ALL)
 ), $fixedLabels);
 
 $console = new Console($config);
-$console->display($tuple);
+$console->display($dataset);
 ~~~
 
 results:

@@ -4,12 +4,13 @@ All Notable changes to `Period Visualizer` will be documented in this file
 
 # 0.5.0 - TBD
 
-- Added the `Tuple` class.
+- Added the `Dataset` class.
 - Added the `OutputWriter` interface and the `ConsoleStdout` implementation, `Console` no longer relies on `echo`
 - Added support for label and graph gutter in `ConsoleConfig` class
 - Added support for label alignment in `ConsoleConfig` class
 - Moved all interfaces into a `Contract` dedicated namespace and made them simpler to implement
 - Renamed the `ConsoleOutput` to `Console`
+- Renamed the `Output` to `Graph`
 - Renamed the `LabelGenerator` implementing classes
 - Removed the `Matrix` class
 - Removed the `Viewer` class

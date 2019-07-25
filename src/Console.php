@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Bakame\Period\Visualizer;
 
-use Bakame\Period\Visualizer\Contract\Output;
+use Bakame\Period\Visualizer\Contract\Graph;
 use Bakame\Period\Visualizer\Contract\OutputWriter;
 use Closure;
 use League\Period\Period;
@@ -32,7 +32,7 @@ use const STDOUT;
 /**
  * A class to output to the console the matrix.
  */
-final class Console implements Output
+final class Console implements Graph
 {
     private const TOKEN_SPACE = 0;
 
@@ -90,15 +90,15 @@ final class Console implements Output
     /**
      * {@inheritDoc}
      */
-    public function display(Tuple $tuple): void
+    public function display(Dataset $dataset): void
     {
-        if ($tuple->isEmpty()) {
+        if ($dataset->isEmpty()) {
             return;
         }
 
-        $matrix = $this->buildMatrix($tuple);
+        $matrix = $this->buildMatrix($dataset);
         $this->writer->writeln(
-            $this->matrixToLine($matrix, $tuple->labelMaxLength())
+            $this->matrixToLine($matrix, $dataset->labelMaxLength())
         );
     }
 
@@ -111,16 +111,16 @@ final class Console implements Output
      *
      * @return iterable<array{0:string, 1:int[]}>
      */
-    private function buildMatrix(Tuple $tuple): iterable
+    private function buildMatrix(Dataset $dataset): iterable
     {
         /** @var Period $boundaries */
-        $boundaries = $tuple->boundaries();
+        $boundaries = $dataset->boundaries();
         $width = $this->config->width();
         $row = array_fill(0, $width, self::TOKEN_SPACE);
         $this->start = $boundaries->getStartDate()->getTimestamp();
         $this->unit = $width / $boundaries->getTimestampInterval();
         $callable = Closure::fromCallable([$this, 'addPeriodToRow']);
-        foreach ($tuple as [$name, $block]) {
+        foreach ($dataset as [$name, $block]) {
             if ($block instanceof Period) {
                 yield [$name, $callable($row, $block)];
             } elseif ($block instanceof Sequence) {
@@ -156,7 +156,7 @@ final class Console implements Output
      * periods and/or collections in a more
      * human readable / parsable manner.
      *
-     * The submitted array values represent a tuple where
+     * The submitted array values represent a pair where
      * the first value is the identifier and the second value
      * the intervals represented as Period or Sequence instances.
      *

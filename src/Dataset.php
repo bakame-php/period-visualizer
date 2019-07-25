@@ -26,7 +26,7 @@ use function is_scalar;
 use function max;
 use function method_exists;
 
-final class Tuple implements Countable, IteratorAggregate
+final class Dataset implements Countable, IteratorAggregate
 {
     /**
      * @var array<int, array{0:string, 1:Sequence|Period}>.
@@ -34,7 +34,7 @@ final class Tuple implements Countable, IteratorAggregate
     private $pairs = [];
 
     /**
-     * Tuple constructor.
+     * constructor.
      */
     public function __construct(iterable $pairs = [])
     {
@@ -54,13 +54,13 @@ final class Tuple implements Countable, IteratorAggregate
         $labelGenerator = $labelGenerator ?? new LatinLetter();
         $labels = $labelGenerator->generate(count($sequence));
         $index = 0;
-        $tuple = new self();
+        $dataset = new self();
         foreach ($sequence as $item) {
-            $tuple->append($labels[$index], $item);
+            $dataset->append($labels[$index], $item);
             ++$index;
         }
 
-        return $tuple;
+        return $dataset;
     }
 
     /**
@@ -68,12 +68,12 @@ final class Tuple implements Countable, IteratorAggregate
      */
     public static function fromCollection(iterable $iterable): self
     {
-        $tuple = new self();
+        $dataset = new self();
         foreach ($iterable as $label => $item) {
-            $tuple->append($label, $item);
+            $dataset->append($label, $item);
         }
 
-        return $tuple;
+        return $dataset;
     }
 
     /**
@@ -162,7 +162,7 @@ final class Tuple implements Countable, IteratorAggregate
     }
 
     /**
-     * Update the labels used for the tuple.
+     * Update the labels used for the dataset.
      *
      * This method MUST retain the state of the current instance, and return
      * an instance that contains the newly specified labels.

@@ -16,7 +16,7 @@ namespace BakameTest\Period\Visualizer;
 use Bakame\Period\Visualizer\Console;
 use Bakame\Period\Visualizer\ConsoleConfig;
 use Bakame\Period\Visualizer\ConsoleStdout;
-use Bakame\Period\Visualizer\Tuple;
+use Bakame\Period\Visualizer\Dataset;
 use League\Period\Period;
 use League\Period\Sequence;
 use PHPUnit\Framework\TestCase;
@@ -73,9 +73,9 @@ final class ConsoleTest extends TestCase
      * @covers ::display
      * @covers ::buildMatrix
      */
-    public function testDisplayEmptyTuple(): void
+    public function testDisplayEmptyDataset(): void
     {
-        $this->output->display(new Tuple());
+        $this->output->display(new Dataset());
         rewind($this->stream);
         $data = stream_get_contents($this->stream);
 
@@ -92,7 +92,7 @@ final class ConsoleTest extends TestCase
      */
     public function testDisplayPeriods(): void
     {
-        $this->output->display(new Tuple([
+        $this->output->display(new Dataset([
             ['A', new Period('2018-01-01', '2018-01-15')],
             ['B', new Period('2018-01-15', '2018-02-01')],
         ]));
@@ -115,12 +115,12 @@ final class ConsoleTest extends TestCase
      */
     public function testDisplaySequence(): void
     {
-        $tuple = new Tuple([
+        $dataset = new Dataset([
             ['A', new Sequence(new Period('2018-01-01', '2018-01-15'))],
             ['B', new Sequence(new Period('2018-01-15', '2018-02-01'))],
         ]);
 
-        $this->output->display($tuple);
+        $this->output->display($dataset);
 
         rewind($this->stream);
         /** @var string $data */
