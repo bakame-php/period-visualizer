@@ -2,7 +2,7 @@
 
 All Notable changes to `Period Visualizer` will be documented in this file
 
-# 0.5.0 - TBD
+## 0.5.0 - 2019-07-25
 
 - Moved all interfaces into a `Contract` dedicated namespace
 - Added the `Dataset` class.
