@@ -36,7 +36,7 @@ final class RomanNumber implements LabelGenerator
     /**
      * @var DecimalNumber
      */
-    private $labelGenerator;
+    private $decimalNumber;
 
     /**
      * @var int
@@ -46,9 +46,9 @@ final class RomanNumber implements LabelGenerator
     /**
      * New instance.
      */
-    public function __construct(DecimalNumber $labelGenerator, int $lettercase = self::UPPER)
+    public function __construct(DecimalNumber $decimalNumber, int $lettercase = self::UPPER)
     {
-        $this->labelGenerator = $labelGenerator;
+        $this->decimalNumber = $decimalNumber;
         $this->lettercase = $this->filterLetterCase($lettercase);
     }
 
@@ -70,7 +70,7 @@ final class RomanNumber implements LabelGenerator
     public function generate(int $nbLabels): array
     {
         $labels = [];
-        foreach ($this->labelGenerator->generate($nbLabels) as $label) {
+        foreach ($this->decimalNumber->generate($nbLabels) as $label) {
             $labels[] = $this->convert($label);
         }
 
@@ -124,7 +124,7 @@ final class RomanNumber implements LabelGenerator
      */
     public function startingAt(): int
     {
-        return $this->labelGenerator->startingAt();
+        return $this->decimalNumber->startingAt();
     }
 
     /**
@@ -151,13 +151,13 @@ final class RomanNumber implements LabelGenerator
      */
     public function startsWith(int $int): self
     {
-        $labelGenerator = $this->labelGenerator->startsWith($int);
-        if ($labelGenerator === $this->labelGenerator) {
+        $labelGenerator = $this->decimalNumber->startsWith($int);
+        if ($labelGenerator === $this->decimalNumber) {
             return $this;
         }
 
         $clone = clone $this;
-        $clone->labelGenerator = $labelGenerator;
+        $clone->decimalNumber = $labelGenerator;
 
         return $clone;
     }
