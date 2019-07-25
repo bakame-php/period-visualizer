@@ -382,7 +382,7 @@ final class ConsoleConfig
 
         $colorCodeIndexes = array_filter(array_map('strtolower', $colorCodeIndexes), $filter);
         if ([] === $colorCodeIndexes) {
-            $colorCodeIndexes = [ConsoleStdout::DEFAULT_COLOR_CODE_INDEX];
+            $colorCodeIndexes = [ConsoleOutput::DEFAULT_COLOR_CODE_INDEX];
         }
 
         if ($colorCodeIndexes === $this->colorCodeIndexes) {

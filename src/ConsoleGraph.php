@@ -32,7 +32,7 @@ use const STDOUT;
 /**
  * A class to output to the console the matrix.
  */
-final class Console implements Graph
+final class ConsoleGraph implements Graph
 {
     private const TOKEN_SPACE = 0;
 
@@ -84,7 +84,7 @@ final class Console implements Graph
     public function __construct(?ConsoleConfig $config = null, ?OutputWriter $writer = null)
     {
         $this->config = $config ?? new ConsoleConfig();
-        $this->writer = $writer ?? new ConsoleStdout(STDOUT);
+        $this->writer = $writer ?? new ConsoleOutput(STDOUT);
     }
 
     /**

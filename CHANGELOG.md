@@ -4,15 +4,15 @@ All Notable changes to `Period Visualizer` will be documented in this file
 
 # 0.5.0 - TBD
 
+- Moved all interfaces into a `Contract` dedicated namespace
 - Added the `Dataset` class.
-- Added the `OutputWriter` interface and the `ConsoleStdout` implementation, `Console` no longer relies on `echo`
+- Added the `Graph` interface and the `ConsoleGraph` implementation.
+- Added the `OutputWriter` interface and the `ConsoleOutput` implementation, `ConsoleOutput` no longer relies on `echo`
 - Added support for label and graph gutter in `ConsoleConfig` class
 - Added support for label alignment in `ConsoleConfig` class
-- Moved all interfaces into a `Contract` dedicated namespace and made them simpler to implement
-- Renamed the `ConsoleOutput` to `Console`
-- Renamed the `Output` to `Graph`
-- Renamed the `LabelGenerator` implementing classes
-- Removed the `Matrix` class
+- Moved graph features out of the `ConsoleOutput` class to `ConsoleGraph`
+- Merge the `Matrix` class feature into the `ConsoleGraph` and removed it
+- Renamed the `LabelGenerator` implementing classes and moved them in the main namespace
 - Removed the `Viewer` class
 
 ## 0.4.0 - 2019-06-17
@@ -63,12 +63,12 @@ All Notable changes to `Period Visualizer` will be documented in this file
 
 - The `OutputInterface::render` and the `OutputInterface::display` array signature has changed.
 
-The array format is that of a tuple where:
+The array format is that of a dataset where:
 	- the first value represents the period or the sequence label
 	- the second value represents the period or the sequence
 
 - The `Matrix` and the `Viewer` class are updated accordingly with refactoring to improve the calculation speed.
-- The `ConsoleConfig` accepts a `default` color keywords to tell that the console should fellow the default colors from the console.
+- The `ConsoleConfig` accepts a `default` color keywords to tell that the graph should fellow the default colors from the graph.
 - The `default` color keyword replaces the `white` color keyword as the default keyword used if no color is specified.
 
 ## 0.1.0 - 2018-12-19

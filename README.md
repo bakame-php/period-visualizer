@@ -14,22 +14,31 @@ It is inspired from the work of [@thecrypticace](https://github.com/thecrypticac
 ~~~php
 <?php
 
-use Bakame\Period\Visualizer\Console;
+use Bakame\Period\Visualizer\ConsoleGraph;
 use Bakame\Period\Visualizer\Dataset;
+use League\Period\Datepoint;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$dataset = Dataset::fromSequence(
-    new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01'))
+$sequence = new Sequence(
+    Datepoint::create('2018-11-29')->getYear(Period::EXCLUDE_START_INCLUDE_END),
+    Datepoint::create('2018-05-29')->getMonth()->expand('3 MONTH'),
+    Datepoint::create('2017-01-13')->getQuarter(Period::EXCLUDE_ALL),
+    Period::around('2016-06-01', '3 MONTHS', Period::INCLUDE_ALL)
 );
-(new Console())->display($dataset);
+$dataset = Dataset::fromSequence($sequence);
+$dataset->append('gaps', $sequence->gaps());
+(new ConsoleGraph())->display($dataset);
 ~~~
 
 results:
 
 ~~~bash
- A    [------------------------------------------------------------------------------)
- B                                        [------------------------------------------)
+ A                                          (--------------------]
+ B                                            [-----------)       
+ C                     (----)                                     
+ D    [---------]                                                 
+ gaps           (------]    [---------------]  
 ~~~
 
 System Requirements
@@ -62,7 +71,7 @@ To generate a graph you need to give to the `Dataset` constructor a list of pair
 ~~~php
 <?php
 
-use Bakame\Period\Visualizer\Console;
+use Bakame\Period\Visualizer\ConsoleGraph;
 use Bakame\Period\Visualizer\Dataset;
 use League\Period\Period;
 
@@ -70,7 +79,7 @@ $dataset = new Dataset([
     ['A', new Period('2018-01-01', '2018-02-01')],
     ['B', new Period('2018-01-15', '2018-02-01')], 
 ]);
-(new Console())->display($dataset);
+(new ConsoleGraph())->display($dataset);
 ~~~
 
 results:
@@ -87,7 +96,7 @@ If you want to display a `Sequence` and some of its operations. You can append t
 ~~~php
 <?php
 
-use Bakame\Period\Visualizer\Console;
+use Bakame\Period\Visualizer\ConsoleGraph;
 use Bakame\Period\Visualizer\Dataset;
 use League\Period\Period;
 use League\Period\Sequence;
@@ -96,12 +105,12 @@ $sequence = new Sequence(
     new Period('2018-01-01', '2018-03-01'),
     new Period('2018-05-01', '2018-08-01')
 );
-$dataset = Dataset::fromSequence($sequence);
+$dataset = new Dataset();
+$dataset->append('A', $sequence[0]);
+$dataset->append('B', $sequence[1]);
 $dataset->append('GAPS', $sequence->gaps());
-(new Console())->display($dataset);
+(new ConsoleGraph())->display($dataset);
 ~~~
-
-*Of Note: We are using the `Dataset::fromSequence` which is a handy named constructor to inject the `Sequence` members into the `Dataset` object*
 
 results:
 
@@ -115,26 +124,38 @@ The `Dataset` implements the `Countable` and the `IteratorAggregate` interface. 
 
 ~~~php
 <?php
+public function Dataset::fromSequence(Sequence $sequence, ?LabelGenerator $labelGenerator = null): self; //Creates a new Dataset from a Sequence and a LabelGenerator.
 public function Dataset::fromCollection(): self; //Creates a new Dataset from a generic iterable structure.
+public function Dataset::isEmpty(): bool; //Tells whether the collection is empty.
 public function Dataset::labels(): string[]; //the current labels used
 public function Dataset::items(): array<Period|Sequence>; //the current objects inside the Dataset
-public function Dataset::isEmpty(): bool; //Tells whether the collection is empty.
-public function Dataset::labelize(LabelGenerator $labelGenerator): self; //Update the labels used for the tuple.
 public function Dataset::boundaries(): ?Period;  //Returns the collection boundaries or null if it is empty.
+public function Dataset::labelMaxLength(): int;  //Returns the label max length.
+public function Dataset::labelize(LabelGenerator $labelGenerator): self; //Update the labels used for the dataset.
 ~~~
 
-## Customize the line labels
+## Setting the Dataset labels
 
-The `Bakame\Period\Visualizer\Dataset::fromSequence` can be further formatted by providing a object to improve line index generation.
-By default the class is instantiated with the letter index strategy which starts incrementing the labels from  the 'A' index. 
-You can choose between the following strategies to modify the default behaviour:
+By default you are required to provide a label per item added present in a `Dataset` object.
+The package provides a `LabelGenerator` interface that ease generating and creating labels for your visualization.
 
-### Letter strategy
+A `LabelGenerator` implementing class is needed for the following methods
+
+- The `Dataset::fromSequence`, to create a new instance from a `Sequence` object;
+- The `Dataset::labelize` to update the associated labels in the current instance;
+
+*By default when using `Dataset::fromSequence` if no `LabelGenerator` class is supplied the `LatinLetter` label generator will be used.*
+
+The current package comes bundle with the following `LabelGenerator` implementing class:
+
+### LatinLetter
+
+Generates labels according the the latin alphabet.
 
 ~~~php
 <?php
 
-use Bakame\Period\Visualizer\Console;
+use Bakame\Period\Visualizer\ConsoleGraph;
 use Bakame\Period\Visualizer\LatinLetter;
 use Bakame\Period\Visualizer\Dataset;
 use League\Period\Period;
@@ -144,7 +165,7 @@ $dataset = Dataset::fromSequence(
     new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
     new LatinLetter('aa')
 );
-(new Console())->display($dataset);
+(new ConsoleGraph())->display($dataset);
 ~~~
 
 results:
@@ -163,12 +184,14 @@ public function LatinLetter::startingAt(): string; //returns the first letter to
 public function LatinLetter::startsWith(): self;  //returns a new object with a new starting letter
 ~~~
 
-### Decimal Number Strategy
+### DecimalNumber
+
+Generates labels according to the decimal number system.
 
 ~~~php
 <?php
 
-use Bakame\Period\Visualizer\Console;
+use Bakame\Period\Visualizer\ConsoleGraph;
 use Bakame\Period\Visualizer\DecimalNumber;
 use Bakame\Period\Visualizer\Dataset;
 use League\Period\Period;
@@ -178,7 +201,7 @@ $dataset = Dataset::fromSequence(
     new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
     new DecimalNumber(42)
 );
-(new Console())->display($dataset);
+(new ConsoleGraph())->display($dataset);
 ~~~
 
 results:
@@ -197,12 +220,14 @@ public function DecimalNumber::startingAt(): string; //returns the first decimal
 public function DecimalNumber::startsWith(): self;  //returns a new object with a new starting decimal number
 ~~~
 
-### Roman Numeral Strategy
+### RomanNumber
+
+Uses the `DecimalNumber` label generator class to generate Roman number labels.
 
 ~~~php
 <?php
 
-use Bakame\Period\Visualizer\Console;
+use Bakame\Period\Visualizer\ConsoleGraph;
 use Bakame\Period\Visualizer\DecimalNumber;
 use Bakame\Period\Visualizer\RomanNumber;
 use Bakame\Period\Visualizer\Dataset;
@@ -215,7 +240,7 @@ $dataset = Dataset::fromSequence(
     new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
     $labelGenerator
 );
-(new Console())->display($dataset);
+(new ConsoleGraph())->display($dataset);
 ~~~
 
 results:
@@ -238,13 +263,15 @@ public function RomanNumber::isUpper(): bool;  //Tells whether the roman letter 
 public function RomanNumber::isLower(): bool;  //Tells whether the roman letter is lower cased.
 ~~~
 
-### Affix Label Strategy
+### AffixLabel
+
+Uses any `labelGenerator` implementing class to add prefix and/or suffix string to the generated labels.
 
 ~~~php
 <?php
 
 use Bakame\Period\Visualizer\AffixLabel;
-use Bakame\Period\Visualizer\Console;
+use Bakame\Period\Visualizer\ConsoleGraph;
 use Bakame\Period\Visualizer\DecimalNumber;
 use Bakame\Period\Visualizer\RomanNumber;
 use Bakame\Period\Visualizer\Dataset;
@@ -260,7 +287,7 @@ $dataset = Dataset::fromSequence(
     new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
     $labelGenerator
 );
-(new Console())->display($dataset);
+(new ConsoleGraph())->display($dataset);
 ~~~
 
 results:
@@ -281,13 +308,15 @@ public function AffixLabel::withPrefix(string $prefix): self;  //returns a new o
 public function AffixLabel::withSuffix(string $suffix): self;  //returns a new object with a new suffix
 ~~~
 
-### Reverse Label Strategy
+### ReverseLabel
+
+Uses any `labelGenerator` implementing class to reverse the generated labels order.
 
 ~~~php
 <?php
 
 use Bakame\Period\Visualizer\AffixLabel;
-use Bakame\Period\Visualizer\Console;
+use Bakame\Period\Visualizer\ConsoleGraph;
 use Bakame\Period\Visualizer\DecimalNumber;
 use Bakame\Period\Visualizer\ReverseLabel;
 use Bakame\Period\Visualizer\RomanNumber;
@@ -304,7 +333,7 @@ $dataset = Dataset::fromSequence(
     new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
     $labelGenerator
 );
-(new Console())->display($dataset);
+(new ConsoleGraph())->display($dataset);
 ~~~
 
 results:
@@ -314,16 +343,16 @@ results:
  v.  [-----------------------------------)
 ~~~
 
-### Custom Strategy
+### Custom LabelGenerator
 
-You can create your own strategy by implementing the `Bakame\Period\Visualizer\Contract\LabelGenerator` interface like shown below:
+You can create your own label generator by implementing the `Bakame\Period\Visualizer\Contract\LabelGenerator` interface like shown below:
 
 ~~~php
 <?php
 
 use Bakame\Period\Visualizer\AffixLabel;
 use Bakame\Period\Visualizer\Contract\LabelGenerator;
-use Bakame\Period\Visualizer\Console;
+use Bakame\Period\Visualizer\ConsoleGraph;
 use Bakame\Period\Visualizer\Dataset;
 use League\Period\Period;
 use League\Period\Sequence;
@@ -345,7 +374,7 @@ $dataset = Dataset::fromSequence(
     new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
     $labelGenerator
 );
-(new Console())->display($dataset);
+(new ConsoleGraph())->display($dataset);
 ~~~
 
 results:
@@ -355,19 +384,23 @@ results:
  foobar. [-----------------------------------)
 ~~~
 
-## Output
+## Displaying the Dataset
 
-The `Console` class is responsible for outputting your graph.
+The `ConsoleGraph` class is responsible for generating the graph from the `Dataset` by implementing the `Graph` interface for the console.
+
+The `ConsoleGraph::display` methods expects a `Dataset` object as its unique argument.
+
+If you wish to present the graph on another medium like a web browser or an image, you will need to implement the interface on your implementation.
 
 ~~~php
 <?php
 
-use Bakame\Period\Visualizer\Console;
+use Bakame\Period\Visualizer\ConsoleGraph;
 use Bakame\Period\Visualizer\Dataset;
 use League\Period\Period;
 
-$console = new Console();
-echo $console->display(new Dataset([
+$graph = new ConsoleGraph();
+echo $graph->display(new Dataset([
     ['first', new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00')],
     ['last', new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00')],
 ]));
@@ -380,21 +413,38 @@ results:
  last                            [----------------------------------------------------)
 ~~~
 
-The `Console::display` methods expects a `Dataset` object as its unique argument where:
+### Customized the graph looks
 
-The `Console` class can be customized by providing a `ConsoleConfig` which defines the console settings.
+The `ConsoleGraph` class can be customized by:
+ 
+- providing a `ConsoleConfig` which defines:
+    - the graph settings (How the intervals will be created)
+        - sets single characters to represent the boundary types
+        - sets single characters to represent the body and space
+    - the console output settings. (How the intervals will be displayed)
+        - sets the graph width
+        - sets the graph colors
+        - sets the gap between the labels and the rows
+        - sets the label alignment
+
+- providing a `OutputWriter` implementing class if you prefer to use a battle tested output library like `League CLImate` or `Symfony Console` 
+to output the resulting graph. If you don't, the package ships with a minimal `ConsoleOutput` class which is used if you do not provide you own implementation.
 
 ~~~php
 <?php
 
+use Bakame\Period\Visualizer\AffixLabel;
 use Bakame\Period\Visualizer\ConsoleConfig;
-use Bakame\Period\Visualizer\Console;
-use Bakame\Period\Visualizer\Contract\LabelGenerator;
+use Bakame\Period\Visualizer\ConsoleGraph;
 use Bakame\Period\Visualizer\Dataset;
+use Bakame\Period\Visualizer\DecimalNumber;
+use Bakame\Period\Visualizer\ReverseLabel;
+use Bakame\Period\Visualizer\RomanNumber;
+use League\Period\Datepoint;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$config = (new ConsoleConfig())
+$config = ConsoleConfig::createFromRainbow()
     ->withStartExcluded('🍕')
     ->withStartIncluded('🍅')
     ->withEndExcluded('🎾')
@@ -402,42 +452,40 @@ $config = (new ConsoleConfig())
     ->withWidth(30)
     ->withSpace('💩')
     ->withBody('😊')
-    ->withColors('yellow', 'red')
     ->withGapSize(2)
     ->withLabelAlign(ConsoleConfig::ALIGN_RIGHT)
 ;
 
-$fixedLabels = new class implements LabelGenerator {
-    public function generate(int $nbLabels): array
-    {
-        return ['first one', 'last'];
-    }
+$labelGenerator = new DecimalNumber(42);
+$labelGenerator = new RomanNumber($labelGenerator, RomanNumber::UPPER);
+$labelGenerator = new AffixLabel($labelGenerator, '', '.');
+$labelGenerator = new ReverseLabel($labelGenerator);
 
-    public function format($str): string
-    {
-        return (string) $str;
-    }
-};
-
-$dataset = Dataset::fromSequence(new Sequence(
-    new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00', Period::EXCLUDE_ALL),
-    new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00', Period::INCLUDE_ALL)
-), $fixedLabels);
-
-$console = new Console($config);
-$console->display($dataset);
+$sequence = new Sequence(
+    Datepoint::create('2018-11-29')->getYear(Period::EXCLUDE_START_INCLUDE_END),
+    Datepoint::create('2018-05-29')->getMonth()->expand('3 MONTH'),
+    Datepoint::create('2017-01-13')->getQuarter(Period::EXCLUDE_ALL),
+    Period::around('2016-06-01', '3 MONTHS', Period::INCLUDE_ALL)
+);
+$dataset = Dataset::fromSequence($sequence, $labelGenerator);
+$dataset->append($labelGenerator->format('gaps'), $sequence->gaps());
+$graph = new ConsoleGraph($config);
+$graph->display($dataset);
 ~~~
 
-results:
+result:
 
 ~~~bash
- first one  🍕😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊🎾💩💩💩💩💩💩💩💩💩💩
-      last  💩💩💩💩💩💩💩💩💩💩🍅😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊🍔
+   XLV.  💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩🍕😊😊😊😊😊😊😊😊😊🍔
+  XLIV.  💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩🍅😊😊😊😊😊🎾💩💩💩
+ XLIII.  💩💩💩💩💩💩💩💩🍕😊😊🎾💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩
+  XLII.  🍅😊😊😊😊🍔💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩
+  GAPS.  💩💩💩💩💩🍕😊😊🍔💩💩🍅😊😊😊😊😊😊😊🍔💩💩💩💩💩💩💩💩💩💩
 ~~~
 
-*On a POSIX compliant console the first line will be yellow and the second red*
+*On a POSIX compliant graph all lines have different colors*
 
-The `ConsoleConfig` class exposes the following additionals methods:
+The `ConsoleConfig` class exposes the following additional methods:
 
 ~~~php
 <?php

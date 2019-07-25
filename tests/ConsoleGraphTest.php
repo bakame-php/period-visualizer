@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace BakameTest\Period\Visualizer;
 
-use Bakame\Period\Visualizer\Console;
 use Bakame\Period\Visualizer\ConsoleConfig;
-use Bakame\Period\Visualizer\ConsoleStdout;
+use Bakame\Period\Visualizer\ConsoleGraph;
+use Bakame\Period\Visualizer\ConsoleOutput;
 use Bakame\Period\Visualizer\Dataset;
 use League\Period\Period;
 use League\Period\Sequence;
@@ -25,14 +25,14 @@ use function rewind;
 use function stream_get_contents;
 
 /**
- * @coversDefaultClass \Bakame\Period\Visualizer\Console
+ * @coversDefaultClass \Bakame\Period\Visualizer\ConsoleGraph
  */
-final class ConsoleTest extends TestCase
+final class ConsoleGraphTest extends TestCase
 {
     /**
-     * @var Console
+     * @var ConsoleGraph
      */
-    private $output;
+    private $graph;
 
     /**
      * @var resource
@@ -43,9 +43,9 @@ final class ConsoleTest extends TestCase
     {
         $this->stream = $this->setStream();
 
-        $this->output = new Console(
+        $this->graph = new ConsoleGraph(
             (new ConsoleConfig())->withColors('red'),
-            new ConsoleStdout($this->stream)
+            new ConsoleOutput($this->stream)
         );
     }
 
@@ -65,8 +65,8 @@ final class ConsoleTest extends TestCase
      */
     public function testConstructor(): void
     {
-        $output = new Console();
-        self::assertNotEquals($this->output, $output);
+        $graph = new ConsoleGraph();
+        self::assertNotEquals($this->graph, $graph);
     }
 
     /**
@@ -75,7 +75,7 @@ final class ConsoleTest extends TestCase
      */
     public function testDisplayEmptyDataset(): void
     {
-        $this->output->display(new Dataset());
+        $this->graph->display(new Dataset());
         rewind($this->stream);
         $data = stream_get_contents($this->stream);
 
@@ -88,11 +88,11 @@ final class ConsoleTest extends TestCase
      * @covers ::tokenToCharacters
      * @covers ::buildMatrix
      * @covers ::addPeriodToRow
-     * @covers \Bakame\Period\Visualizer\ConsoleStdout
+     * @covers \Bakame\Period\Visualizer\ConsoleOutput
      */
     public function testDisplayPeriods(): void
     {
-        $this->output->display(new Dataset([
+        $this->graph->display(new Dataset([
             ['A', new Period('2018-01-01', '2018-01-15')],
             ['B', new Period('2018-01-15', '2018-02-01')],
         ]));
@@ -120,7 +120,7 @@ final class ConsoleTest extends TestCase
             ['B', new Sequence(new Period('2018-01-15', '2018-02-01'))],
         ]);
 
-        $this->output->display($dataset);
+        $this->graph->display($dataset);
 
         rewind($this->stream);
         /** @var string $data */

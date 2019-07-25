@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace BakameTest\Period\Visualizer;
 
-use Bakame\Period\Visualizer\ConsoleStdout;
+use Bakame\Period\Visualizer\ConsoleOutput;
 use PHPUnit\Framework\TestCase;
 use TypeError;
 use function curl_init;
@@ -22,9 +22,9 @@ use function rewind;
 use function stream_get_contents;
 
 /**
- * @coversDefaultClass \Bakame\Period\Visualizer\ConsoleStdout
+ * @coversDefaultClass \Bakame\Period\Visualizer\ConsoleOutput
  */
-final class ConsoleStdoutTest extends TestCase
+final class ConsoleOutputTest extends TestCase
 {
     /**
      * @return resource
@@ -40,13 +40,13 @@ final class ConsoleStdoutTest extends TestCase
     public function testCreateStreamWithInvalidParameter(): void
     {
         self::expectException(TypeError::class);
-        new ConsoleStdout(__DIR__.'/data/foo.csv');
+        new ConsoleOutput(__DIR__.'/data/foo.csv');
     }
 
     public function testCreateStreamWithWrongResourceType(): void
     {
         self::expectException(TypeError::class);
-        new ConsoleStdout(curl_init());
+        new ConsoleOutput(curl_init());
     }
 
     /**
@@ -55,9 +55,9 @@ final class ConsoleStdoutTest extends TestCase
     public function testColorize(string $string, string $colorCodeIndex, string $expected): void
     {
         $stream = $this->setStream();
-        $stdout = new ConsoleStdout($stream);
+        $output = new ConsoleOutput($stream);
 
-        self::assertSame($expected, $stdout->colorize($string, $colorCodeIndex));
+        self::assertSame($expected, $output->colorize($string, $colorCodeIndex));
     }
 
     public function provideTextToColorize(): iterable
@@ -93,8 +93,8 @@ final class ConsoleStdoutTest extends TestCase
     public function testWriteln($message, string $expected): void
     {
         $stream = $this->setStream();
-        $stdout = new ConsoleStdout($stream);
-        $stdout->writeln($message);
+        $output = new ConsoleOutput($stream);
+        $output->writeln($message);
         rewind($stream);
         /** @var string $data */
         $data = stream_get_contents($stream);
@@ -105,7 +105,7 @@ final class ConsoleStdoutTest extends TestCase
     public function provideWritelnTexts(): iterable
     {
         $stream = $this->setStream();
-        $stdout = new ConsoleStdout($stream);
+        $output = new ConsoleOutput($stream);
 
         return [
             'empty message' => [
@@ -124,7 +124,7 @@ final class ConsoleStdoutTest extends TestCase
                 'expected' => "I'm the king".PHP_EOL.'Of the casa'.PHP_EOL,
             ],
             'message with color' => [
-                'message' => $stdout->colorize('foobar', 'magenta'),
+                'message' => $output->colorize('foobar', 'magenta'),
                 'expected' => 'foobar',
             ],
         ];

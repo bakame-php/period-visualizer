@@ -29,7 +29,7 @@ use function strtolower;
 use const PHP_EOL;
 use const PHP_OS;
 
-final class ConsoleStdout implements OutputWriter
+final class ConsoleOutput implements OutputWriter
 {
     private const REGEXP_POSIX_PLACEHOLDER = '/(\s+)/msi';
 
