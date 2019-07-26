@@ -103,6 +103,22 @@ final class Dataset implements Countable, IteratorAggregate
     }
 
     /**
+     * @return string[]
+     */
+    public function labels(): array
+    {
+        return array_column($this->pairs, 0);
+    }
+
+    /**
+     * @return array<Period|Sequence>
+     */
+    public function items(): array
+    {
+        return array_column($this->pairs, 1);
+    }
+
+    /**
      * Returns the collection boundaries.
      */
     public function boundaries(): ?Period
@@ -120,27 +136,15 @@ final class Dataset implements Countable, IteratorAggregate
     }
 
     /**
-     * @return string[]
-     */
-    public function labels(): array
-    {
-        return array_column($this->pairs, 0);
-    }
-
-    /**
      * Returns the label maximum length.
      */
     public function labelMaxLength(): int
     {
-        return  max(...array_map('strlen', array_column($this->pairs, 0)));
-    }
+        if ([] === $this->pairs) {
+            return 0;
+        }
 
-    /**
-     * @return array<Period|Sequence>
-     */
-    public function items(): array
-    {
-        return array_column($this->pairs, 1);
+        return  max(...array_map('strlen', array_column($this->pairs, 0)));
     }
 
     /**

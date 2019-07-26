@@ -138,4 +138,12 @@ final class DatasetTest extends TestCase
         $emptyDataset = new Dataset();
         self::assertEquals($emptyDataset, $emptyDataset->labelize(new DecimalNumber(42)));
     }
+
+    public function testEmptyInstance(): void
+    {
+        $dataset = new Dataset();
+        self::assertSame(0, $dataset->labelMaxLength());
+        self::assertSame([], $dataset->items());
+        self::assertSame([], $dataset->labels());
+    }
 }
