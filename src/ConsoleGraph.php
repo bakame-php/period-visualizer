@@ -70,42 +70,63 @@ final class ConsoleGraph implements Graph
      */
     public function display(Dataset $dataset): void
     {
-        if (!$dataset->isEmpty()) {
-            $this->output->writeln($this->drawLines($dataset));
+        $this->setScale($dataset);
+        $graph = $this->drawGraph($dataset);
+        $this->output->writeln($graph);
+    }
+
+    /**
+     * Sets the scale to render the line.
+     */
+    private function setScale(Dataset $dataset): void
+    {
+        $this->start = 0;
+        $this->unit = 1;
+        $boundaries = $dataset->boundaries();
+        if (null !== $boundaries) {
+            $this->start = $boundaries->getStartDate()->getTimestamp();
+            $this->unit = $this->config->width() / $boundaries->getTimestampInterval();
         }
     }
 
     /**
-     * Converts a Dataset entry into a line to be outputted by the OutputWriter implementation.
+     * Converts a Dataset entry into a series of lines to be outputted by the OutputWriter implementation.
      *
      * @return iterable<string>
      */
-    private function drawLines(Dataset $dataset): iterable
+    private function drawGraph(Dataset $dataset): iterable
     {
-        $nameLength = $dataset->labelMaxLength();
-        /** @var Period $boundaries */
-        $boundaries = $dataset->boundaries();
-        $this->start = $boundaries->getStartDate()->getTimestamp();
-        $this->unit = $this->config->width() / $boundaries->getTimestampInterval();
         $colorCodeIndexes = $this->config->colors();
         $colorCodeCount = count($colorCodeIndexes);
         $padding = $this->config->labelAlign();
         $gap = str_repeat(' ', $this->config->gapSize());
         $lineCharacters = array_fill(0, $this->config->width(), $this->config->space());
-        $drawSequence = Closure::fromCallable([$this, 'drawPeriod']);
-        foreach ($dataset as $offset => [$name, $item]) {
-            $color = $colorCodeIndexes[$offset % $colorCodeCount];
-            $line = str_pad($name, $nameLength, ' ', $padding).$gap;
-            if ($item instanceof Period) {
-                $line .= implode('', $this->drawPeriod($lineCharacters, $item));
+        $labelMaxLength = $dataset->labelMaxLength();
+        foreach ($dataset as $offset => [$label, $item]) {
+            $colorIndex = $colorCodeIndexes[$offset % $colorCodeCount];
+            $labelPortion = str_pad($label, $labelMaxLength, ' ', $padding);
+            $dataPortion = $this->drawDataPortion($item, $lineCharacters);
 
-                yield ' '.$this->output->colorize($line, $color);
-            } elseif ($item instanceof Sequence) {
-                $line .= implode('', $item->reduce($drawSequence, $lineCharacters));
-
-                yield ' '.$this->output->colorize($line, $color);
-            }
+            yield ' '.$this->output->colorize($labelPortion.$gap.$dataPortion, $colorIndex);
         }
+    }
+
+    /**
+     * Convert a Dataset item into a graph data portion.
+     *
+     * @param Period|Sequence $item
+     * @param string[]        $lineCharacters
+     */
+    private function drawDataPortion($item, array $lineCharacters): string
+    {
+        if ($item instanceof Period) {
+            return implode('', $this->drawPeriod($lineCharacters, $item));
+        }
+
+        static $drawSequence;
+        $drawSequence = $drawSequence ?? Closure::fromCallable([$this, 'drawPeriod']);
+
+        return implode('', $item->reduce($drawSequence, $lineCharacters));
     }
 
     /**

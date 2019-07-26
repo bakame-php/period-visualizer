@@ -71,6 +71,8 @@ final class ConsoleGraphTest extends TestCase
 
     /**
      * @covers ::display
+     * @covers ::drawGraph
+     * @covers ::setScale
      */
     public function testDisplayEmptyDataset(): void
     {
@@ -83,7 +85,9 @@ final class ConsoleGraphTest extends TestCase
 
     /**
      * @covers ::display
-     * @covers ::drawLines
+     * @covers ::drawGraph
+     * @covers ::setScale
+     * @covers ::drawDataPortion
      * @covers ::drawPeriod
      * @covers \Bakame\Period\Visualizer\ConsoleOutput
      */
@@ -104,7 +108,9 @@ final class ConsoleGraphTest extends TestCase
 
     /**
      * @covers ::display
-     * @covers ::drawLines
+     * @covers ::drawGraph
+     * @covers ::setScale
+     * @covers ::drawDataPortion
      * @covers ::drawPeriod
      */
     public function testDisplaySequence(): void
@@ -122,5 +128,27 @@ final class ConsoleGraphTest extends TestCase
 
         self::assertStringContainsString('A [--------------------------)', $data);
         self::assertStringContainsString('B                            [-------------------------------)', $data);
+    }
+
+    /**
+     * @covers ::display
+     * @covers ::drawGraph
+     * @covers ::setScale
+     * @covers ::drawDataPortion
+     * @covers ::drawPeriod
+     */
+    public function testDisplayEmptySequence(): void
+    {
+        $dataset = new Dataset();
+        $dataset->append('sequenceA', new Sequence());
+        $dataset->append('sequenceB', new Sequence());
+        $this->graph->display($dataset);
+
+        rewind($this->stream);
+        /** @var string $data */
+        $data = stream_get_contents($this->stream);
+
+        self::assertStringContainsString('sequenceA                                  ', $data);
+        self::assertStringContainsString('sequenceB                                  ', $data);
     }
 }

@@ -2,6 +2,12 @@
 
 All Notable changes to `Period Visualizer` will be documented in this file
 
+## Next - TBD 
+
+- Bug fix `Dataset::labelMaxLength` when `Dataset` is empty
+- Bug fix `ConsoleGraph::display` when `Dataset` only contains empty `Sequence` instances.
+- Improve `ConsoleGraph` implementation.
+
 ## 0.5.0 - 2019-07-25
 
 - Moved all interfaces into a `Contract` dedicated namespace
