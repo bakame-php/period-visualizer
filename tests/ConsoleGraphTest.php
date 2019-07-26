@@ -71,7 +71,6 @@ final class ConsoleGraphTest extends TestCase
 
     /**
      * @covers ::display
-     * @covers ::buildMatrix
      */
     public function testDisplayEmptyDataset(): void
     {
@@ -84,10 +83,8 @@ final class ConsoleGraphTest extends TestCase
 
     /**
      * @covers ::display
-     * @covers ::matrixToLine
-     * @covers ::tokenToCharacters
-     * @covers ::buildMatrix
-     * @covers ::addPeriodToRow
+     * @covers ::drawLines
+     * @covers ::drawPeriod
      * @covers \Bakame\Period\Visualizer\ConsoleOutput
      */
     public function testDisplayPeriods(): void
@@ -105,13 +102,10 @@ final class ConsoleGraphTest extends TestCase
         self::assertStringContainsString('B                            [-------------------------------)', $data);
     }
 
-
     /**
      * @covers ::display
-     * @covers ::matrixToLine
-     * @covers ::tokenToCharacters
-     * @covers ::buildMatrix
-     * @covers ::addPeriodToRow
+     * @covers ::drawLines
+     * @covers ::drawPeriod
      */
     public function testDisplaySequence(): void
     {

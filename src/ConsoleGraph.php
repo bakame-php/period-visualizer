@@ -19,7 +19,6 @@ use Closure;
 use League\Period\Period;
 use League\Period\Sequence;
 use function array_fill;
-use function array_map;
 use function array_splice;
 use function ceil;
 use function count;
@@ -34,31 +33,10 @@ use const STDOUT;
  */
 final class ConsoleGraph implements Graph
 {
-    private const TOKEN_SPACE = 0;
-
-    private const TOKEN_BODY = 1;
-
-    private const TOKEN_START_INCLUDED = 2;
-
-    private const TOKEN_START_EXCLUDED = 3;
-
-    private const TOKEN_END_INCLUDED = 4;
-
-    private const TOKEN_END_EXCLUDED = 5;
-
-    private const TOKEN_TO_METHOD = [
-        self::TOKEN_SPACE => 'space',
-        self::TOKEN_BODY => 'body',
-        self::TOKEN_START_EXCLUDED => 'startExcluded',
-        self::TOKEN_START_INCLUDED => 'startIncluded',
-        self::TOKEN_END_INCLUDED => 'endIncluded',
-        self::TOKEN_END_EXCLUDED => 'endExcluded',
-    ];
-
     /**
      * @var OutputWriter
      */
-    private $writer;
+    private $output;
 
     /**
      * @var ConsoleConfig
@@ -79,12 +57,12 @@ final class ConsoleGraph implements Graph
      * New instance.
      *
      * @param ?ConsoleConfig $config
-     * @param ?OutputWriter  $writer
+     * @param ?OutputWriter  $output
      */
-    public function __construct(?ConsoleConfig $config = null, ?OutputWriter $writer = null)
+    public function __construct(?ConsoleConfig $config = null, ?OutputWriter $output = null)
     {
         $this->config = $config ?? new ConsoleConfig();
-        $this->writer = $writer ?? new ConsoleOutput(STDOUT);
+        $this->output = $output ?? new ConsoleOutput(STDOUT);
     }
 
     /**
@@ -92,99 +70,63 @@ final class ConsoleGraph implements Graph
      */
     public function display(Dataset $dataset): void
     {
-        if ($dataset->isEmpty()) {
-            return;
+        if (!$dataset->isEmpty()) {
+            $this->output->writeln($this->drawLines($dataset));
         }
-
-        $matrix = $this->buildMatrix($dataset);
-        $this->writer->writeln(
-            $this->matrixToLine($matrix, $dataset->labelMaxLength())
-        );
     }
 
     /**
-     * Build a 2D table such that:.
+     * Converts a Dataset entry into a line to be outputted by the OutputWriter implementation.
      *
-     * - There's one row for every block.
-     * - There's one column for every unit of width.
-     * - Cell state depends on Period presence and boundary type.
-     *
-     * @return iterable<array{0:string, 1:int[]}>
+     * @return iterable<string>
      */
-    private function buildMatrix(Dataset $dataset): iterable
+    private function drawLines(Dataset $dataset): iterable
     {
+        $nameLength = $dataset->labelMaxLength();
         /** @var Period $boundaries */
         $boundaries = $dataset->boundaries();
-        $width = $this->config->width();
-        $row = array_fill(0, $width, self::TOKEN_SPACE);
         $this->start = $boundaries->getStartDate()->getTimestamp();
-        $this->unit = $width / $boundaries->getTimestampInterval();
-        $callable = Closure::fromCallable([$this, 'addPeriodToRow']);
-        foreach ($dataset as [$name, $block]) {
-            if ($block instanceof Period) {
-                yield [$name, $callable($row, $block)];
-            } elseif ($block instanceof Sequence) {
-                yield [$name, $block->reduce($callable, $row)];
+        $this->unit = $this->config->width() / $boundaries->getTimestampInterval();
+        $colorCodeIndexes = $this->config->colors();
+        $colorCodeCount = count($colorCodeIndexes);
+        $padding = $this->config->labelAlign();
+        $gap = str_repeat(' ', $this->config->gapSize());
+        $lineCharacters = array_fill(0, $this->config->width(), $this->config->space());
+        $drawSequence = Closure::fromCallable([$this, 'drawPeriod']);
+        foreach ($dataset as $offset => [$name, $item]) {
+            $color = $colorCodeIndexes[$offset % $colorCodeCount];
+            $line = str_pad($name, $nameLength, ' ', $padding).$gap;
+            if ($item instanceof Period) {
+                $line .= implode('', $this->drawPeriod($lineCharacters, $item));
+
+                yield ' '.$this->output->colorize($line, $color);
+            } elseif ($item instanceof Sequence) {
+                $line .= implode('', $item->reduce($drawSequence, $lineCharacters));
+
+                yield ' '.$this->output->colorize($line, $color);
             }
         }
     }
 
     /**
-     * Converts and add a Period to the matrix row.
+     * Converts a Period instance into an sequence of characters.
      *
-     * The conversion depends on the period presence and boundaries.
+     * The conversion depends on the Period interval and boundaries.
      *
-     * @param int[] $row
+     * @param string[] $lineCharacters
      *
-     * @return int[]
+     * @return string[]
      */
-    private function addPeriodToRow(array $row, Period $period): array
+    private function drawPeriod(array $lineCharacters, Period $period): array
     {
         $startIndex = (int) floor(($period->getStartDate()->getTimestamp() - $this->start) * $this->unit);
         $endIndex = (int) ceil(($period->getEndDate()->getTimestamp() - $this->start) * $this->unit);
         $periodLength = $endIndex - $startIndex;
 
-        array_splice($row, $startIndex, $periodLength, array_fill(0, $periodLength, self::TOKEN_BODY));
-        $row[$startIndex] = $period->isStartIncluded() ? self::TOKEN_START_INCLUDED : self::TOKEN_START_EXCLUDED;
-        $row[$endIndex - 1] = $period->isEndIncluded() ? self::TOKEN_END_INCLUDED : self::TOKEN_END_EXCLUDED;
+        array_splice($lineCharacters, $startIndex, $periodLength, array_fill(0, $periodLength, $this->config->body()));
+        $lineCharacters[$startIndex] = $period->isStartIncluded() ? $this->config->startIncluded() : $this->config->startExcluded();
+        $lineCharacters[$endIndex - 1] = $period->isEndIncluded() ? $this->config->endIncluded() : $this->config->endExcluded();
 
-        return $row;
-    }
-
-    /**
-     * Builds an Iterator to visualize one or more
-     * periods and/or collections in a more
-     * human readable / parsable manner.
-     *
-     * The submitted array values represent a pair where
-     * the first value is the identifier and the second value
-     * the intervals represented as Period or Sequence instances.
-     *
-     * This method returns one output string line at a time.
-     *
-     * @return iterable<string>
-     */
-    private function matrixToLine(iterable $matrix, int $nameLength): iterable
-    {
-        $colorCodeIndexes = $this->config->colors();
-        $colorCodeCount = count($colorCodeIndexes);
-        $key = -1;
-        $padding = $this->config->labelAlign();
-        $gap = str_repeat(' ', $this->config->gapSize());
-        foreach ($matrix as [$name, $row]) {
-            $lineName = str_pad($name, $nameLength, ' ', $padding);
-            $lineContent = implode('', array_map([$this, 'tokenToCharacters'], $row));
-            $color = $colorCodeIndexes[++$key % $colorCodeCount];
-
-            yield ' '.$this->writer->colorize($lineName.$gap.$lineContent, $color);
-        }
-    }
-
-    /**
-     * Turns the matrix values into characters representing the interval.
-     */
-    private function tokenToCharacters(int $token): string
-    {
-        return $this->config->{self::TOKEN_TO_METHOD[$token]}();
+        return $lineCharacters;
     }
 }
