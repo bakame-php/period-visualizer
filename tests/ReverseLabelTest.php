@@ -55,6 +55,6 @@ final class ReverseLabelTest extends TestCase
     public function testFormat(): void
     {
         $generator = new ReverseLabel(new LatinLetter('AA'));
-        self::assertSame('', $generator->format([]));
+        self::assertSame('', $generator->format(''));
     }
 }

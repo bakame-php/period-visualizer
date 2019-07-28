@@ -14,24 +14,28 @@ declare(strict_types=1);
 namespace Bakame\Period\Visualizer;
 
 use Bakame\Period\Visualizer\Contract\LabelGenerator;
+use Bakame\Period\Visualizer\Contract\Pairs;
 use Countable;
 use Iterator;
-use IteratorAggregate;
 use League\Period\Period;
 use League\Period\Sequence;
 use function array_column;
-use function array_map;
 use function count;
 use function is_scalar;
-use function max;
 use function method_exists;
+use function strlen;
 
-final class Dataset implements Countable, IteratorAggregate
+final class Dataset implements Pairs
 {
     /**
      * @var array<int, array{0:string, 1:Sequence|Period}>.
      */
     private $pairs = [];
+
+    /**
+     * @var int
+     */
+    private $labelMaxLength = 0;
 
     /**
      * constructor.
@@ -95,7 +99,7 @@ final class Dataset implements Countable, IteratorAggregate
     }
 
     /**
-     * Tells whether the collection is empty.
+     * {@inheritDoc}
      */
     public function isEmpty(): bool
     {
@@ -103,7 +107,7 @@ final class Dataset implements Countable, IteratorAggregate
     }
 
     /**
-     * @return string[]
+     * {@inheritDoc}
      */
     public function labels(): array
     {
@@ -111,7 +115,7 @@ final class Dataset implements Countable, IteratorAggregate
     }
 
     /**
-     * @return array<Period|Sequence>
+     * {@inheritDoc}
      */
     public function items(): array
     {
@@ -119,7 +123,7 @@ final class Dataset implements Countable, IteratorAggregate
     }
 
     /**
-     * Returns the collection boundaries.
+     * {@inheritDoc}
      */
     public function boundaries(): ?Period
     {
@@ -136,22 +140,15 @@ final class Dataset implements Countable, IteratorAggregate
     }
 
     /**
-     * Returns the label maximum length.
+     * {@inheritDoc}
      */
     public function labelMaxLength(): int
     {
-        if ([] === $this->pairs) {
-            return 0;
-        }
-
-        return  max(...array_map('strlen', array_column($this->pairs, 0)));
+        return $this->labelMaxLength;
     }
 
     /**
-     * Add a new pair to the collection.
-     *
-     * @param mixed $label any stringable structure.
-     * @param mixed $item  if the input is not a Period or a Sequence instance it is not added.
+     * {@inheritDoc}
      */
     public function append($label, $item): void
     {
@@ -160,18 +157,22 @@ final class Dataset implements Countable, IteratorAggregate
         }
 
         $label = (string) $label;
-        if ($item instanceof Period || $item instanceof Sequence) {
-            $this->pairs[] = [$label, $item];
+        if (!$item instanceof Period && !$item instanceof Sequence) {
+            return;
         }
+
+        $labelLength = strlen($label);
+        if ($this->labelMaxLength < $labelLength) {
+            $this->labelMaxLength = $labelLength;
+        }
+
+        $this->pairs[] = [$label, $item];
     }
 
     /**
-     * Update the labels used for the dataset.
-     *
-     * This method MUST retain the state of the current instance, and return
-     * an instance that contains the newly specified labels.
+     * {@inheritDoc}
      */
-    public function labelize(LabelGenerator $labelGenerator): self
+    public function labelize(LabelGenerator $labelGenerator): Pairs
     {
         return self::fromSequence($this->items(), $labelGenerator);
     }

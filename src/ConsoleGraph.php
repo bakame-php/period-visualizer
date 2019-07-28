@@ -15,6 +15,7 @@ namespace Bakame\Period\Visualizer;
 
 use Bakame\Period\Visualizer\Contract\Graph;
 use Bakame\Period\Visualizer\Contract\OutputWriter;
+use Bakame\Period\Visualizer\Contract\Pairs;
 use Closure;
 use League\Period\Period;
 use League\Period\Sequence;
@@ -68,21 +69,21 @@ final class ConsoleGraph implements Graph
     /**
      * {@inheritDoc}
      */
-    public function display(Dataset $dataset): void
+    public function display(Pairs $pairs): void
     {
-        $this->setScale($dataset);
-        $graph = $this->drawGraph($dataset);
-        $this->output->writeln($graph);
+        $this->setGraphScale($pairs);
+        $lines = $this->drawGraphLines($pairs);
+        $this->output->writeln($lines);
     }
 
     /**
      * Sets the scale to render the line.
      */
-    private function setScale(Dataset $dataset): void
+    private function setGraphScale(Pairs $pairs): void
     {
         $this->start = 0;
         $this->unit = 1;
-        $boundaries = $dataset->boundaries();
+        $boundaries = $pairs->boundaries();
         if (null !== $boundaries) {
             $this->start = $boundaries->getStartDate()->getTimestamp();
             $this->unit = $this->config->width() / $boundaries->getTimestampInterval();
@@ -94,20 +95,21 @@ final class ConsoleGraph implements Graph
      *
      * @return iterable<string>
      */
-    private function drawGraph(Dataset $dataset): iterable
+    private function drawGraphLines(Pairs $pairs): iterable
     {
         $colorCodeIndexes = $this->config->colors();
         $colorCodeCount = count($colorCodeIndexes);
         $padding = $this->config->labelAlign();
         $gap = str_repeat(' ', $this->config->gapSize());
+        $leftMargin = str_repeat(' ', $this->config->leftMarginSize());
         $lineCharacters = array_fill(0, $this->config->width(), $this->config->space());
-        $labelMaxLength = $dataset->labelMaxLength();
-        foreach ($dataset as $offset => [$label, $item]) {
+        $labelMaxLength = $pairs->labelMaxLength();
+        foreach ($pairs as $offset => [$label, $item]) {
             $colorIndex = $colorCodeIndexes[$offset % $colorCodeCount];
             $labelPortion = str_pad($label, $labelMaxLength, ' ', $padding);
             $dataPortion = $this->drawDataPortion($item, $lineCharacters);
 
-            yield ' '.$this->output->colorize($labelPortion.$gap.$dataPortion, $colorIndex);
+            yield $this->output->colorize($leftMargin.$labelPortion.$gap.$dataPortion, $colorIndex);
         }
     }
 

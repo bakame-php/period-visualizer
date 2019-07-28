@@ -175,6 +175,13 @@ final class ConsoleConfigTest extends TestCase
         self::expectException(InvalidArgumentException::class);
         $this->config->withBody($input);
     }
+    /**
+     * @dataProvider providerGaps
+     */
+    public function testLeftMargin(int $gap, int $expected): void
+    {
+        self::assertSame($expected, $this->config->withLeftMarginSize($gap)->leftMarginSize());
+    }
 
     /**
      * @dataProvider providerGaps

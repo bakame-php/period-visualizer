@@ -32,7 +32,7 @@ interface OutputWriter
     ];
 
     /**
-     * @param iterable|string $message
+     * @param iterable<string>|string $message
      *
      * @throws TypeError If the message type is not supported.
      */

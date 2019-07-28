@@ -82,6 +82,11 @@ final class ConsoleConfig
     /**
      * @var int
      */
+    private $leftMarginSize = 1;
+
+    /**
+     * @var int
+     */
     private $gapSize = 1;
 
     /**
@@ -178,7 +183,15 @@ final class ConsoleConfig
     }
 
     /**
-     * Retrieves the gap sequence between the label and the line.
+     * Retrieves the left margin size before the label name.
+     */
+    public function leftMarginSize(): int
+    {
+        return $this->leftMarginSize;
+    }
+
+    /**
+     * Retrieves the gap size between the label and the line.
      */
     public function gapSize(): int
     {
@@ -396,10 +409,31 @@ final class ConsoleConfig
     }
 
     /**
-     * Return an instance with a new gap sequence.
+     * Return an instance with a new left margin size.
      *
      * This method MUST retain the state of the current instance, and return
-     * an instance that contains the specified gap sequence.
+     * an instance that contains the specified left margin size.
+     */
+    public function withLeftMarginSize(int $leftMarginSize): self
+    {
+        if ($leftMarginSize  === $this->leftMarginSize) {
+            return $this;
+        }
+
+        if ($leftMarginSize < 0) {
+            $leftMarginSize = 1;
+        }
+
+        $clone = clone $this;
+        $clone->leftMarginSize = $leftMarginSize;
+
+        return $clone;
+    }
+    /**
+     * Return an instance with a new gap size.
+     *
+     * This method MUST retain the state of the current instance, and return
+     * an instance that contains the specified gap size.
      */
     public function withGapSize(int $gapSize): self
     {

@@ -14,8 +14,6 @@ declare(strict_types=1);
 namespace Bakame\Period\Visualizer;
 
 use Bakame\Period\Visualizer\Contract\LabelGenerator;
-use function is_scalar;
-use function method_exists;
 use function preg_match;
 use function trim;
 
@@ -51,13 +49,9 @@ final class LatinLetter implements LabelGenerator
     /**
      * {@inheritdoc}
      */
-    public function format($str): string
+    public function format(string $label): string
     {
-        if (!is_scalar($str) && !method_exists($str, '__toString') && null !== $str) {
-            return '';
-        }
-
-        return (string) $str;
+        return $label;
     }
 
     /**

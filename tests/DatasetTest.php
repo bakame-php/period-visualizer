@@ -99,7 +99,7 @@ final class DatasetTest extends TestCase
         ];
     }
 
-    public function testAppendPairs(): void
+    public function testAppendDataset(): void
     {
         $dataset = new Dataset([
             ['A', new Sequence(new Period('2018-01-01', '2018-01-15'))],
@@ -111,7 +111,7 @@ final class DatasetTest extends TestCase
         self::assertCount(2, $dataset);
     }
 
-    public function testLabelizePairs(): void
+    public function testLabelizeDataset(): void
     {
         $dataset = new Dataset([
             ['A', new Sequence(new Period('2018-01-01', '2018-01-15'))],
@@ -126,7 +126,7 @@ final class DatasetTest extends TestCase
         self::assertSame(2, $newDataset->labelMaxLength());
     }
 
-    public function testLabelizePairsReturnsSameInstance(): void
+    public function testLabelizeDatasetReturnsSameInstance(): void
     {
         $dataset = new Dataset([
             ['A', new Sequence(new Period('2018-01-01', '2018-01-15'))],

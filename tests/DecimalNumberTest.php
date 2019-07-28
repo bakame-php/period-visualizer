@@ -76,6 +76,6 @@ final class DecimalNumberTest extends TestCase
     public function testFormat(): void
     {
         $generator = new DecimalNumber(42);
-        self::assertSame('', $generator->format([]));
+        self::assertSame('', $generator->format(''));
     }
 }

@@ -21,9 +21,7 @@ interface LabelGenerator
     public function generate(int $nbLabels): array;
 
     /**
-     * Returns a formatted label according to the generator.
-     *
-     * @param mixed $str a stringable label
+     * Returns a formatted label according to the generator rules.
      */
-    public function format($str): string;
+    public function format(string $label): string;
 }

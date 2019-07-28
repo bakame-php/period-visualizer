@@ -15,8 +15,6 @@ namespace Bakame\Period\Visualizer;
 
 use Bakame\Period\Visualizer\Contract\LabelGenerator;
 use function array_map;
-use function is_scalar;
-use function method_exists;
 use function range;
 
 final class DecimalNumber implements LabelGenerator
@@ -56,13 +54,9 @@ final class DecimalNumber implements LabelGenerator
     /**
      * {@inheritdoc}
      */
-    public function format($str): string
+    public function format(string $label): string
     {
-        if (is_scalar($str) || method_exists($str, '__toString') || null === $str) {
-            return (string) $str;
-        }
-
-        return '';
+        return $label;
     }
 
     /**

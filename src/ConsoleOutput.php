@@ -92,6 +92,7 @@ final class ConsoleOutput implements OutputWriter
             $message = [$message];
         }
 
+        /** @var string $line */
         foreach ($message as $line) {
             fwrite($this->stream, $this->format($line).PHP_EOL);
         }

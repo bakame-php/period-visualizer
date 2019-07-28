@@ -71,8 +71,8 @@ final class ConsoleGraphTest extends TestCase
 
     /**
      * @covers ::display
-     * @covers ::drawGraph
-     * @covers ::setScale
+     * @covers ::drawGraphLines
+     * @covers ::setGraphScale
      */
     public function testDisplayEmptyDataset(): void
     {
@@ -85,8 +85,8 @@ final class ConsoleGraphTest extends TestCase
 
     /**
      * @covers ::display
-     * @covers ::drawGraph
-     * @covers ::setScale
+     * @covers ::drawGraphLines
+     * @covers ::setGraphScale
      * @covers ::drawDataPortion
      * @covers ::drawPeriod
      * @covers \Bakame\Period\Visualizer\ConsoleOutput
@@ -108,8 +108,8 @@ final class ConsoleGraphTest extends TestCase
 
     /**
      * @covers ::display
-     * @covers ::drawGraph
-     * @covers ::setScale
+     * @covers ::drawGraphLines
+     * @covers ::setGraphScale
      * @covers ::drawDataPortion
      * @covers ::drawPeriod
      */
@@ -132,8 +132,8 @@ final class ConsoleGraphTest extends TestCase
 
     /**
      * @covers ::display
-     * @covers ::drawGraph
-     * @covers ::setScale
+     * @covers ::drawGraphLines
+     * @covers ::setGraphScale
      * @covers ::drawDataPortion
      * @covers ::drawPeriod
      */

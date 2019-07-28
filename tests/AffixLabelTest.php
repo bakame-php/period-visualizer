@@ -103,7 +103,6 @@ final class AffixLabelTest extends TestCase
     public function testFormat(): void
     {
         $generator = new AffixLabel(new RomanNumber(new DecimalNumber(10)), ':', '.');
-        self::assertSame(':.', $generator->format([]));
         self::assertSame(':FOOBAR.', $generator->format('foobar'));
     }
 }

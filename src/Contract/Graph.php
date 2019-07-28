@@ -13,8 +13,6 @@ declare(strict_types=1);
 
 namespace Bakame\Period\Visualizer\Contract;
 
-use Bakame\Period\Visualizer\Dataset;
-
 /**
  * A class to output to the console the matrix.
  */
@@ -35,5 +33,5 @@ interface Graph
      * D              [---------------)
      * RESULT         [-)   [--)    [-)
      */
-    public function display(Dataset $dataset): void;
+    public function display(Pairs $pairs): void;
 }

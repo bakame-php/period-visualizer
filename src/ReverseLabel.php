@@ -42,8 +42,8 @@ final class ReverseLabel implements LabelGenerator
     /**
      * {@inheritdoc}
      */
-    public function format($str): string
+    public function format(string $label): string
     {
-        return $this->labelGenerator->format($str);
+        return $this->labelGenerator->format($label);
     }
 }
