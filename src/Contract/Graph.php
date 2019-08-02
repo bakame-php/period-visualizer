@@ -20,18 +20,6 @@ interface Graph
 {
     /**
      * Builds a string to visualize one or more intervals.
-     *
-     * The generated string can be represented like the following
-     * and depends on the Configuration used
-     *
-     * The returned int represents the number of bytes used to
-     * generated the display.
-     *
-     * A       [--------)
-     * B                    [--)
-     * C                            [-----)
-     * D              [---------------)
-     * RESULT         [-)   [--)    [-)
      */
     public function display(Pairs $pairs): void;
 }

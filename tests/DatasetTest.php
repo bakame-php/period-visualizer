@@ -120,7 +120,7 @@ final class DatasetTest extends TestCase
         self::assertSame(['A', 'B'], $dataset->labels());
         self::assertSame(1, $dataset->labelMaxLength());
 
-        $newDataset = $dataset->labelize(new DecimalNumber(42));
+        $newDataset = $dataset->withLabels(new DecimalNumber(42));
         self::assertSame(['42', '43'], $newDataset->labels());
         self::assertSame($dataset->items(), $newDataset->items());
         self::assertSame(2, $newDataset->labelMaxLength());
@@ -133,10 +133,10 @@ final class DatasetTest extends TestCase
             ['B', new Sequence(new Period('2018-01-15', '2018-02-01'))],
         ]);
 
-        self::assertEquals($dataset, $dataset->labelize(new LatinLetter()));
+        self::assertEquals($dataset, $dataset->withLabels(new LatinLetter()));
 
         $emptyDataset = new Dataset();
-        self::assertEquals($emptyDataset, $emptyDataset->labelize(new DecimalNumber(42)));
+        self::assertEquals($emptyDataset, $emptyDataset->withLabels(new DecimalNumber(42)));
     }
 
     public function testEmptyInstance(): void

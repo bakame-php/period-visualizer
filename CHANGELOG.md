@@ -2,6 +2,12 @@
 
 All Notable changes to `Period Visualizer` will be documented in this file
 
+## Next - TBD
+
+- Adding `Dataset::appendAll`
+- Adding `ConsoleConfig::leftMargin`
+- Adding `ConsoleConfig::withLeftMargin`
+
 ## 0.5.1 - 2019-07-28 
 
 - Bug fix `Dataset::labelMaxLength` when `Dataset` is empty

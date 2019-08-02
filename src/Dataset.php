@@ -38,12 +38,79 @@ final class Dataset implements Pairs
     private $labelMaxLength = 0;
 
     /**
+     * @var Period|null
+     */
+    private $boundaries;
+
+    /**
      * constructor.
      */
     public function __construct(iterable $pairs = [])
     {
+        $this->appendAll($pairs);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function appendAll(iterable $pairs): void
+    {
         foreach ($pairs as [$label, $item]) {
             $this->append($label, $item);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function append($label, $item): void
+    {
+        if (!is_scalar($label) && !method_exists($label, '__toString')) {
+            return;
+        }
+
+        if (!$item instanceof Period && !$item instanceof Sequence) {
+            return;
+        }
+
+        $label = (string) $label;
+        $this->setLabelMaxLength($label);
+        $this->setBoundaries($item);
+
+        $this->pairs[] = [$label, $item];
+    }
+
+    private function setLabelMaxLength(string $label): void
+    {
+        $labelLength = strlen($label);
+        if ($this->labelMaxLength < $labelLength) {
+            $this->labelMaxLength = $labelLength;
+        }
+    }
+
+    /**
+     * @param Period|Sequence $item
+     */
+    private function setBoundaries($item): void
+    {
+        if ($item instanceof Period) {
+            if (null === $this->boundaries) {
+                $this->boundaries = $item;
+
+                return;
+            }
+
+            $this->boundaries = $this->boundaries->merge($item);
+        }
+
+        if ($item instanceof Sequence) {
+            if (null === $this->boundaries) {
+                $this->boundaries = $item->boundaries();
+
+                return;
+            }
+
+            $this->boundaries = $this->boundaries->merge(...$item);
         }
     }
 
@@ -127,16 +194,7 @@ final class Dataset implements Pairs
      */
     public function boundaries(): ?Period
     {
-        $sequence = new Sequence();
-        foreach ($this->pairs as [$label, $item]) {
-            if ($item instanceof Period) {
-                $sequence->push($item);
-                continue;
-            }
-            $sequence->push(...$item);
-        }
-
-        return $sequence->boundaries();
+        return $this->boundaries;
     }
 
     /**
@@ -150,29 +208,7 @@ final class Dataset implements Pairs
     /**
      * {@inheritDoc}
      */
-    public function append($label, $item): void
-    {
-        if (!is_scalar($label) && !method_exists($label, '__toString')) {
-            return;
-        }
-
-        $label = (string) $label;
-        if (!$item instanceof Period && !$item instanceof Sequence) {
-            return;
-        }
-
-        $labelLength = strlen($label);
-        if ($this->labelMaxLength < $labelLength) {
-            $this->labelMaxLength = $labelLength;
-        }
-
-        $this->pairs[] = [$label, $item];
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function labelize(LabelGenerator $labelGenerator): Pairs
+    public function withLabels(LabelGenerator $labelGenerator): Pairs
     {
         return self::fromSequence($this->items(), $labelGenerator);
     }

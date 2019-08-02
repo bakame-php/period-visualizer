@@ -67,7 +67,15 @@ final class ConsoleGraph implements Graph
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
+     *
+     * The generated string can be represented like the following but depends on the configuration used
+     *
+     * A       [--------)
+     * B                    [--)
+     * C                            [-----)
+     * D              [---------------)
+     * RESULT         [-)   [--)    [-)
      */
     public function display(Pairs $pairs): void
     {
