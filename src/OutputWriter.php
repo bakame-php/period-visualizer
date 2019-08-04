@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Bakame\Period\Visualizer\Contract;
+namespace Bakame\Period\Visualizer;
 
 use TypeError;
 

@@ -125,13 +125,14 @@ The `Dataset` implements the `Countable` and the `IteratorAggregate` interface. 
 ~~~php
 <?php
 public function Dataset::fromSequence(Sequence $sequence, ?LabelGenerator $labelGenerator = null): self; //Creates a new Dataset from a Sequence and a LabelGenerator.
-public function Dataset::fromCollection(): self; //Creates a new Dataset from a generic iterable structure.
+public function Dataset::fromCollection(iterable $collection): self; //Creates a new Dataset from a generic iterable structure.
+public function Dataset::appendAll(iterable $pairs): void; //adds multiple pairs at once.
 public function Dataset::isEmpty(): bool; //Tells whether the collection is empty.
 public function Dataset::labels(): string[]; //the current labels used
 public function Dataset::items(): array<Period|Sequence>; //the current objects inside the Dataset
 public function Dataset::boundaries(): ?Period;  //Returns the collection boundaries or null if it is empty.
 public function Dataset::labelMaxLength(): int;  //Returns the label max length.
-public function Dataset::labelize(LabelGenerator $labelGenerator): self; //Update the labels used for the dataset.
+public function Dataset::withLabels(LabelGenerator $labelGenerator): self; //Update the labels used for the dataset.
 ~~~
 
 ## Setting the Dataset labels
@@ -345,13 +346,13 @@ results:
 
 ### Custom LabelGenerator
 
-You can create your own label generator by implementing the `Bakame\Period\Visualizer\Contract\LabelGenerator` interface like shown below:
+You can create your own label generator by implementing the `Bakame\Period\Visualizer\LabelGenerator` interface like shown below:
 
 ~~~php
 <?php
 
 use Bakame\Period\Visualizer\AffixLabel;
-use Bakame\Period\Visualizer\Contract\LabelGenerator;
+use Bakame\Period\Visualizer\LabelGenerator;
 use Bakame\Period\Visualizer\GanttBar;
 use Bakame\Period\Visualizer\Dataset;
 use League\Period\Period;

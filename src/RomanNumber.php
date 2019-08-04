@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Bakame\Period\Visualizer;
 
-use Bakame\Period\Visualizer\Contract\LabelGenerator;
 use function in_array;
 use function strtolower;
 use function strtoupper;

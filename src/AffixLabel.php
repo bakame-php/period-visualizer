@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Bakame\Period\Visualizer;
 
-use Bakame\Period\Visualizer\Contract\LabelGenerator;
 use function preg_replace;
 
 final class AffixLabel implements LabelGenerator

@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Bakame\Period\Visualizer;
 
-use Bakame\Period\Visualizer\Contract\OutputWriter;
 use TypeError;
 use function array_key_exists;
 use function array_keys;

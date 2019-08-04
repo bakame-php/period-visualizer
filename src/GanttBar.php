@@ -13,8 +13,6 @@ declare(strict_types=1);
 
 namespace Bakame\Period\Visualizer;
 
-use Bakame\Period\Visualizer\Contract\Graph;
-use Bakame\Period\Visualizer\Contract\OutputWriter;
 use Closure;
 use League\Period\Period;
 use League\Period\Sequence;

@@ -11,17 +11,15 @@
 
 declare(strict_types=1);
 
-namespace Bakame\Period\Visualizer\Contract;
+namespace Bakame\Period\Visualizer;
 
-interface LabelGenerator
+/**
+ * A class to output to the console the matrix.
+ */
+interface Graph
 {
     /**
-     * Returns the labels to associate with all items.
+     * Visualizes one or more intervals in a provided via a Dataset object.
      */
-    public function generate(int $nbLabels): array;
-
-    /**
-     * Returns a formatted label according to the generator rules.
-     */
-    public function format(string $label): string;
+    public function display(Dataset $dataset): void;
 }
