@@ -17,6 +17,7 @@ use Bakame\Period\Visualizer\Contract\LabelGenerator;
 use Bakame\Period\Visualizer\Contract\Pairs;
 use Countable;
 use Iterator;
+use IteratorAggregate;
 use League\Period\Period;
 use League\Period\Sequence;
 use function array_column;
@@ -25,7 +26,7 @@ use function is_scalar;
 use function method_exists;
 use function strlen;
 
-final class Dataset implements Pairs
+final class Dataset implements Countable, IteratorAggregate
 {
     /**
      * @var array<int, array{0:string, 1:Sequence|Period}>.
@@ -51,7 +52,7 @@ final class Dataset implements Pairs
     }
 
     /**
-     * {@inheritDoc}
+     * Add a collection of pairs to the collection.
      */
     public function appendAll(iterable $pairs): void
     {
@@ -61,7 +62,10 @@ final class Dataset implements Pairs
     }
 
     /**
-     * {@inheritDoc}
+     * Add a new pair to the collection.
+     *
+     * @param mixed $label any stringable type except for null.
+     * @param mixed $item  if the input is not a Period or a Sequence instance it is not added.
      */
     public function append($label, $item): void
     {
@@ -80,6 +84,9 @@ final class Dataset implements Pairs
         $this->pairs[] = [$label, $item];
     }
 
+    /**
+     * Computes the label maximum length for the dataset.
+     */
     private function setLabelMaxLength(string $label): void
     {
         $labelLength = strlen($label);
@@ -89,6 +96,8 @@ final class Dataset implements Pairs
     }
 
     /**
+     * Computes the Period boundary for the dataset.
+     *
      * @param Period|Sequence $item
      */
     private function setBoundaries($item): void
@@ -148,7 +157,7 @@ final class Dataset implements Pairs
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the number of pairs.
      */
     public function count(): int
     {
@@ -156,7 +165,9 @@ final class Dataset implements Pairs
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the pairs.
+     *
+     * @return Iterator<int, array{0: string, 1: Period|Sequence}>
      */
     public function getIterator(): Iterator
     {
@@ -166,7 +177,7 @@ final class Dataset implements Pairs
     }
 
     /**
-     * {@inheritDoc}
+     * Tells whether the collection is empty.
      */
     public function isEmpty(): bool
     {
@@ -174,7 +185,7 @@ final class Dataset implements Pairs
     }
 
     /**
-     * {@inheritDoc}
+     * @return string[]
      */
     public function labels(): array
     {
@@ -182,7 +193,7 @@ final class Dataset implements Pairs
     }
 
     /**
-     * {@inheritDoc}
+     * @return array<Period|Sequence>
      */
     public function items(): array
     {
@@ -190,7 +201,7 @@ final class Dataset implements Pairs
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the dataset boundaries.
      */
     public function boundaries(): ?Period
     {
@@ -198,7 +209,7 @@ final class Dataset implements Pairs
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the label maximum length.
      */
     public function labelMaxLength(): int
     {
@@ -206,9 +217,12 @@ final class Dataset implements Pairs
     }
 
     /**
-     * {@inheritDoc}
+     * Update the labels used for the dataset.
+     *
+     * This method MUST retain the state of the current instance, and return
+     * an instance that contains the newly specified labels.
      */
-    public function withLabels(LabelGenerator $labelGenerator): Pairs
+    public function withLabels(LabelGenerator $labelGenerator): self
     {
         return self::fromSequence($this->items(), $labelGenerator);
     }

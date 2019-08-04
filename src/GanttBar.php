@@ -15,7 +15,6 @@ namespace Bakame\Period\Visualizer;
 
 use Bakame\Period\Visualizer\Contract\Graph;
 use Bakame\Period\Visualizer\Contract\OutputWriter;
-use Bakame\Period\Visualizer\Contract\Pairs;
 use Closure;
 use League\Period\Period;
 use League\Period\Sequence;
@@ -30,9 +29,9 @@ use function str_repeat;
 use const STDOUT;
 
 /**
- * A class to output to the console the matrix.
+ * A class to output a Dataset via a Gantt Bar graph.
  */
-final class ConsoleGraph implements Graph
+final class GanttBar implements Graph
 {
     /**
      * @var OutputWriter
@@ -40,7 +39,7 @@ final class ConsoleGraph implements Graph
     private $output;
 
     /**
-     * @var ConsoleConfig
+     * @var GanttBarConfig
      */
     private $config;
 
@@ -57,19 +56,19 @@ final class ConsoleGraph implements Graph
     /**
      * New instance.
      *
-     * @param ?ConsoleConfig $config
-     * @param ?OutputWriter  $output
+     * @param ?GanttBarConfig $config
+     * @param ?OutputWriter   $output
      */
-    public function __construct(?ConsoleConfig $config = null, ?OutputWriter $output = null)
+    public function __construct(?GanttBarConfig $config = null, ?OutputWriter $output = null)
     {
-        $this->config = $config ?? new ConsoleConfig();
+        $this->config = $config ?? new GanttBarConfig();
         $this->output = $output ?? new ConsoleOutput(STDOUT);
     }
 
     /**
      * @inheritDoc
      *
-     * The generated string can be represented like the following but depends on the configuration used
+     * The generated Gantt Bar can be represented like the following but depends on the configuration used
      *
      * A       [--------)
      * B                    [--)
@@ -77,21 +76,20 @@ final class ConsoleGraph implements Graph
      * D              [---------------)
      * RESULT         [-)   [--)    [-)
      */
-    public function display(Pairs $pairs): void
+    public function display(Dataset $dataset): void
     {
-        $this->setGraphScale($pairs);
-        $lines = $this->drawGraphLines($pairs);
-        $this->output->writeln($lines);
+        $this->setGraphScale($dataset);
+        $this->drawGraph($dataset);
     }
 
     /**
      * Sets the scale to render the line.
      */
-    private function setGraphScale(Pairs $pairs): void
+    private function setGraphScale(Dataset $dataset): void
     {
         $this->start = 0;
         $this->unit = 1;
-        $boundaries = $pairs->boundaries();
+        $boundaries = $dataset->boundaries();
         if (null !== $boundaries) {
             $this->start = $boundaries->getStartDate()->getTimestamp();
             $this->unit = $this->config->width() / $boundaries->getTimestampInterval();
@@ -99,11 +97,9 @@ final class ConsoleGraph implements Graph
     }
 
     /**
-     * Converts a Dataset entry into a series of lines to be outputted by the OutputWriter implementation.
-     *
-     * @return iterable<string>
+     * Converts a Dataset entry into a series of lines outputted by the OutputWriter implementation.
      */
-    private function drawGraphLines(Pairs $pairs): iterable
+    private function drawGraph(Dataset $dataset): void
     {
         $colorCodeIndexes = $this->config->colors();
         $colorCodeCount = count($colorCodeIndexes);
@@ -111,13 +107,14 @@ final class ConsoleGraph implements Graph
         $gap = str_repeat(' ', $this->config->gapSize());
         $leftMargin = str_repeat(' ', $this->config->leftMarginSize());
         $lineCharacters = array_fill(0, $this->config->width(), $this->config->space());
-        $labelMaxLength = $pairs->labelMaxLength();
-        foreach ($pairs as $offset => [$label, $item]) {
+        $labelMaxLength = $dataset->labelMaxLength();
+        foreach ($dataset as $offset => [$label, $item]) {
             $colorIndex = $colorCodeIndexes[$offset % $colorCodeCount];
             $labelPortion = str_pad($label, $labelMaxLength, ' ', $padding);
             $dataPortion = $this->drawDataPortion($item, $lineCharacters);
-
-            yield $this->output->colorize($leftMargin.$labelPortion.$gap.$dataPortion, $colorIndex);
+            $this->output->writeln(
+                $this->output->colorize($leftMargin.$labelPortion.$gap.$dataPortion, $colorIndex)
+            );
         }
     }
 
@@ -133,10 +130,7 @@ final class ConsoleGraph implements Graph
             return implode('', $this->drawPeriod($lineCharacters, $item));
         }
 
-        static $drawSequence;
-        $drawSequence = $drawSequence ?? Closure::fromCallable([$this, 'drawPeriod']);
-
-        return implode('', $item->reduce($drawSequence, $lineCharacters));
+        return implode('', $item->reduce(Closure::fromCallable([$this, 'drawPeriod']), $lineCharacters));
     }
 
     /**

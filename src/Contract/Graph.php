@@ -13,13 +13,15 @@ declare(strict_types=1);
 
 namespace Bakame\Period\Visualizer\Contract;
 
+use Bakame\Period\Visualizer\Dataset;
+
 /**
  * A class to output to the console the matrix.
  */
 interface Graph
 {
     /**
-     * Builds a string to visualize one or more intervals.
+     * Visualizes one or more intervals in a provided via a Dataset object.
      */
-    public function display(Pairs $pairs): void;
+    public function display(Dataset $dataset): void;
 }

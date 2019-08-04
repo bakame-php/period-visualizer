@@ -14,7 +14,7 @@ It is inspired from the work of [@thecrypticace](https://github.com/thecrypticac
 ~~~php
 <?php
 
-use Bakame\Period\Visualizer\ConsoleGraph;
+use Bakame\Period\Visualizer\GanttBar;
 use Bakame\Period\Visualizer\Dataset;
 use League\Period\Datepoint;
 use League\Period\Period;
@@ -28,7 +28,7 @@ $sequence = new Sequence(
 );
 $dataset = Dataset::fromSequence($sequence);
 $dataset->append('gaps', $sequence->gaps());
-(new ConsoleGraph())->display($dataset);
+(new GanttBar())->display($dataset);
 ~~~
 
 results:
@@ -71,7 +71,7 @@ To generate a graph you need to give to the `Dataset` constructor a list of pair
 ~~~php
 <?php
 
-use Bakame\Period\Visualizer\ConsoleGraph;
+use Bakame\Period\Visualizer\GanttBar;
 use Bakame\Period\Visualizer\Dataset;
 use League\Period\Period;
 
@@ -79,7 +79,7 @@ $dataset = new Dataset([
     ['A', new Period('2018-01-01', '2018-02-01')],
     ['B', new Period('2018-01-15', '2018-02-01')], 
 ]);
-(new ConsoleGraph())->display($dataset);
+(new GanttBar())->display($dataset);
 ~~~
 
 results:
@@ -96,7 +96,7 @@ If you want to display a `Sequence` and some of its operations. You can append t
 ~~~php
 <?php
 
-use Bakame\Period\Visualizer\ConsoleGraph;
+use Bakame\Period\Visualizer\GanttBar;
 use Bakame\Period\Visualizer\Dataset;
 use League\Period\Period;
 use League\Period\Sequence;
@@ -109,7 +109,7 @@ $dataset = new Dataset();
 $dataset->append('A', $sequence[0]);
 $dataset->append('B', $sequence[1]);
 $dataset->append('GAPS', $sequence->gaps());
-(new ConsoleGraph())->display($dataset);
+(new GanttBar())->display($dataset);
 ~~~
 
 results:
@@ -155,7 +155,7 @@ Generates labels according the the latin alphabet.
 ~~~php
 <?php
 
-use Bakame\Period\Visualizer\ConsoleGraph;
+use Bakame\Period\Visualizer\GanttBar;
 use Bakame\Period\Visualizer\LatinLetter;
 use Bakame\Period\Visualizer\Dataset;
 use League\Period\Period;
@@ -165,7 +165,7 @@ $dataset = Dataset::fromSequence(
     new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
     new LatinLetter('aa')
 );
-(new ConsoleGraph())->display($dataset);
+(new GanttBar())->display($dataset);
 ~~~
 
 results:
@@ -191,7 +191,7 @@ Generates labels according to the decimal number system.
 ~~~php
 <?php
 
-use Bakame\Period\Visualizer\ConsoleGraph;
+use Bakame\Period\Visualizer\GanttBar;
 use Bakame\Period\Visualizer\DecimalNumber;
 use Bakame\Period\Visualizer\Dataset;
 use League\Period\Period;
@@ -201,7 +201,7 @@ $dataset = Dataset::fromSequence(
     new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
     new DecimalNumber(42)
 );
-(new ConsoleGraph())->display($dataset);
+(new GanttBar())->display($dataset);
 ~~~
 
 results:
@@ -227,7 +227,7 @@ Uses the `DecimalNumber` label generator class to generate Roman number labels.
 ~~~php
 <?php
 
-use Bakame\Period\Visualizer\ConsoleGraph;
+use Bakame\Period\Visualizer\GanttBar;
 use Bakame\Period\Visualizer\DecimalNumber;
 use Bakame\Period\Visualizer\RomanNumber;
 use Bakame\Period\Visualizer\Dataset;
@@ -240,7 +240,7 @@ $dataset = Dataset::fromSequence(
     new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
     $labelGenerator
 );
-(new ConsoleGraph())->display($dataset);
+(new GanttBar())->display($dataset);
 ~~~
 
 results:
@@ -271,7 +271,7 @@ Uses any `labelGenerator` implementing class to add prefix and/or suffix string 
 <?php
 
 use Bakame\Period\Visualizer\AffixLabel;
-use Bakame\Period\Visualizer\ConsoleGraph;
+use Bakame\Period\Visualizer\GanttBar;
 use Bakame\Period\Visualizer\DecimalNumber;
 use Bakame\Period\Visualizer\RomanNumber;
 use Bakame\Period\Visualizer\Dataset;
@@ -287,7 +287,7 @@ $dataset = Dataset::fromSequence(
     new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
     $labelGenerator
 );
-(new ConsoleGraph())->display($dataset);
+(new GanttBar())->display($dataset);
 ~~~
 
 results:
@@ -316,7 +316,7 @@ Uses any `labelGenerator` implementing class to reverse the generated labels ord
 <?php
 
 use Bakame\Period\Visualizer\AffixLabel;
-use Bakame\Period\Visualizer\ConsoleGraph;
+use Bakame\Period\Visualizer\GanttBar;
 use Bakame\Period\Visualizer\DecimalNumber;
 use Bakame\Period\Visualizer\ReverseLabel;
 use Bakame\Period\Visualizer\RomanNumber;
@@ -333,7 +333,7 @@ $dataset = Dataset::fromSequence(
     new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
     $labelGenerator
 );
-(new ConsoleGraph())->display($dataset);
+(new GanttBar())->display($dataset);
 ~~~
 
 results:
@@ -352,7 +352,7 @@ You can create your own label generator by implementing the `Bakame\Period\Visua
 
 use Bakame\Period\Visualizer\AffixLabel;
 use Bakame\Period\Visualizer\Contract\LabelGenerator;
-use Bakame\Period\Visualizer\ConsoleGraph;
+use Bakame\Period\Visualizer\GanttBar;
 use Bakame\Period\Visualizer\Dataset;
 use League\Period\Period;
 use League\Period\Sequence;
@@ -374,7 +374,7 @@ $dataset = Dataset::fromSequence(
     new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
     $labelGenerator
 );
-(new ConsoleGraph())->display($dataset);
+(new GanttBar())->display($dataset);
 ~~~
 
 results:
@@ -386,20 +386,20 @@ results:
 
 ## Displaying the Dataset
 
-The `ConsoleGraph` class is responsible for generating the graph from the `Dataset` by implementing the `Graph` interface for the console.
+The `GanttBar` class is responsible for generating the graph from the `Dataset` by implementing the `Graph` interface for the console.
 
-The `ConsoleGraph::display` methods expects a `Dataset` object as its unique argument.
+The `GanttBar::display` methods expects a `Dataset` object as its unique argument.
 
 If you wish to present the graph on another medium like a web browser or an image, you will need to implement the interface on your implementation.
 
 ~~~php
 <?php
 
-use Bakame\Period\Visualizer\ConsoleGraph;
+use Bakame\Period\Visualizer\GanttBar;
 use Bakame\Period\Visualizer\Dataset;
 use League\Period\Period;
 
-$graph = new ConsoleGraph();
+$graph = new GanttBar();
 $graph->display(new Dataset([
     ['first', new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00')],
     ['last', new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00')],
@@ -415,9 +415,9 @@ results:
 
 ### Customized the graph looks
 
-The `ConsoleGraph` class can be customized by:
+The `GanttBar` class can be customized by:
  
-- providing a `ConsoleConfig` which defines:
+- providing a `GanttBarConfig` which defines:
     - the graph settings (How the intervals will be created)
         - sets single characters to represent the boundary types
         - sets single characters to represent the body and space
@@ -434,8 +434,8 @@ to output the resulting graph. If you don't, the package ships with a minimal `C
 <?php
 
 use Bakame\Period\Visualizer\AffixLabel;
-use Bakame\Period\Visualizer\ConsoleConfig;
-use Bakame\Period\Visualizer\ConsoleGraph;
+use Bakame\Period\Visualizer\GanttBarConfig;
+use Bakame\Period\Visualizer\GanttBar;
 use Bakame\Period\Visualizer\Dataset;
 use Bakame\Period\Visualizer\DecimalNumber;
 use Bakame\Period\Visualizer\ReverseLabel;
@@ -444,7 +444,7 @@ use League\Period\Datepoint;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$config = ConsoleConfig::createFromRainbow()
+$config = GanttBarConfig::createFromRainbow()
     ->withStartExcluded('🍕')
     ->withStartIncluded('🍅')
     ->withEndExcluded('🎾')
@@ -453,7 +453,8 @@ $config = ConsoleConfig::createFromRainbow()
     ->withSpace('💩')
     ->withBody('😊')
     ->withGapSize(2)
-    ->withLabelAlign(ConsoleConfig::ALIGN_RIGHT)
+    ->withLeftMarginSize(1)
+    ->withLabelAlign(GanttBarConfig::ALIGN_RIGHT)
 ;
 
 $labelGenerator = new DecimalNumber(42);
@@ -469,7 +470,7 @@ $sequence = new Sequence(
 );
 $dataset = Dataset::fromSequence($sequence, $labelGenerator);
 $dataset->append($labelGenerator->format('gaps'), $sequence->gaps());
-$graph = new ConsoleGraph($config);
+$graph = new GanttBar($config);
 $graph->display($dataset);
 ~~~
 
@@ -485,26 +486,27 @@ result:
 
 *On a POSIX compliant console all lines have different colors*
 
-The `ConsoleConfig` class exposes the following additional constants and methods:
+The `GanttBarConfig` class exposes the following additional constants and methods:
 
 ~~~php
 <?php
-const ConsoleConfig::ALIGN_LEFT = 1;
-const ConsoleConfig::ALIGN_RIGHT = 0;
-const ConsoleConfig::ALIGN_CENTER = 2;
-public function ConsoleConfig::startExcluded(): string; //Retrieves the excluded start block character.
-public function ConsoleConfig::startIncluded(): string; //Retrieves the included start block character.
-public function ConsoleConfig::endExcluded(): string;   //Retrieves the excluded end block character.
-public function ConsoleConfig::endIncluded(): string;   //Retrieves the included end block character.
-public function ConsoleConfig::width(): int;            //Retrieves the max size width.
-public function ConsoleConfig::body(): string;          //Retrieves the body block character.
-public function ConsoleConfig::space(): string;         //Retrieves the space block character.
-public function ConsoleConfig::colors(): string[];      //The selected colors for each row.
-public function ConsoleConfig::gapSize(): int;          //Retrieves the gap sequence between the label and the line.
-public function ConsoleConfig::labelAlign(): int;       //Returns how label should be aligned.
+const GanttBarConfig::ALIGN_LEFT = 1;
+const GanttBarConfig::ALIGN_RIGHT = 0;
+const GanttBarConfig::ALIGN_CENTER = 2;
+public function GanttBarConfig::startExcluded(): string; //Retrieves the excluded start block character.
+public function GanttBarConfig::startIncluded(): string; //Retrieves the included start block character.
+public function GanttBarConfig::endExcluded(): string;   //Retrieves the excluded end block character.
+public function GanttBarConfig::endIncluded(): string;   //Retrieves the included end block character.
+public function GanttBarConfig::width(): int;            //Retrieves the max size width.
+public function GanttBarConfig::body(): string;          //Retrieves the body block character.
+public function GanttBarConfig::space(): string;         //Retrieves the space block character.
+public function GanttBarConfig::colors(): string[];      //The selected colors for each row.
+public function GanttBarConfig::gapSize(): int;          //Retrieves the gap sequence between the label and the line.
+public function GanttBarConfig::labelAlign(): int;       //Returns how label should be aligned.
+public function GanttBarConfig::leftMarginSize(): int;   //Retrieves the margin between the label and the console left side.
 ~~~
 
-**`ConsoleConfig` is immutable, modifying its properties returns a new instance with the updated values.**
+**`GanttBarConfig` is immutable, modifying its properties returns a new instance with the updated values.**
 
 Changelog
 -------

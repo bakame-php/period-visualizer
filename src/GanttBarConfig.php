@@ -30,7 +30,7 @@ use const STR_PAD_RIGHT;
 /**
  * A class to configure the console output settings.
  */
-final class ConsoleConfig
+final class GanttBarConfig
 {
     private const REGEXP_UNICODE = '/\\\\u(?<unicode>[0-9A-F]{1,4})/i';
 
@@ -53,22 +53,23 @@ final class ConsoleConfig
     /**
      * @var string
      */
-    private $endExcluded = ')';
+    private $endExcludedChar = ')';
 
     /**
      * @var string
      */
-    private $startIncluded = '[';
+    private $endIncludedChar = ']';
 
     /**
      * @var string
      */
-    private $endIncluded = ']';
+    private $startExcludedChar = '(';
 
     /**
      * @var string
      */
-    private $startExcluded = '(';
+    private $startIncludedChar = '[';
+
     /**
      * @var string
      */
@@ -122,14 +123,14 @@ final class ConsoleConfig
      */
     public function startExcluded(): string
     {
-        return $this->startExcluded;
+        return $this->startExcludedChar;
     }
     /**
      * Retrieves the start included block character.
      */
     public function startIncluded(): string
     {
-        return $this->startIncluded;
+        return $this->startIncludedChar;
     }
 
     /**
@@ -137,7 +138,7 @@ final class ConsoleConfig
      */
     public function endExcluded(): string
     {
-        return $this->endExcluded;
+        return $this->endExcludedChar;
     }
 
     /**
@@ -145,7 +146,7 @@ final class ConsoleConfig
      */
     public function endIncluded(): string
     {
-        return $this->endIncluded;
+        return $this->endIncludedChar;
     }
 
     /**
@@ -215,12 +216,12 @@ final class ConsoleConfig
     public function withStartExcluded(string $startExcludedChar): self
     {
         $startExcludedChar = $this->filterPattern($startExcludedChar, 'startExcluded');
-        if ($startExcludedChar === $this->startExcluded) {
+        if ($startExcludedChar === $this->startExcludedChar) {
             return $this;
         }
 
         $clone = clone $this;
-        $clone->startExcluded = $startExcludedChar;
+        $clone->startExcludedChar = $startExcludedChar;
 
         return $clone;
     }
@@ -271,12 +272,12 @@ final class ConsoleConfig
     public function withStartIncluded(string $startIncludedChar): self
     {
         $startIncludedChar = $this->filterPattern($startIncludedChar, 'startIncluded');
-        if ($startIncludedChar === $this->startIncluded) {
+        if ($startIncludedChar === $this->startIncludedChar) {
             return $this;
         }
 
         $clone = clone $this;
-        $clone->startIncluded = $startIncludedChar;
+        $clone->startIncludedChar = $startIncludedChar;
 
         return $clone;
     }
@@ -290,12 +291,12 @@ final class ConsoleConfig
     public function withEndExcluded(string $endExcludedChar): self
     {
         $endExcludedChar = $this->filterPattern($endExcludedChar, 'endExcluded');
-        if ($endExcludedChar === $this->endExcluded) {
+        if ($endExcludedChar === $this->endExcludedChar) {
             return $this;
         }
 
         $clone = clone $this;
-        $clone->endExcluded = $endExcludedChar;
+        $clone->endExcludedChar = $endExcludedChar;
 
         return $clone;
     }
@@ -309,12 +310,12 @@ final class ConsoleConfig
     public function withEndIncluded(string $endIncludedChar): self
     {
         $endIncludedChar = $this->filterPattern($endIncludedChar, 'endIncluded');
-        if ($endIncludedChar === $this->endIncluded) {
+        if ($endIncludedChar === $this->endIncludedChar) {
             return $this;
         }
 
         $clone = clone $this;
-        $clone->endIncluded = $endIncludedChar;
+        $clone->endIncludedChar = $endIncludedChar;
 
         return $clone;
     }

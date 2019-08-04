@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace BakameTest\Period\Visualizer;
 
-use Bakame\Period\Visualizer\ConsoleConfig;
-use Bakame\Period\Visualizer\ConsoleGraph;
 use Bakame\Period\Visualizer\ConsoleOutput;
 use Bakame\Period\Visualizer\Dataset;
+use Bakame\Period\Visualizer\GanttBar;
+use Bakame\Period\Visualizer\GanttBarConfig;
 use League\Period\Period;
 use League\Period\Sequence;
 use PHPUnit\Framework\TestCase;
@@ -25,12 +25,12 @@ use function rewind;
 use function stream_get_contents;
 
 /**
- * @coversDefaultClass \Bakame\Period\Visualizer\ConsoleGraph
+ * @coversDefaultClass \Bakame\Period\Visualizer\GanttBar
  */
-final class ConsoleGraphTest extends TestCase
+final class GanttBarTest extends TestCase
 {
     /**
-     * @var ConsoleGraph
+     * @var GanttBar
      */
     private $graph;
 
@@ -43,8 +43,8 @@ final class ConsoleGraphTest extends TestCase
     {
         $this->stream = $this->setStream();
 
-        $this->graph = new ConsoleGraph(
-            (new ConsoleConfig())->withColors('red'),
+        $this->graph = new GanttBar(
+            (new GanttBarConfig())->withColors('red'),
             new ConsoleOutput($this->stream)
         );
     }
@@ -65,13 +65,13 @@ final class ConsoleGraphTest extends TestCase
      */
     public function testConstructor(): void
     {
-        $graph = new ConsoleGraph();
+        $graph = new GanttBar();
         self::assertNotEquals($this->graph, $graph);
     }
 
     /**
      * @covers ::display
-     * @covers ::drawGraphLines
+     * @covers ::drawGraph
      * @covers ::setGraphScale
      */
     public function testDisplayEmptyDataset(): void
@@ -85,7 +85,7 @@ final class ConsoleGraphTest extends TestCase
 
     /**
      * @covers ::display
-     * @covers ::drawGraphLines
+     * @covers ::drawGraph
      * @covers ::setGraphScale
      * @covers ::drawDataPortion
      * @covers ::drawPeriod
@@ -108,7 +108,7 @@ final class ConsoleGraphTest extends TestCase
 
     /**
      * @covers ::display
-     * @covers ::drawGraphLines
+     * @covers ::drawGraph
      * @covers ::setGraphScale
      * @covers ::drawDataPortion
      * @covers ::drawPeriod
@@ -132,7 +132,7 @@ final class ConsoleGraphTest extends TestCase
 
     /**
      * @covers ::display
-     * @covers ::drawGraphLines
+     * @covers ::drawGraph
      * @covers ::setGraphScale
      * @covers ::drawDataPortion
      * @covers ::drawPeriod

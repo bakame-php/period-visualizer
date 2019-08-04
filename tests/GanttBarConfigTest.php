@@ -13,23 +13,23 @@ declare(strict_types=1);
 
 namespace BakameTest\Period\Visualizer;
 
-use Bakame\Period\Visualizer\ConsoleConfig;
+use Bakame\Period\Visualizer\GanttBarConfig;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass \Bakame\Period\Visualizer\ConsoleConfig
+ * @coversDefaultClass \Bakame\Period\Visualizer\GanttBarConfig
  */
-final class ConsoleConfigTest extends TestCase
+final class GanttBarConfigTest extends TestCase
 {
     /**
-     * @var ConsoleConfig
+     * @var GanttBarConfig
      */
     private $config;
 
     public function setUp(): void
     {
-        $this->config = new ConsoleConfig();
+        $this->config = new GanttBarConfig();
     }
 
     public function testNewInstance(): void
@@ -43,13 +43,13 @@ final class ConsoleConfigTest extends TestCase
         self::assertSame(60, $this->config->width());
         self::assertSame(1, $this->config->gapSize());
         self::assertSame(['reset'], $this->config->colors());
-        self::assertSame(ConsoleConfig::ALIGN_LEFT, $this->config->labelAlign());
+        self::assertSame(GanttBarConfig::ALIGN_LEFT, $this->config->labelAlign());
     }
 
     public function testCreateFromRandom(): void
     {
-        $config1 = ConsoleConfig::createFromRandom();
-        $config2 = ConsoleConfig::createFromRainbow();
+        $config1 = GanttBarConfig::createFromRandom();
+        $config2 = GanttBarConfig::createFromRainbow();
         self::assertContains($config1->colors()[0], $config2->colors());
     }
 
@@ -221,16 +221,16 @@ final class ConsoleConfigTest extends TestCase
     {
         return [
             'default' => [
-                'padding' => ConsoleConfig::ALIGN_LEFT,
-                'expected' => ConsoleConfig::ALIGN_LEFT,
+                'padding' => GanttBarConfig::ALIGN_LEFT,
+                'expected' => GanttBarConfig::ALIGN_LEFT,
             ],
             'changing wit a defined config' => [
-                'padding' => ConsoleConfig::ALIGN_RIGHT,
-                'expected' => ConsoleConfig::ALIGN_RIGHT,
+                'padding' => GanttBarConfig::ALIGN_RIGHT,
+                'expected' => GanttBarConfig::ALIGN_RIGHT,
             ],
             'changing wit a unknown config' => [
                 'padding' => 42,
-                'expected' => ConsoleConfig::ALIGN_LEFT,
+                'expected' => GanttBarConfig::ALIGN_LEFT,
             ],
         ];
     }
