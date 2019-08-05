@@ -14,8 +14,8 @@ It is inspired from the work of [@thecrypticace](https://github.com/thecrypticac
 ~~~php
 <?php
 
-use Bakame\Period\Visualizer\GanttBar;
 use Bakame\Period\Visualizer\Dataset;
+use Bakame\Period\Visualizer\GanttChart;
 use League\Period\Datepoint;
 use League\Period\Period;
 use League\Period\Sequence;
@@ -28,7 +28,7 @@ $sequence = new Sequence(
 );
 $dataset = Dataset::fromSequence($sequence);
 $dataset->append('gaps', $sequence->gaps());
-(new GanttBar())->display($dataset);
+(new GanttChart())->display($dataset);
 ~~~
 
 results:
@@ -71,15 +71,15 @@ To generate a graph you need to give to the `Dataset` constructor a list of pair
 ~~~php
 <?php
 
-use Bakame\Period\Visualizer\GanttBar;
 use Bakame\Period\Visualizer\Dataset;
+use Bakame\Period\Visualizer\GanttChart;
 use League\Period\Period;
 
 $dataset = new Dataset([
     ['A', new Period('2018-01-01', '2018-02-01')],
     ['B', new Period('2018-01-15', '2018-02-01')], 
 ]);
-(new GanttBar())->display($dataset);
+(new GanttChart())->display($dataset);
 ~~~
 
 results:
@@ -96,8 +96,8 @@ If you want to display a `Sequence` and some of its operations. You can append t
 ~~~php
 <?php
 
-use Bakame\Period\Visualizer\GanttBar;
 use Bakame\Period\Visualizer\Dataset;
+use Bakame\Period\Visualizer\GanttChart;
 use League\Period\Period;
 use League\Period\Sequence;
 
@@ -109,7 +109,7 @@ $dataset = new Dataset();
 $dataset->append('A', $sequence[0]);
 $dataset->append('B', $sequence[1]);
 $dataset->append('GAPS', $sequence->gaps());
-(new GanttBar())->display($dataset);
+(new GanttChart())->display($dataset);
 ~~~
 
 results:
@@ -156,9 +156,9 @@ Generates labels according the the latin alphabet.
 ~~~php
 <?php
 
-use Bakame\Period\Visualizer\GanttBar;
-use Bakame\Period\Visualizer\LatinLetter;
 use Bakame\Period\Visualizer\Dataset;
+use Bakame\Period\Visualizer\GanttChart;
+use Bakame\Period\Visualizer\LatinLetter;
 use League\Period\Period;
 use League\Period\Sequence;
 
@@ -166,7 +166,7 @@ $dataset = Dataset::fromSequence(
     new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
     new LatinLetter('aa')
 );
-(new GanttBar())->display($dataset);
+(new GanttChart())->display($dataset);
 ~~~
 
 results:
@@ -192,9 +192,9 @@ Generates labels according to the decimal number system.
 ~~~php
 <?php
 
-use Bakame\Period\Visualizer\GanttBar;
-use Bakame\Period\Visualizer\DecimalNumber;
 use Bakame\Period\Visualizer\Dataset;
+use Bakame\Period\Visualizer\DecimalNumber;
+use Bakame\Period\Visualizer\GanttChart;
 use League\Period\Period;
 use League\Period\Sequence;
 
@@ -202,7 +202,7 @@ $dataset = Dataset::fromSequence(
     new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
     new DecimalNumber(42)
 );
-(new GanttBar())->display($dataset);
+(new GanttChart())->display($dataset);
 ~~~
 
 results:
@@ -228,10 +228,10 @@ Uses the `DecimalNumber` label generator class to generate Roman number labels.
 ~~~php
 <?php
 
-use Bakame\Period\Visualizer\GanttBar;
-use Bakame\Period\Visualizer\DecimalNumber;
-use Bakame\Period\Visualizer\RomanNumber;
 use Bakame\Period\Visualizer\Dataset;
+use Bakame\Period\Visualizer\DecimalNumber;
+use Bakame\Period\Visualizer\GanttChart;
+use Bakame\Period\Visualizer\RomanNumber;
 use League\Period\Period;
 use League\Period\Sequence;
 
@@ -241,7 +241,7 @@ $dataset = Dataset::fromSequence(
     new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
     $labelGenerator
 );
-(new GanttBar())->display($dataset);
+(new GanttChart())->display($dataset);
 ~~~
 
 results:
@@ -272,10 +272,10 @@ Uses any `labelGenerator` implementing class to add prefix and/or suffix string 
 <?php
 
 use Bakame\Period\Visualizer\AffixLabel;
-use Bakame\Period\Visualizer\GanttBar;
-use Bakame\Period\Visualizer\DecimalNumber;
-use Bakame\Period\Visualizer\RomanNumber;
 use Bakame\Period\Visualizer\Dataset;
+use Bakame\Period\Visualizer\DecimalNumber;
+use Bakame\Period\Visualizer\GanttChart;
+use Bakame\Period\Visualizer\RomanNumber;
 use League\Period\Period;
 use League\Period\Sequence;
 
@@ -288,7 +288,7 @@ $dataset = Dataset::fromSequence(
     new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
     $labelGenerator
 );
-(new GanttBar())->display($dataset);
+(new GanttChart())->display($dataset);
 ~~~
 
 results:
@@ -317,11 +317,11 @@ Uses any `labelGenerator` implementing class to reverse the generated labels ord
 <?php
 
 use Bakame\Period\Visualizer\AffixLabel;
-use Bakame\Period\Visualizer\GanttBar;
+use Bakame\Period\Visualizer\Dataset;
 use Bakame\Period\Visualizer\DecimalNumber;
+use Bakame\Period\Visualizer\GanttChart;
 use Bakame\Period\Visualizer\ReverseLabel;
 use Bakame\Period\Visualizer\RomanNumber;
-use Bakame\Period\Visualizer\Dataset;
 use League\Period\Period;
 use League\Period\Sequence;
 
@@ -334,7 +334,7 @@ $dataset = Dataset::fromSequence(
     new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
     $labelGenerator
 );
-(new GanttBar())->display($dataset);
+(new GanttChart())->display($dataset);
 ~~~
 
 results:
@@ -352,9 +352,9 @@ You can create your own label generator by implementing the `Bakame\Period\Visua
 <?php
 
 use Bakame\Period\Visualizer\AffixLabel;
-use Bakame\Period\Visualizer\LabelGenerator;
-use Bakame\Period\Visualizer\GanttBar;
 use Bakame\Period\Visualizer\Dataset;
+use Bakame\Period\Visualizer\GanttChart;
+use Bakame\Period\Visualizer\LabelGenerator;
 use League\Period\Period;
 use League\Period\Sequence;
 
@@ -375,7 +375,7 @@ $dataset = Dataset::fromSequence(
     new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
     $labelGenerator
 );
-(new GanttBar())->display($dataset);
+(new GanttChart())->display($dataset);
 ~~~
 
 results:
@@ -387,20 +387,20 @@ results:
 
 ## Displaying the Dataset
 
-The `GanttBar` class is responsible for generating the graph from the `Dataset` by implementing the `Graph` interface for the console.
+The `GanttChart` class is responsible for generating the graph from the `Dataset` by implementing the `Graph` interface for the console.
 
-The `GanttBar::display` methods expects a `Dataset` object as its unique argument.
+The `GanttChart::display` methods expects a `Dataset` object as its unique argument.
 
 If you wish to present the graph on another medium like a web browser or an image, you will need to implement the interface on your implementation.
 
 ~~~php
 <?php
 
-use Bakame\Period\Visualizer\GanttBar;
 use Bakame\Period\Visualizer\Dataset;
+use Bakame\Period\Visualizer\GanttChart;
 use League\Period\Period;
 
-$graph = new GanttBar();
+$graph = new GanttChart();
 $graph->display(new Dataset([
     ['first', new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00')],
     ['last', new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00')],
@@ -416,9 +416,9 @@ results:
 
 ### Customized the graph looks
 
-The `GanttBar` class can be customized by:
+The `GanttChart` class can be customized by:
  
-- providing a `GanttBarConfig` which defines:
+- providing a `GanttChartConfig` which defines:
     - the graph settings (How the intervals will be created)
         - sets single characters to represent the boundary types
         - sets single characters to represent the body and space
@@ -435,17 +435,17 @@ to output the resulting graph. If you don't, the package ships with a minimal `C
 <?php
 
 use Bakame\Period\Visualizer\AffixLabel;
-use Bakame\Period\Visualizer\GanttBarConfig;
-use Bakame\Period\Visualizer\GanttBar;
 use Bakame\Period\Visualizer\Dataset;
 use Bakame\Period\Visualizer\DecimalNumber;
+use Bakame\Period\Visualizer\GanttChart;
+use Bakame\Period\Visualizer\GanttChartConfig;
 use Bakame\Period\Visualizer\ReverseLabel;
 use Bakame\Period\Visualizer\RomanNumber;
 use League\Period\Datepoint;
 use League\Period\Period;
 use League\Period\Sequence;
 
-$config = GanttBarConfig::createFromRainbow()
+$config = GanttChartConfig::createFromRainbow()
     ->withStartExcluded('🍕')
     ->withStartIncluded('🍅')
     ->withEndExcluded('🎾')
@@ -455,7 +455,7 @@ $config = GanttBarConfig::createFromRainbow()
     ->withBody('😊')
     ->withGapSize(2)
     ->withLeftMarginSize(1)
-    ->withLabelAlign(GanttBarConfig::ALIGN_RIGHT)
+    ->withLabelAlign(GanttChartConfig::ALIGN_RIGHT)
 ;
 
 $labelGenerator = new DecimalNumber(42);
@@ -471,7 +471,7 @@ $sequence = new Sequence(
 );
 $dataset = Dataset::fromSequence($sequence, $labelGenerator);
 $dataset->append($labelGenerator->format('gaps'), $sequence->gaps());
-$graph = new GanttBar($config);
+$graph = new GanttChart($config);
 $graph->display($dataset);
 ~~~
 
@@ -487,27 +487,27 @@ result:
 
 *On a POSIX compliant console all lines have different colors*
 
-The `GanttBarConfig` class exposes the following additional constants and methods:
+The `GanttChartConfig` class exposes the following additional constants and methods:
 
 ~~~php
 <?php
-const GanttBarConfig::ALIGN_LEFT = 1;
-const GanttBarConfig::ALIGN_RIGHT = 0;
-const GanttBarConfig::ALIGN_CENTER = 2;
-public function GanttBarConfig::startExcluded(): string; //Retrieves the excluded start block character.
-public function GanttBarConfig::startIncluded(): string; //Retrieves the included start block character.
-public function GanttBarConfig::endExcluded(): string;   //Retrieves the excluded end block character.
-public function GanttBarConfig::endIncluded(): string;   //Retrieves the included end block character.
-public function GanttBarConfig::width(): int;            //Retrieves the max size width.
-public function GanttBarConfig::body(): string;          //Retrieves the body block character.
-public function GanttBarConfig::space(): string;         //Retrieves the space block character.
-public function GanttBarConfig::colors(): string[];      //The selected colors for each row.
-public function GanttBarConfig::gapSize(): int;          //Retrieves the gap sequence between the label and the line.
-public function GanttBarConfig::labelAlign(): int;       //Returns how label should be aligned.
-public function GanttBarConfig::leftMarginSize(): int;   //Retrieves the margin between the label and the console left side.
+const GanttChartConfig::ALIGN_LEFT = 1;
+const GanttChartConfig::ALIGN_RIGHT = 0;
+const GanttChartConfig::ALIGN_CENTER = 2;
+public function GanttChartConfig::startExcluded(): string; //Retrieves the excluded start block character.
+public function GanttChartConfig::startIncluded(): string; //Retrieves the included start block character.
+public function GanttChartConfig::endExcluded(): string;   //Retrieves the excluded end block character.
+public function GanttChartConfig::endIncluded(): string;   //Retrieves the included end block character.
+public function GanttChartConfig::width(): int;            //Retrieves the max size width.
+public function GanttChartConfig::body(): string;          //Retrieves the body block character.
+public function GanttChartConfig::space(): string;         //Retrieves the space block character.
+public function GanttChartConfig::colors(): string[];      //The selected colors for each row.
+public function GanttChartConfig::gapSize(): int;          //Retrieves the gap sequence between the label and the line.
+public function GanttChartConfig::labelAlign(): int;       //Returns how label should be aligned.
+public function GanttChartConfig::leftMarginSize(): int;   //Retrieves the margin between the label and the console left side.
 ~~~
 
-**`GanttBarConfig` is immutable, modifying its properties returns a new instance with the updated values.**
+**`GanttChartConfig` is immutable, modifying its properties returns a new instance with the updated values.**
 
 Changelog
 -------

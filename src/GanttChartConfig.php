@@ -29,7 +29,7 @@ use const STR_PAD_RIGHT;
 /**
  * A class to configure the console output settings.
  */
-final class GanttBarConfig
+final class GanttChartConfig
 {
     private const REGEXP_UNICODE = '/\\\\u(?<unicode>[0-9A-F]{1,4})/i';
 

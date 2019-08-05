@@ -29,7 +29,7 @@ use const STDOUT;
 /**
  * A class to output a Dataset via a Gantt Bar graph.
  */
-final class GanttBar implements Graph
+final class GanttChart implements Graph
 {
     /**
      * @var OutputWriter
@@ -37,7 +37,7 @@ final class GanttBar implements Graph
     private $output;
 
     /**
-     * @var GanttBarConfig
+     * @var GanttChartConfig
      */
     private $config;
 
@@ -54,12 +54,12 @@ final class GanttBar implements Graph
     /**
      * New instance.
      *
-     * @param ?GanttBarConfig $config
-     * @param ?OutputWriter   $output
+     * @param ?GanttChartConfig $config
+     * @param ?OutputWriter     $output
      */
-    public function __construct(?GanttBarConfig $config = null, ?OutputWriter $output = null)
+    public function __construct(?GanttChartConfig $config = null, ?OutputWriter $output = null)
     {
-        $this->config = $config ?? new GanttBarConfig();
+        $this->config = $config ?? new GanttChartConfig();
         $this->output = $output ?? new ConsoleOutput(STDOUT);
     }
 

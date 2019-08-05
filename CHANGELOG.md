@@ -7,9 +7,8 @@ All Notable changes to `Period Visualizer` will be documented in this file
 - Adding `Dataset::appendAll`
 - Adding `ConsoleConfig::leftMargin`
 - Adding `ConsoleConfig::withLeftMargin`
-- Renamed `ConsoleGraph` to `GanttBar`
-- Renamed `ConsoleConfig` to `GanttBarConfig`
-- Removed `Pairs` interface
+- Renamed `ConsoleGraph` to `GanttChart`
+- Renamed `ConsoleConfig` to `GanttChartConfig`
 
 ## 0.5.1 - 2019-07-28 
 

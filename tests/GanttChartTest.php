@@ -15,8 +15,8 @@ namespace BakameTest\Period\Visualizer;
 
 use Bakame\Period\Visualizer\ConsoleOutput;
 use Bakame\Period\Visualizer\Dataset;
-use Bakame\Period\Visualizer\GanttBar;
-use Bakame\Period\Visualizer\GanttBarConfig;
+use Bakame\Period\Visualizer\GanttChart;
+use Bakame\Period\Visualizer\GanttChartConfig;
 use League\Period\Period;
 use League\Period\Sequence;
 use PHPUnit\Framework\TestCase;
@@ -25,12 +25,12 @@ use function rewind;
 use function stream_get_contents;
 
 /**
- * @coversDefaultClass \Bakame\Period\Visualizer\GanttBar
+ * @coversDefaultClass \Bakame\Period\Visualizer\GanttChart
  */
-final class GanttBarTest extends TestCase
+final class GanttChartTest extends TestCase
 {
     /**
-     * @var GanttBar
+     * @var GanttChart
      */
     private $graph;
 
@@ -43,8 +43,8 @@ final class GanttBarTest extends TestCase
     {
         $this->stream = $this->setStream();
 
-        $this->graph = new GanttBar(
-            (new GanttBarConfig())->withColors('red'),
+        $this->graph = new GanttChart(
+            (new GanttChartConfig())->withColors('red'),
             new ConsoleOutput($this->stream)
         );
     }
@@ -65,7 +65,7 @@ final class GanttBarTest extends TestCase
      */
     public function testConstructor(): void
     {
-        $graph = new GanttBar();
+        $graph = new GanttChart();
         self::assertNotEquals($this->graph, $graph);
     }
 

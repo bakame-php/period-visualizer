@@ -13,23 +13,23 @@ declare(strict_types=1);
 
 namespace BakameTest\Period\Visualizer;
 
-use Bakame\Period\Visualizer\GanttBarConfig;
+use Bakame\Period\Visualizer\GanttChartConfig;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass \Bakame\Period\Visualizer\GanttBarConfig
+ * @coversDefaultClass \Bakame\Period\Visualizer\GanttChartConfig
  */
-final class GanttBarConfigTest extends TestCase
+final class GanttChartConfigTest extends TestCase
 {
     /**
-     * @var GanttBarConfig
+     * @var GanttChartConfig
      */
     private $config;
 
     public function setUp(): void
     {
-        $this->config = new GanttBarConfig();
+        $this->config = new GanttChartConfig();
     }
 
     public function testNewInstance(): void
@@ -43,13 +43,13 @@ final class GanttBarConfigTest extends TestCase
         self::assertSame(60, $this->config->width());
         self::assertSame(1, $this->config->gapSize());
         self::assertSame(['reset'], $this->config->colors());
-        self::assertSame(GanttBarConfig::ALIGN_LEFT, $this->config->labelAlign());
+        self::assertSame(GanttChartConfig::ALIGN_LEFT, $this->config->labelAlign());
     }
 
     public function testCreateFromRandom(): void
     {
-        $config1 = GanttBarConfig::createFromRandom();
-        $config2 = GanttBarConfig::createFromRainbow();
+        $config1 = GanttChartConfig::createFromRandom();
+        $config2 = GanttChartConfig::createFromRainbow();
         self::assertContains($config1->colors()[0], $config2->colors());
     }
 
@@ -221,16 +221,16 @@ final class GanttBarConfigTest extends TestCase
     {
         return [
             'default' => [
-                'padding' => GanttBarConfig::ALIGN_LEFT,
-                'expected' => GanttBarConfig::ALIGN_LEFT,
+                'padding' => GanttChartConfig::ALIGN_LEFT,
+                'expected' => GanttChartConfig::ALIGN_LEFT,
             ],
             'changing wit a defined config' => [
-                'padding' => GanttBarConfig::ALIGN_RIGHT,
-                'expected' => GanttBarConfig::ALIGN_RIGHT,
+                'padding' => GanttChartConfig::ALIGN_RIGHT,
+                'expected' => GanttChartConfig::ALIGN_RIGHT,
             ],
             'changing wit a unknown config' => [
                 'padding' => 42,
-                'expected' => GanttBarConfig::ALIGN_LEFT,
+                'expected' => GanttChartConfig::ALIGN_LEFT,
             ],
         ];
     }
