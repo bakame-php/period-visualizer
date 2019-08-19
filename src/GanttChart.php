@@ -13,13 +13,11 @@ declare(strict_types=1);
 
 namespace Bakame\Period\Visualizer;
 
-use Closure;
 use League\Period\Period;
 use League\Period\Sequence;
 use function array_fill;
 use function array_splice;
 use function ceil;
-use function count;
 use function floor;
 use function implode;
 use function str_pad;
@@ -29,7 +27,7 @@ use const STDOUT;
 /**
  * A class to output a Dataset via a Gantt Bar graph.
  */
-final class GanttChart implements Graph
+final class GanttChart implements Chart
 {
     /**
      * @var OutputWriter
@@ -76,14 +74,14 @@ final class GanttChart implements Graph
      */
     public function display(Dataset $dataset): void
     {
-        $this->setGraphScale($dataset);
+        $this->setChartScale($dataset);
         $this->drawGraph($dataset);
     }
 
     /**
      * Sets the scale to render the line.
      */
-    private function setGraphScale(Dataset $dataset): void
+    private function setChartScale(Dataset $dataset): void
     {
         $this->start = 0;
         $this->unit = 1;
@@ -99,57 +97,40 @@ final class GanttChart implements Graph
      */
     private function drawGraph(Dataset $dataset): void
     {
-        $colorCodeIndexes = $this->config->colors();
-        $colorCodeCount = count($colorCodeIndexes);
         $padding = $this->config->labelAlign();
         $gap = str_repeat(' ', $this->config->gapSize());
         $leftMargin = str_repeat(' ', $this->config->leftMarginSize());
         $lineCharacters = array_fill(0, $this->config->width(), $this->config->space());
         $labelMaxLength = $dataset->labelMaxLength();
+        $outputColors = $this->output->colors();
+        $this->output->setColors(...$this->config->colors());
         foreach ($dataset as $offset => [$label, $item]) {
-            $colorIndex = $colorCodeIndexes[$offset % $colorCodeCount];
             $labelPortion = str_pad($label, $labelMaxLength, ' ', $padding);
             $dataPortion = $this->drawDataPortion($item, $lineCharacters);
-            $this->output->writeln(
-                $this->output->colorize($leftMargin.$labelPortion.$gap.$dataPortion, $colorIndex)
-            );
+            $this->output->writeln($leftMargin.$labelPortion.$gap.$dataPortion);
         }
+        $this->output->setColors(...$outputColors);
     }
 
     /**
      * Convert a Dataset item into a graph data portion.
      *
-     * @param Period|Sequence $item
-     * @param string[]        $lineCharacters
-     */
-    private function drawDataPortion($item, array $lineCharacters): string
-    {
-        if ($item instanceof Period) {
-            return implode('', $this->drawPeriod($lineCharacters, $item));
-        }
-
-        return implode('', $item->reduce(Closure::fromCallable([$this, 'drawPeriod']), $lineCharacters));
-    }
-
-    /**
-     * Converts a Period instance into an sequence of characters.
-     *
-     * The conversion depends on the Period interval and boundaries.
-     *
      * @param string[] $lineCharacters
-     *
-     * @return string[]
      */
-    private function drawPeriod(array $lineCharacters, Period $period): array
+    private function drawDataPortion(Sequence $item, array $lineCharacters): string
     {
-        $startIndex = (int) floor(($period->getStartDate()->getTimestamp() - $this->start) * $this->unit);
-        $endIndex = (int) ceil(($period->getEndDate()->getTimestamp() - $this->start) * $this->unit);
-        $periodLength = $endIndex - $startIndex;
+        $reducer = function (array $lineCharacters, Period $period): array {
+            $startIndex = (int) floor(($period->getStartDate()->getTimestamp() - $this->start) * $this->unit);
+            $endIndex = (int) ceil(($period->getEndDate()->getTimestamp() - $this->start) * $this->unit);
+            $periodLength = $endIndex - $startIndex;
 
-        array_splice($lineCharacters, $startIndex, $periodLength, array_fill(0, $periodLength, $this->config->body()));
-        $lineCharacters[$startIndex] = $period->isStartIncluded() ? $this->config->startIncluded() : $this->config->startExcluded();
-        $lineCharacters[$endIndex - 1] = $period->isEndIncluded() ? $this->config->endIncluded() : $this->config->endExcluded();
+            array_splice($lineCharacters, $startIndex, $periodLength, array_fill(0, $periodLength, $this->config->body()));
+            $lineCharacters[$startIndex] = $period->isStartIncluded() ? $this->config->startIncluded() : $this->config->startExcluded();
+            $lineCharacters[$endIndex - 1] = $period->isEndIncluded() ? $this->config->endIncluded() : $this->config->endExcluded();
 
-        return $lineCharacters;
+            return $lineCharacters;
+        };
+
+        return implode('', $item->reduce($reducer, $lineCharacters));
     }
 }

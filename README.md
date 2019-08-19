@@ -129,7 +129,7 @@ public function Dataset::fromCollection(iterable $collection): self; //Creates a
 public function Dataset::appendAll(iterable $pairs): void; //adds multiple pairs at once.
 public function Dataset::isEmpty(): bool; //Tells whether the collection is empty.
 public function Dataset::labels(): string[]; //the current labels used
-public function Dataset::items(): array<Period|Sequence>; //the current objects inside the Dataset
+public function Dataset::items(): Sequence[]; //the current objects inside the Dataset
 public function Dataset::boundaries(): ?Period;  //Returns the collection boundaries or null if it is empty.
 public function Dataset::labelMaxLength(): int;  //Returns the label max length.
 public function Dataset::withLabels(LabelGenerator $labelGenerator): self; //Update the labels used for the dataset.
@@ -143,7 +143,7 @@ The package provides a `LabelGenerator` interface that ease generating and creat
 A `LabelGenerator` implementing class is needed for the following methods
 
 - The `Dataset::fromSequence`, to create a new instance from a `Sequence` object;
-- The `Dataset::labelize` to update the associated labels in the current instance;
+- The `Dataset::withLabels` to update the associated labels in the current instance;
 
 *By default when using `Dataset::fromSequence` if no `LabelGenerator` class is supplied the `LatinLetter` label generator will be used.*
 
@@ -173,7 +173,7 @@ results:
 
 ~~~bash
  aa [------------------------------------------------------------------------------)
- ab [-----------------------------------)     
+ ab [-----------------------------------)
 ~~~
 
 The `LatinLetter` also exposes the following methods:
@@ -410,7 +410,7 @@ $graph->display(new Dataset([
 results:
 
 ~~~bash
- first [----------------------------------------------------)                          
+ first [----------------------------------------------------)
  last                            [----------------------------------------------------)
 ~~~
 

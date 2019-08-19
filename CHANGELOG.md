@@ -4,17 +4,23 @@ All Notable changes to `Period Visualizer` will be documented in this file
 
 ## Next - TBD
 
-- Adding `Dataset::appendAll`
-- Adding `ConsoleConfig::leftMargin`
-- Adding `ConsoleConfig::withLeftMargin`
 - Renamed `ConsoleGraph` to `GanttChart`
 - Renamed `ConsoleConfig` to `GanttChartConfig`
+- Renamed `Graph` to `Chart`
+- Adding `Dataset::appendAll`
+- Adding `GanttChartConfig::leftMargin`
+- Adding `GanttChartConfig::withLeftMargin`
+- Adding `OutputWriter::setColors`
+- Adding `OutputWriter::colors`
+- Improve `GanttChart` implementation
+- Improve `ConsoleOutput` implementation
+- Removed `OutputWriter::colorize` method
 
 ## 0.5.1 - 2019-07-28 
 
 - Bug fix `Dataset::labelMaxLength` when `Dataset` is empty
-- Bug fix `ConsoleGraph::display` when `Dataset` only contains empty `Sequence` instances.
-- Improve `ConsoleGraph` implementation.
+- Bug fix `GanttChart::display` when `Dataset` only contains empty `Sequence` instances.
+- Improve `GanttChart` implementation.
 
 ## 0.5.0 - 2019-07-25
 

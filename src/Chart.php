@@ -14,9 +14,9 @@ declare(strict_types=1);
 namespace Bakame\Period\Visualizer;
 
 /**
- * A class to output to the console the matrix.
+ * A class to output the Dataset via a Chart.
  */
-interface Graph
+interface Chart
 {
     /**
      * Visualizes one or more intervals in a provided via a Dataset object.

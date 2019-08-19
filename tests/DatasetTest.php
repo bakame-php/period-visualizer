@@ -22,6 +22,7 @@ use League\Period\Period;
 use League\Period\Sequence;
 use PHPUnit\Framework\TestCase;
 use function iterator_to_array;
+use function json_encode;
 
 /**
  * @coversDefaultClass \Bakame\Period\Visualizer\Dataset;
@@ -39,7 +40,7 @@ final class DatasetTest extends TestCase
 
         self::assertCount(2, $dataset);
         self::assertSame('B', $arr[1][0]);
-        self::assertTrue($periodB->equals($arr[1][1]));
+        self::assertTrue($periodB->equals($arr[1][1][0]));
 
         $emptyDataset = Dataset::fromSequence(new Sequence(), $labelGenerator);
         self::assertCount(0, $emptyDataset);
@@ -145,5 +146,16 @@ final class DatasetTest extends TestCase
         self::assertSame(0, $dataset->labelMaxLength());
         self::assertSame([], $dataset->items());
         self::assertSame([], $dataset->labels());
+    }
+
+    public function testJsonEncoding(): void
+    {
+        self::assertSame('[]', json_encode(new Dataset()));
+        $dataset = new Dataset([
+            ['A', new Sequence(new Period('2018-01-01', '2018-01-15'))],
+            ['B', new Sequence(new Period('2018-01-15', '2018-02-01'))],
+        ]);
+
+        self::assertStringContainsString('label', (string) json_encode($dataset));
     }
 }

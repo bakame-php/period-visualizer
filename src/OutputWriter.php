@@ -32,14 +32,26 @@ interface OutputWriter
     ];
 
     /**
+     * Return an instance with a new color palette.
+     *
+     * This method MUST retain the state of the current instance, and return
+     * an instance that contains the specified color palette.
+     *
+     * @param string... $colorCodeIndexes
+     */
+    public function setColors(string ...$colorCodeIndexes): void;
+
+    /**
+     * The selected colors for each line.
+     *
+     * @return string[]
+     */
+    public function colors(): array;
+
+    /**
      * @param iterable<string>|string $message
      *
      * @throws TypeError If the message type is not supported.
      */
     public function writeln($message = ''): void;
-
-    /**
-     * Returns a colorize line if the underlying console allows it.
-     */
-    public function colorize(string $characters, string $colorCodeIndex): string;
 }

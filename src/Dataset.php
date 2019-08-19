@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace Bakame\Period\Visualizer;
 
-use Bakame\Period\Visualizer\Contract\Pairs;
 use Countable;
 use Iterator;
 use IteratorAggregate;
+use JsonSerializable;
 use League\Period\Period;
 use League\Period\Sequence;
 use function array_column;
@@ -25,10 +25,10 @@ use function is_scalar;
 use function method_exists;
 use function strlen;
 
-final class Dataset implements Countable, IteratorAggregate
+final class Dataset implements Countable, IteratorAggregate, JsonSerializable
 {
     /**
-     * @var array<int, array{0:string, 1:Sequence|Period}>.
+     * @var array<int, array{0:string, 1:Sequence}>.
      */
     private $pairs = [];
 
@@ -72,7 +72,11 @@ final class Dataset implements Countable, IteratorAggregate
             return;
         }
 
-        if (!$item instanceof Period && !$item instanceof Sequence) {
+        if ($item instanceof Period) {
+            $item = new Sequence($item);
+        }
+
+        if (!$item instanceof Sequence) {
             return;
         }
 
@@ -96,30 +100,16 @@ final class Dataset implements Countable, IteratorAggregate
 
     /**
      * Computes the Period boundary for the dataset.
-     *
-     * @param Period|Sequence $item
      */
-    private function setBoundaries($item): void
+    private function setBoundaries(Sequence $sequence): void
     {
-        if ($item instanceof Period) {
-            if (null === $this->boundaries) {
-                $this->boundaries = $item;
+        if (null === $this->boundaries) {
+            $this->boundaries = $sequence->boundaries();
 
-                return;
-            }
-
-            $this->boundaries = $this->boundaries->merge($item);
+            return;
         }
 
-        if ($item instanceof Sequence) {
-            if (null === $this->boundaries) {
-                $this->boundaries = $item->boundaries();
-
-                return;
-            }
-
-            $this->boundaries = $this->boundaries->merge(...$item);
-        }
+        $this->boundaries = $this->boundaries->merge(...$sequence);
     }
 
     /**
@@ -166,13 +156,20 @@ final class Dataset implements Countable, IteratorAggregate
     /**
      * Returns the pairs.
      *
-     * @return Iterator<int, array{0: string, 1: Period|Sequence}>
+     * @return Iterator<int, array{0: string, 1: Sequence}>
      */
     public function getIterator(): Iterator
     {
         foreach ($this->pairs as $pair) {
             yield $pair;
         }
+    }
+
+    public function jsonSerialize(): array
+    {
+        return array_map(function (array $pair) {
+            return ['label' => $pair[0], 'item' => $pair[1]];
+        }, $this->pairs);
     }
 
     /**
@@ -192,7 +189,7 @@ final class Dataset implements Countable, IteratorAggregate
     }
 
     /**
-     * @return array<Period|Sequence>
+     * @return Sequence[]
      */
     public function items(): array
     {

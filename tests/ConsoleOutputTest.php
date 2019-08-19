@@ -16,6 +16,7 @@ namespace BakameTest\Period\Visualizer;
 use Bakame\Period\Visualizer\ConsoleOutput;
 use PHPUnit\Framework\TestCase;
 use TypeError;
+use function chr;
 use function curl_init;
 use function fopen;
 use function rewind;
@@ -50,50 +51,13 @@ final class ConsoleOutputTest extends TestCase
     }
 
     /**
-     * @dataProvider provideTextToColorize
-     */
-    public function testColorize(string $string, string $colorCodeIndex, string $expected): void
-    {
-        $stream = $this->setStream();
-        $output = new ConsoleOutput($stream);
-
-        self::assertSame($expected, $output->colorize($string, $colorCodeIndex));
-    }
-
-    public function provideTextToColorize(): iterable
-    {
-        return [
-            'default text' => [
-                'string' => 'toto',
-                'colorCodeIndex' => 'white',
-                'expected' => '<<white>>toto<<reset>>',
-            ],
-            'text with reset' => [
-                'string' => 'toto',
-                'colorCodeIndex' => 'reset',
-                'expected' => 'toto',
-            ],
-            'text with different casing for color code Index' => [
-                'string' => 'toto',
-                'colorCodeIndex' => 'WhITe',
-                'expected' => '<<white>>toto<<reset>>',
-            ],
-            'text with invalid color code Index' => [
-                'string' => 'toto',
-                'colorCodeIndex' => 'foobar',
-                'expected' => 'toto',
-            ],
-        ];
-    }
-
-    /**
      * @dataProvider provideWritelnTexts
      * @param string|string[] $message
      */
     public function testWriteln($message, string $expected): void
     {
         $stream = $this->setStream();
-        $output = new ConsoleOutput($stream);
+        $output = new ConsoleOutput($stream, 'blue');
         $output->writeln($message);
         rewind($stream);
         /** @var string $data */
@@ -104,8 +68,10 @@ final class ConsoleOutputTest extends TestCase
 
     public function provideWritelnTexts(): iterable
     {
-        $stream = $this->setStream();
-        $output = new ConsoleOutput($stream);
+        $data = ["I'm the king", 'Of the casa'];
+        $writtenData = array_map(function (string $line): string {
+            return chr(27).'[34m'.$line.chr(27).'[0m';
+        }, $data);
 
         return [
             'empty message' => [
@@ -114,19 +80,25 @@ final class ConsoleOutputTest extends TestCase
             ],
             'simple message' => [
                 'message' => "I'm the king of the world",
-                'expected' => "I'm the king of the world".PHP_EOL,
+                'expected' => chr(27).'[34m'."I'm the king of the world".chr(27).'[0m'.PHP_EOL,
             ],
             'multiple string message' => [
-                'message' => [
-                    "I'm the king",
-                    'Of the casa',
-                ],
-                'expected' => "I'm the king".PHP_EOL.'Of the casa'.PHP_EOL,
-            ],
-            'message with color' => [
-                'message' => $output->colorize('foobar', 'magenta'),
-                'expected' => 'foobar',
+                'message' => $data,
+                'expected' => implode(PHP_EOL, $writtenData).PHP_EOL,
             ],
         ];
+    }
+
+    public function testWritelnWithUnknownColor(): void
+    {
+        $message = 'foobar the quick brown fox';
+        $stream = $this->setStream();
+        $output = new ConsoleOutput($stream, 'pink');
+        $output->writeln($message);
+        rewind($stream);
+        /** @var string $data */
+        $data = stream_get_contents($stream);
+
+        self::assertStringContainsString($message.PHP_EOL, $data);
     }
 }
