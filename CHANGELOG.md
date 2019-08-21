@@ -15,6 +15,7 @@ All Notable changes to `Period Visualizer` will be documented in this file
 - Improve `GanttChart` implementation
 - Improve `ConsoleOutput` implementation
 - Removed `OutputWriter::colorize` method
+- Changed `OutputWriter::writeln` signature
 
 ## 0.5.1 - 2019-07-28 
 

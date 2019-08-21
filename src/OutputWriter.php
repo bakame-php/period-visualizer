@@ -13,8 +13,6 @@ declare(strict_types=1);
 
 namespace Bakame\Period\Visualizer;
 
-use TypeError;
-
 interface OutputWriter
 {
     public const DEFAULT_COLOR_CODE_INDEX = 'reset';
@@ -31,27 +29,5 @@ interface OutputWriter
         'white'   => '37',
     ];
 
-    /**
-     * Return an instance with a new color palette.
-     *
-     * This method MUST retain the state of the current instance, and return
-     * an instance that contains the specified color palette.
-     *
-     * @param string... $colorCodeIndexes
-     */
-    public function setColors(string ...$colorCodeIndexes): void;
-
-    /**
-     * The selected colors for each line.
-     *
-     * @return string[]
-     */
-    public function colors(): array;
-
-    /**
-     * @param iterable<string>|string $message
-     *
-     * @throws TypeError If the message type is not supported.
-     */
-    public function writeln($message = ''): void;
+    public function writeln(string $message = '', string $colorCodeIndex = self::DEFAULT_COLOR_CODE_INDEX): void;
 }

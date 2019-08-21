@@ -71,7 +71,6 @@ final class GanttChartTest extends TestCase
 
     /**
      * @covers ::display
-     * @covers ::drawGraph
      * @covers ::setChartScale
      */
     public function testDisplayEmptyDataset(): void
@@ -85,7 +84,6 @@ final class GanttChartTest extends TestCase
 
     /**
      * @covers ::display
-     * @covers ::drawGraph
      * @covers ::setChartScale
      * @covers ::drawDataPortion
      * @covers \Bakame\Period\Visualizer\ConsoleOutput
@@ -107,7 +105,6 @@ final class GanttChartTest extends TestCase
 
     /**
      * @covers ::display
-     * @covers ::drawGraph
      * @covers ::setChartScale
      * @covers ::drawDataPortion
      */
@@ -130,7 +127,6 @@ final class GanttChartTest extends TestCase
 
     /**
      * @covers ::display
-     * @covers ::drawGraph
      * @covers ::setChartScale
      * @covers ::drawDataPortion
      */

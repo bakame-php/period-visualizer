@@ -52,13 +52,12 @@ final class ConsoleOutputTest extends TestCase
 
     /**
      * @dataProvider provideWritelnTexts
-     * @param string|string[] $message
      */
-    public function testWriteln($message, string $expected): void
+    public function testWriteln(string $message, string $expected): void
     {
         $stream = $this->setStream();
-        $output = new ConsoleOutput($stream, 'blue');
-        $output->writeln($message);
+        $output = new ConsoleOutput($stream);
+        $output->writeln($message, 'blue');
         rewind($stream);
         /** @var string $data */
         $data = stream_get_contents($stream);
@@ -68,11 +67,6 @@ final class ConsoleOutputTest extends TestCase
 
     public function provideWritelnTexts(): iterable
     {
-        $data = ["I'm the king", 'Of the casa'];
-        $writtenData = array_map(function (string $line): string {
-            return chr(27).'[34m'.$line.chr(27).'[0m';
-        }, $data);
-
         return [
             'empty message' => [
                 'message' => '',
@@ -82,10 +76,6 @@ final class ConsoleOutputTest extends TestCase
                 'message' => "I'm the king of the world",
                 'expected' => chr(27).'[34m'."I'm the king of the world".chr(27).'[0m'.PHP_EOL,
             ],
-            'multiple string message' => [
-                'message' => $data,
-                'expected' => implode(PHP_EOL, $writtenData).PHP_EOL,
-            ],
         ];
     }
 
@@ -93,8 +83,8 @@ final class ConsoleOutputTest extends TestCase
     {
         $message = 'foobar the quick brown fox';
         $stream = $this->setStream();
-        $output = new ConsoleOutput($stream, 'pink');
-        $output->writeln($message);
+        $output = new ConsoleOutput($stream);
+        $output->writeln($message, 'pink');
         rewind($stream);
         /** @var string $data */
         $data = stream_get_contents($stream);

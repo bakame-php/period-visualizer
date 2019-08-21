@@ -14,16 +14,12 @@ declare(strict_types=1);
 namespace Bakame\Period\Visualizer;
 
 use TypeError;
-use function array_filter;
 use function array_key_exists;
 use function array_keys;
-use function array_map;
 use function chr;
-use function count;
 use function fflush;
 use function fwrite;
 use function implode;
-use function is_iterable;
 use function preg_replace;
 use function preg_replace_callback;
 use function stripos;
@@ -51,17 +47,11 @@ final class ConsoleOutput implements OutputWriter
     private $stream;
 
     /**
-     * @var string[]
-     */
-    private $colorCodeIndexes;
-
-    /**
      * Stdout constructor.
      *
      * @param resource|mixed $resource
-     * @param string         ...$colorCodeIndexes
      */
-    public function __construct($resource, string ...$colorCodeIndexes)
+    public function __construct($resource)
     {
         if (!is_resource($resource)) {
             throw new TypeError(sprintf('Argument passed must be a stream resource, %s given', gettype($resource)));
@@ -72,34 +62,16 @@ final class ConsoleOutput implements OutputWriter
         }
 
         $this->stream = $resource;
-        $this->setColors(...$colorCodeIndexes);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function setColors(string ...$colorCodeIndexes): void
+    public function writeln(string $message = '', string $colorCodeIndex = self::DEFAULT_COLOR_CODE_INDEX): void
     {
-        $filter = static function ($value) {
-            return array_key_exists($value, OutputWriter::POSIX_COLOR_CODES);
-        };
-
-        $colorCodeIndexes = array_filter(array_map('strtolower', $colorCodeIndexes), $filter);
-        if ([] === $colorCodeIndexes) {
-            $colorCodeIndexes = [ConsoleOutput::DEFAULT_COLOR_CODE_INDEX];
-        }
-
-        if ($colorCodeIndexes !== $this->colorCodeIndexes) {
-            $this->colorCodeIndexes = $colorCodeIndexes;
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function colors(): array
-    {
-        return $this->colorCodeIndexes;
+        $line = $this->format($this->colorize($message, $colorCodeIndex)).PHP_EOL;
+        fwrite($this->stream, $line);
+        fflush($this->stream);
     }
 
     /**
@@ -117,27 +89,6 @@ final class ConsoleOutput implements OutputWriter
         }
 
         return $characters;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function writeln($message = ''): void
-    {
-        if (!is_iterable($message)) {
-            $message = [$message];
-        }
-
-        $colorCodeCount = count($this->colorCodeIndexes);
-        /** @var string $line */
-        foreach ($message as $offset => $line) {
-            $colorIndex = $this->colorCodeIndexes[$offset % $colorCodeCount];
-            $line = $this->colorize($line, $colorIndex);
-
-            fwrite($this->stream, $this->format($line).PHP_EOL);
-        }
-
-        fflush($this->stream);
     }
 
     /**

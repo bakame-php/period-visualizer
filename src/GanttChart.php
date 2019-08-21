@@ -18,6 +18,7 @@ use League\Period\Sequence;
 use function array_fill;
 use function array_splice;
 use function ceil;
+use function count;
 use function floor;
 use function implode;
 use function str_pad;
@@ -75,7 +76,19 @@ final class GanttChart implements Chart
     public function display(Dataset $dataset): void
     {
         $this->setChartScale($dataset);
-        $this->drawGraph($dataset);
+        $padding = $this->config->labelAlign();
+        $gap = str_repeat(' ', $this->config->gapSize());
+        $leftMargin = str_repeat(' ', $this->config->leftMarginSize());
+        $lineCharacters = array_fill(0, $this->config->width(), $this->config->space());
+        $labelMaxLength = $dataset->labelMaxLength();
+        $colorCodeIndexes = $this->config->colors();
+        $colorCodeCount = count($colorCodeIndexes);
+        foreach ($dataset as $offset => [$label, $item]) {
+            $colorIndex = $colorCodeIndexes[$offset % $colorCodeCount];
+            $labelPortion = str_pad($label, $labelMaxLength, ' ', $padding);
+            $dataPortion = $this->drawDataPortion($item, $lineCharacters);
+            $this->output->writeln($leftMargin.$labelPortion.$gap.$dataPortion, $colorIndex);
+        }
     }
 
     /**
@@ -90,26 +103,6 @@ final class GanttChart implements Chart
             $this->start = $boundaries->getStartDate()->getTimestamp();
             $this->unit = $this->config->width() / $boundaries->getTimestampInterval();
         }
-    }
-
-    /**
-     * Converts a Dataset entry into a series of lines outputted by the OutputWriter implementation.
-     */
-    private function drawGraph(Dataset $dataset): void
-    {
-        $padding = $this->config->labelAlign();
-        $gap = str_repeat(' ', $this->config->gapSize());
-        $leftMargin = str_repeat(' ', $this->config->leftMarginSize());
-        $lineCharacters = array_fill(0, $this->config->width(), $this->config->space());
-        $labelMaxLength = $dataset->labelMaxLength();
-        $outputColors = $this->output->colors();
-        $this->output->setColors(...$this->config->colors());
-        foreach ($dataset as $offset => [$label, $item]) {
-            $labelPortion = str_pad($label, $labelMaxLength, ' ', $padding);
-            $dataPortion = $this->drawDataPortion($item, $lineCharacters);
-            $this->output->writeln($leftMargin.$labelPortion.$gap.$dataPortion);
-        }
-        $this->output->setColors(...$outputColors);
     }
 
     /**
