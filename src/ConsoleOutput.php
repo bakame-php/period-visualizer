@@ -31,6 +31,18 @@ final class ConsoleOutput implements OutputWriter
 {
     private const REGEXP_POSIX_PLACEHOLDER = '/(\s+)/msi';
 
+    private const POSIX_COLOR_CODES = [
+        self::COLOR_DEFAULT => '0',
+        self::COLOR_BLACK   => '30',
+        self::COLOR_RED     => '31',
+        self::COLOR_GREEN   => '32',
+        self::COLOR_YELLOW  => '33',
+        self::COLOR_BLUE    => '34',
+        self::COLOR_MAGENTA => '35',
+        self::COLOR_CYAN    => '36',
+        self::COLOR_WHITE   => '37',
+    ];
+
     /**
      * @var callable
      */
@@ -67,9 +79,9 @@ final class ConsoleOutput implements OutputWriter
     /**
      * {@inheritDoc}
      */
-    public function writeln(string $message = '', string $colorCodeIndex = self::DEFAULT_COLOR_CODE_INDEX): void
+    public function writeln(string $message = '', string $color = self::COLOR_DEFAULT): void
     {
-        $line = $this->format($this->colorize($message, $colorCodeIndex)).PHP_EOL;
+        $line = $this->format($this->colorize($message, $color)).PHP_EOL;
         fwrite($this->stream, $line);
         fflush($this->stream);
     }
@@ -77,15 +89,15 @@ final class ConsoleOutput implements OutputWriter
     /**
      * Returns a colorize line if the underlying console allows it.
      */
-    private function colorize(string $characters, string $colorCodeIndex): string
+    private function colorize(string $characters, string $color): string
     {
-        $colorCodeIndex = strtolower($colorCodeIndex);
-        if (OutputWriter::DEFAULT_COLOR_CODE_INDEX === $colorCodeIndex) {
+        $color = strtolower($color);
+        if (OutputWriter::COLOR_DEFAULT === $color) {
             return $characters;
         }
 
-        if (array_key_exists($colorCodeIndex, OutputWriter::POSIX_COLOR_CODES)) {
-            return "<<$colorCodeIndex>>$characters<<".OutputWriter::DEFAULT_COLOR_CODE_INDEX.'>>';
+        if (array_key_exists($color, self::POSIX_COLOR_CODES)) {
+            return "<<$color>>$characters<<".OutputWriter::COLOR_DEFAULT.'>>';
         }
 
         return $characters;

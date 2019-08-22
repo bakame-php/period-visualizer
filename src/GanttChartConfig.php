@@ -15,7 +15,6 @@ namespace Bakame\Period\Visualizer;
 
 use InvalidArgumentException;
 use function array_filter;
-use function array_key_exists;
 use function array_map;
 use function mb_convert_encoding;
 use function mb_strlen;
@@ -42,7 +41,7 @@ final class GanttChartConfig
     /**
      * @var string[]
      */
-    private $colorCodeIndexes = [OutputWriter::DEFAULT_COLOR_CODE_INDEX];
+    private $colors = [OutputWriter::COLOR_DEFAULT];
 
     /**
      * @var int
@@ -99,12 +98,12 @@ final class GanttChartConfig
      */
     public static function createFromRandom(): self
     {
+        $index = array_rand(OutputWriter::COLORS);
+
         $config = new self();
+        $config->colors = [OutputWriter::COLORS[$index]];
 
-        /** @var string $colorCode */
-        $colorCode = array_rand(OutputWriter::POSIX_COLOR_CODES);
-
-        return $config->withColors($colorCode);
+        return $config;
     }
 
     /**
@@ -113,8 +112,9 @@ final class GanttChartConfig
     public static function createFromRainbow(): self
     {
         $config = new self();
+        $config->colors = OutputWriter::COLORS;
 
-        return $config->withColors(...array_keys(OutputWriter::POSIX_COLOR_CODES));
+        return $config;
     }
 
     /**
@@ -179,7 +179,7 @@ final class GanttChartConfig
      */
     public function colors(): array
     {
-        return $this->colorCodeIndexes;
+        return $this->colors;
     }
 
     /**
@@ -385,25 +385,25 @@ final class GanttChartConfig
      * This method MUST retain the state of the current instance, and return
      * an instance that contains the specified color palette.
      *
-     * @param string... $colorCodeIndexes
+     * @param string... $colors
      */
-    public function withColors(string ...$colorCodeIndexes): self
+    public function withColors(string ...$colors): self
     {
         $filter = static function ($value) {
-            return array_key_exists($value, OutputWriter::POSIX_COLOR_CODES);
+            return in_array($value, OutputWriter::COLORS, true);
         };
 
-        $colorCodeIndexes = array_filter(array_map('strtolower', $colorCodeIndexes), $filter);
-        if ([] === $colorCodeIndexes) {
-            $colorCodeIndexes = [ConsoleOutput::DEFAULT_COLOR_CODE_INDEX];
+        $colors = array_filter(array_map('strtolower', $colors), $filter);
+        if ([] === $colors) {
+            $colors = [OutputWriter::COLOR_DEFAULT];
         }
 
-        if ($colorCodeIndexes === $this->colorCodeIndexes) {
+        if ($colors === $this->colors) {
             return $this;
         }
 
         $clone = clone $this;
-        $clone->colorCodeIndexes = $colorCodeIndexes;
+        $clone->colors = $colors;
 
         return $clone;
     }

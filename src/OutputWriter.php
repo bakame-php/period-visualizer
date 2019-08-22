@@ -15,19 +15,26 @@ namespace Bakame\Period\Visualizer;
 
 interface OutputWriter
 {
-    public const DEFAULT_COLOR_CODE_INDEX = 'reset';
-
-    public const POSIX_COLOR_CODES = [
-        self::DEFAULT_COLOR_CODE_INDEX => '0',
-        'black'   => '30',
-        'red'     => '31',
-        'green'   => '32',
-        'yellow'  => '33',
-        'blue'    => '34',
-        'magenta' => '35',
-        'cyan'    => '36',
-        'white'   => '37',
+    public const COLOR_DEFAULT = 'reset';
+    public const COLOR_BLACK = 'black';
+    public const COLOR_RED = 'red';
+    public const COLOR_GREEN = 'green';
+    public const COLOR_YELLOW = 'yellow';
+    public const COLOR_BLUE = 'blue';
+    public const COLOR_MAGENTA = 'magenta';
+    public const COLOR_CYAN = 'cyan';
+    public const COLOR_WHITE = 'white';
+    public const COLORS = [
+        OutputWriter::COLOR_DEFAULT,
+        OutputWriter::COLOR_BLACK,
+        OutputWriter::COLOR_RED,
+        OutputWriter::COLOR_GREEN,
+        OutputWriter::COLOR_YELLOW ,
+        OutputWriter::COLOR_BLUE,
+        OutputWriter::COLOR_MAGENTA,
+        OutputWriter::COLOR_CYAN,
+        OutputWriter::COLOR_WHITE,
     ];
 
-    public function writeln(string $message = '', string $colorCodeIndex = self::DEFAULT_COLOR_CODE_INDEX): void;
+    public function writeln(string $message = '', string $color = self::COLOR_DEFAULT): void;
 }
