@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Bakame\Period\Visualizer;
 
 use TypeError;
-use function array_key_exists;
 use function array_keys;
 use function chr;
 use function fflush;
@@ -87,24 +86,19 @@ final class ConsoleOutput implements OutputWriter
     }
 
     /**
-     * Returns a colorize line if the underlying console allows it.
+     * Colorizes the given string.
      */
     private function colorize(string $characters, string $color): string
     {
-        $color = strtolower($color);
-        if (OutputWriter::COLOR_DEFAULT === $color) {
+        if (!isset(self::POSIX_COLOR_CODES[strtolower($color)])) {
             return $characters;
         }
 
-        if (array_key_exists($color, self::POSIX_COLOR_CODES)) {
-            return "<<$color>>$characters<<".OutputWriter::COLOR_DEFAULT.'>>';
-        }
-
-        return $characters;
+        return "<<$color>>$characters<<".OutputWriter::COLOR_DEFAULT.'>>';
     }
 
     /**
-     * Returns a formatted windows line.
+     * Returns a formatted line.
      */
     private function format(string $str): string
     {
