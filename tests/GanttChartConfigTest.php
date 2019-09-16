@@ -13,9 +13,11 @@ declare(strict_types=1);
 
 namespace BakameTest\Period\Visualizer;
 
+use Bakame\Period\Visualizer\ConsoleOutput;
 use Bakame\Period\Visualizer\GanttChartConfig;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use const STDOUT;
 
 /**
  * @coversDefaultClass \Bakame\Period\Visualizer\GanttChartConfig
@@ -233,5 +235,12 @@ final class GanttChartConfigTest extends TestCase
                 'expected' => GanttChartConfig::ALIGN_LEFT,
             ],
         ];
+    }
+
+    public function testWithOutputAlwaysReturnsANewInstance(): void
+    {
+        $newConfig = $this->config->withOutput(new ConsoleOutput(STDOUT));
+        self::assertNotSame($this->config, $newConfig);
+        self::assertEquals($newConfig->output(), $this->config->output());
     }
 }

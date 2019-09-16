@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Bakame\Period\Visualizer;
 
-use TypeError;
 use function array_keys;
 use function chr;
 use function fflush;
@@ -65,11 +64,11 @@ final class ConsoleOutput implements OutputWriter
     public function __construct($resource)
     {
         if (!is_resource($resource)) {
-            throw new TypeError(sprintf('Argument passed must be a stream resource, %s given', gettype($resource)));
+            throw new \TypeError(sprintf('Argument passed must be a stream resource, %s given', gettype($resource)));
         }
 
         if ('stream' !== ($type = get_resource_type($resource))) {
-            throw new TypeError(sprintf('Argument passed must be a stream resource, %s resource given', $type));
+            throw new \TypeError(sprintf('Argument passed must be a stream resource, %s resource given', $type));
         }
 
         $this->stream = $resource;

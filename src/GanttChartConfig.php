@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Bakame\Period\Visualizer;
 
-use InvalidArgumentException;
 use function array_filter;
 use function array_map;
 use function mb_convert_encoding;
@@ -21,6 +20,7 @@ use function mb_strlen;
 use function preg_match;
 use function preg_replace;
 use function sprintf;
+use const STDOUT;
 use const STR_PAD_BOTH;
 use const STR_PAD_LEFT;
 use const STR_PAD_RIGHT;
@@ -37,6 +37,11 @@ final class GanttChartConfig
     public const ALIGN_RIGHT = STR_PAD_LEFT;
 
     public const ALIGN_CENTER = STR_PAD_BOTH;
+
+    /**
+     * @var OutputWriter
+     */
+    private $output;
 
     /**
      * @var string[]
@@ -94,13 +99,25 @@ final class GanttChartConfig
     private $alignLabel = self::ALIGN_LEFT;
 
     /**
-     * Create a Cli Renderer to Display the millipede in Rainbow.
+     * New instance.
+     *
+     * @param ?OutputWriter $output
      */
-    public static function createFromRandom(): self
+    public function __construct(?OutputWriter $output = null)
+    {
+        $this->output = $output ?? new ConsoleOutput(STDOUT);
+    }
+
+    /**
+     * Create a Cli Renderer to Display the millipede in Rainbow.
+     *
+     * @param ?OutputWriter $output
+     */
+    public static function createFromRandom(?OutputWriter $output = null): self
     {
         $index = array_rand(OutputWriter::COLORS);
 
-        $config = new self();
+        $config = new self($output);
         $config->colors = [OutputWriter::COLORS[$index]];
 
         return $config;
@@ -108,13 +125,23 @@ final class GanttChartConfig
 
     /**
      * Create a Cli Renderer to Display the millipede in Rainbow.
+     *
+     * @param ?OutputWriter $output
      */
-    public static function createFromRainbow(): self
+    public static function createFromRainbow(?OutputWriter $output = null): self
     {
-        $config = new self();
+        $config = new self($output);
         $config->colors = OutputWriter::COLORS;
 
         return $config;
+    }
+
+    /**
+     * Returns the OutputWriter class.
+     */
+    public function output(): OutputWriter
+    {
+        return $this->output;
     }
 
     /**
@@ -228,7 +255,7 @@ final class GanttChartConfig
     /**
      * Filter the submitted string.
      *
-     * @throws InvalidArgumentException if the pattern is invalid
+     * @throws \InvalidArgumentException if the pattern is invalid
      */
     private function filterPattern(string $str, string $part): string
     {
@@ -240,7 +267,7 @@ final class GanttChartConfig
             return $this->filterUnicodeCharacter($str);
         }
 
-        throw new InvalidArgumentException(sprintf('The %s pattern must be a single character', $part));
+        throw new \InvalidArgumentException(sprintf('The %s pattern must be a single character', $part));
     }
 
     /**
@@ -248,7 +275,7 @@ final class GanttChartConfig
      *
      * @see http://stackoverflow.com/a/37415135/2316257
      *
-     * @throws InvalidArgumentException if the character is not valid.
+     * @throws \InvalidArgumentException if the character is not valid.
      */
     private function filterUnicodeCharacter(string $str): string
     {
@@ -259,7 +286,21 @@ final class GanttChartConfig
             return $result;
         }
 
-        throw new InvalidArgumentException(sprintf('The given string `%s` is not a valid unicode string', $str));
+        throw new \InvalidArgumentException(sprintf('The given string `%s` is not a valid unicode string', $str));
+    }
+
+    /**
+     * Return an instance with a new output object.
+     *
+     * This method MUST retain the state of the current instance, and return
+     * an instance that contains the specified output class.
+     */
+    public function withOutput(OutputWriter $output): self
+    {
+        $clone = clone $this;
+        $clone->output = $output;
+
+        return $clone;
     }
 
     /**

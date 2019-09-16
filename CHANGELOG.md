@@ -2,22 +2,20 @@
 
 All Notable changes to `Period Visualizer` will be documented in this file
 
-## Next - TBD
+## 0.6.0 - 2019-09-13
 
+- The `OutputWriter` is now a property of `GanttChartConfig`
 - Renamed `ConsoleGraph` to `GanttChart`
 - Renamed `ConsoleConfig` to `GanttChartConfig`
 - Renamed `Graph` to `Chart`
 - Adding `Dataset::appendAll`
 - Adding `GanttChartConfig::leftMargin`
 - Adding `GanttChartConfig::withLeftMargin`
-- Adding `OutputWriter::setColors`
-- Adding `OutputWriter::colors`
-- Improve `GanttChart` implementation
-- Improve `ConsoleOutput` implementation
-- Removed `OutputWriter::colorize` method
+- Improved `GanttChart` implementation
+- Improved `ConsoleOutput` implementation
 - Changed `OutputWriter::writeln` signature
 
-## 0.5.1 - 2019-07-28 
+## 0.5.1 - 2019-07-28
 
 - Bug fix `Dataset::labelMaxLength` when `Dataset` is empty
 - Bug fix `GanttChart::display` when `Dataset` only contains empty `Sequence` instances.
@@ -29,10 +27,10 @@ All Notable changes to `Period Visualizer` will be documented in this file
 - Added the `Dataset` class.
 - Added the `Graph` interface and the `ConsoleGraph` implementation.
 - Added the `OutputWriter` interface and the `ConsoleOutput` implementation, `ConsoleOutput` no longer relies on `echo`
-- Added support for label and graph gutter in `ConsoleConfig` class
+- Added support for label and basicGraph gutter in `ConsoleConfig` class
 - Added support for label alignment in `ConsoleConfig` class
-- Moved graph features out of the `ConsoleOutput` class to `ConsoleGraph`
-- Merge the `Matrix` class feature into the `ConsoleGraph` and removed it
+- Moved basicGraph features out of the `ConsoleOutput` class to `ConsoleGraph`
+- Merged the `Matrix` class feature into the `ConsoleGraph` and removed it
 - Renamed the `LabelGenerator` implementing classes and moved them in the main namespace
 - Removed the `Viewer` class
 
@@ -70,7 +68,7 @@ All Notable changes to `Period Visualizer` will be documented in this file
 
 - Removed the `OutputInterface`.
 - Made `ConsoleOutput::render` private only `ConsoleOutput::display` stays public.
-- Improve `Matrix` code.
+- Improved `Matrix` code.
 
 ## 0.2.2 - 2018-12-20
 
@@ -89,7 +87,7 @@ The array format is that of a dataset where:
 	- the second value represents the period or the sequence
 
 - The `Matrix` and the `Viewer` class are updated accordingly with refactoring to improve the calculation speed.
-- The `ConsoleConfig` accepts a `default` color keywords to tell that the graph should fellow the default colors from the graph.
+- The `ConsoleConfig` accepts a `default` color keywords to tell that the basicGraph should fellow the default colors from the basicGraph.
 - The `default` color keyword replaces the `white` color keyword as the default keyword used if no color is specified.
 
 ## 0.1.0 - 2018-12-19

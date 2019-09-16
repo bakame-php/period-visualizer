@@ -13,10 +13,6 @@ declare(strict_types=1);
 
 namespace Bakame\Period\Visualizer;
 
-use Countable;
-use Iterator;
-use IteratorAggregate;
-use JsonSerializable;
 use League\Period\Period;
 use League\Period\Sequence;
 use function array_column;
@@ -25,7 +21,7 @@ use function is_scalar;
 use function method_exists;
 use function strlen;
 
-final class Dataset implements Countable, IteratorAggregate, JsonSerializable
+final class Dataset implements \Countable, \IteratorAggregate, \JsonSerializable
 {
     /**
      * @var array<int, array{0:string, 1:Sequence}>.
@@ -63,8 +59,9 @@ final class Dataset implements Countable, IteratorAggregate, JsonSerializable
     /**
      * Add a new pair to the collection.
      *
-     * @param mixed $label any stringable type except for null.
-     * @param mixed $item  if the input is not a Period or a Sequence instance it is not added.
+     * @param mixed $label if the label is not stringable it is not added (the null value excluded).
+     * @param mixed $item  if the item is not a League\Period\Period or a League\Period\Sequence instance
+     *                     it is not added.
      */
     public function append($label, $item): void
     {
@@ -115,8 +112,8 @@ final class Dataset implements Countable, IteratorAggregate, JsonSerializable
     /**
      * Creates a new collection from a countable iterable structure.
      *
-     * @param array|(Countable&iterable) $sequence
-     * @param ?LabelGenerator            $labelGenerator
+     * @param array|(\Countable&iterable) $sequence
+     * @param ?LabelGenerator             $labelGenerator
      */
     public static function fromSequence($sequence, ?LabelGenerator $labelGenerator = null): self
     {
@@ -156,9 +153,9 @@ final class Dataset implements Countable, IteratorAggregate, JsonSerializable
     /**
      * Returns the pairs.
      *
-     * @return Iterator<int, array{0: string, 1: Sequence}>
+     * @return \Iterator<int, array{0: string, 1: Sequence}>
      */
-    public function getIterator(): Iterator
+    public function getIterator(): \Iterator
     {
         foreach ($this->pairs as $pair) {
             yield $pair;

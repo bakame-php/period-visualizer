@@ -23,18 +23,12 @@ use function floor;
 use function implode;
 use function str_pad;
 use function str_repeat;
-use const STDOUT;
 
 /**
  * A class to output a Dataset via a Gantt Bar graph.
  */
 final class GanttChart implements Chart
 {
-    /**
-     * @var OutputWriter
-     */
-    private $output;
-
     /**
      * @var GanttChartConfig
      */
@@ -54,12 +48,10 @@ final class GanttChart implements Chart
      * New instance.
      *
      * @param ?GanttChartConfig $config
-     * @param ?OutputWriter     $output
      */
-    public function __construct(?GanttChartConfig $config = null, ?OutputWriter $output = null)
+    public function __construct(?GanttChartConfig $config = null)
     {
         $this->config = $config ?? new GanttChartConfig();
-        $this->output = $output ?? new ConsoleOutput(STDOUT);
     }
 
     /**
@@ -83,11 +75,12 @@ final class GanttChart implements Chart
         $labelMaxLength = $dataset->labelMaxLength();
         $colorCodeIndexes = $this->config->colors();
         $colorCodeCount = count($colorCodeIndexes);
+        $output = $this->config->output();
         foreach ($dataset as $offset => [$label, $item]) {
             $colorIndex = $colorCodeIndexes[$offset % $colorCodeCount];
             $labelPortion = str_pad($label, $labelMaxLength, ' ', $padding);
             $dataPortion = $this->drawDataPortion($item, $lineCharacters);
-            $this->output->writeln($leftMargin.$labelPortion.$gap.$dataPortion, $colorIndex);
+            $output->writeln($leftMargin.$labelPortion.$gap.$dataPortion, $colorIndex);
         }
     }
 

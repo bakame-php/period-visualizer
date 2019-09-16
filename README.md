@@ -391,7 +391,7 @@ The `GanttChart` class is responsible for generating the graph from the `Dataset
 
 The `GanttChart::display` methods expects a `Dataset` object as its unique argument.
 
-If you wish to present the graph on another medium like a web browser or an image, you will need to implement the interface on your implementation.
+If you wish to present the graph on another medium like a web browser or an image, you will need to implement the interface for your implementation.
 
 ~~~php
 <?php
@@ -427,9 +427,11 @@ The `GanttChart` class can be customized by:
         - sets the graph colors
         - sets the gap between the labels and the rows
         - sets the label alignment
-
-- providing a `OutputWriter` implementing class if you prefer to use a battle tested output library like `League CLImate` or `Symfony Console` 
-to output the resulting graph. If you don't, the package ships with a minimal `ConsoleOutput` class which is used if you do not provide you own implementation.
+    - the console output via a `OutputWriter` implementing class.
+     
+You can easily create a `OutputWriter` implementing class with libraries like `League CLImate` or `Symfony Console` 
+to output the resulting graph. If you don't, the package ships with a minimal `ConsoleOutput` class which is used
+ if you do not provide you own implementation.
 
 ~~~php
 <?php
@@ -494,6 +496,7 @@ The `GanttChartConfig` class exposes the following additional constants and meth
 const GanttChartConfig::ALIGN_LEFT = 1;
 const GanttChartConfig::ALIGN_RIGHT = 0;
 const GanttChartConfig::ALIGN_CENTER = 2;
+public function GanttChartConfig::output(): OutputWriter;  //Returns a the OutputWriter instance associated.
 public function GanttChartConfig::startExcluded(): string; //Retrieves the excluded start block character.
 public function GanttChartConfig::startIncluded(): string; //Retrieves the included start block character.
 public function GanttChartConfig::endExcluded(): string;   //Retrieves the excluded end block character.
