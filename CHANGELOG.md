@@ -5,9 +5,10 @@ All Notable changes to `Period Visualizer` will be documented in this file
 ## 0.6.0 - 2019-09-13
 
 - The `OutputWriter` is now a property of `GanttChartConfig`
+- Renamed `Graph` to `Chart`
+- Renamed `Graph::display` to `Chart::display`
 - Renamed `ConsoleGraph` to `GanttChart`
 - Renamed `ConsoleConfig` to `GanttChartConfig`
-- Renamed `Graph` to `Chart`
 - Adding `Dataset::appendAll`
 - Adding `GanttChartConfig::leftMargin`
 - Adding `GanttChartConfig::withLeftMargin`

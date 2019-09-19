@@ -28,7 +28,7 @@ $sequence = new Sequence(
 );
 $dataset = Dataset::fromSequence($sequence);
 $dataset->append('gaps', $sequence->gaps());
-(new GanttChart())->display($dataset);
+(new GanttChart())->stroke($dataset);
 ~~~
 
 results:
@@ -79,7 +79,7 @@ $dataset = new Dataset([
     ['A', new Period('2018-01-01', '2018-02-01')],
     ['B', new Period('2018-01-15', '2018-02-01')], 
 ]);
-(new GanttChart())->display($dataset);
+(new GanttChart())->stroke($dataset);
 ~~~
 
 results:
@@ -109,7 +109,7 @@ $dataset = new Dataset();
 $dataset->append('A', $sequence[0]);
 $dataset->append('B', $sequence[1]);
 $dataset->append('GAPS', $sequence->gaps());
-(new GanttChart())->display($dataset);
+(new GanttChart())->stroke($dataset);
 ~~~
 
 results:
@@ -166,7 +166,7 @@ $dataset = Dataset::fromSequence(
     new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
     new LatinLetter('aa')
 );
-(new GanttChart())->display($dataset);
+(new GanttChart())->stroke($dataset);
 ~~~
 
 results:
@@ -202,7 +202,7 @@ $dataset = Dataset::fromSequence(
     new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
     new DecimalNumber(42)
 );
-(new GanttChart())->display($dataset);
+(new GanttChart())->stroke($dataset);
 ~~~
 
 results:
@@ -241,7 +241,7 @@ $dataset = Dataset::fromSequence(
     new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
     $labelGenerator
 );
-(new GanttChart())->display($dataset);
+(new GanttChart())->stroke($dataset);
 ~~~
 
 results:
@@ -288,7 +288,7 @@ $dataset = Dataset::fromSequence(
     new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
     $labelGenerator
 );
-(new GanttChart())->display($dataset);
+(new GanttChart())->stroke($dataset);
 ~~~
 
 results:
@@ -334,7 +334,7 @@ $dataset = Dataset::fromSequence(
     new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
     $labelGenerator
 );
-(new GanttChart())->display($dataset);
+(new GanttChart())->stroke($dataset);
 ~~~
 
 results:
@@ -375,7 +375,7 @@ $dataset = Dataset::fromSequence(
     new Sequence(new Period('2018-01-01', '2018-02-01'), new Period('2018-01-15', '2018-02-01')),
     $labelGenerator
 );
-(new GanttChart())->display($dataset);
+(new GanttChart())->stroke($dataset);
 ~~~
 
 results:
@@ -401,7 +401,7 @@ use Bakame\Period\Visualizer\GanttChart;
 use League\Period\Period;
 
 $graph = new GanttChart();
-$graph->display(new Dataset([
+$graph->stroke(new Dataset([
     ['first', new Period('2018-01-01 08:00:00', '2018-01-01 12:00:00')],
     ['last', new Period('2018-01-01 10:00:00', '2018-01-01 14:00:00')],
 ]));
@@ -474,7 +474,7 @@ $sequence = new Sequence(
 $dataset = Dataset::fromSequence($sequence, $labelGenerator);
 $dataset->append($labelGenerator->format('gaps'), $sequence->gaps());
 $graph = new GanttChart($config);
-$graph->display($dataset);
+$graph->stroke($dataset);
 ~~~
 
 result:

@@ -67,12 +67,12 @@ final class GanttChartTest extends TestCase
     }
 
     /**
-     * @covers ::display
+     * @covers ::stroke
      * @covers ::setChartScale
      */
     public function testDisplayEmptyDataset(): void
     {
-        $this->graph->display(new Dataset());
+        $this->graph->stroke(new Dataset());
         rewind($this->stream);
         $data = stream_get_contents($this->stream);
 
@@ -80,14 +80,14 @@ final class GanttChartTest extends TestCase
     }
 
     /**
-     * @covers ::display
+     * @covers ::stroke
      * @covers ::setChartScale
      * @covers ::drawDataPortion
      * @covers \Bakame\Period\Visualizer\ConsoleOutput
      */
     public function testDisplayPeriods(): void
     {
-        $this->graph->display(new Dataset([
+        $this->graph->stroke(new Dataset([
             ['A', new Period('2018-01-01', '2018-01-15')],
             ['B', new Period('2018-01-15', '2018-02-01')],
         ]));
@@ -101,7 +101,7 @@ final class GanttChartTest extends TestCase
     }
 
     /**
-     * @covers ::display
+     * @covers ::stroke
      * @covers ::setChartScale
      * @covers ::drawDataPortion
      */
@@ -112,7 +112,7 @@ final class GanttChartTest extends TestCase
             ['B', new Sequence(new Period('2018-01-15', '2018-02-01'))],
         ]);
 
-        $this->graph->display($dataset);
+        $this->graph->stroke($dataset);
 
         rewind($this->stream);
         /** @var string $data */
@@ -123,7 +123,7 @@ final class GanttChartTest extends TestCase
     }
 
     /**
-     * @covers ::display
+     * @covers ::stroke
      * @covers ::setChartScale
      * @covers ::drawDataPortion
      */
@@ -132,7 +132,7 @@ final class GanttChartTest extends TestCase
         $dataset = new Dataset();
         $dataset->append('sequenceA', new Sequence());
         $dataset->append('sequenceB', new Sequence());
-        $this->graph->display($dataset);
+        $this->graph->stroke($dataset);
 
         rewind($this->stream);
         /** @var string $data */

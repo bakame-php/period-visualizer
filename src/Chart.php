@@ -21,5 +21,5 @@ interface Chart
     /**
      * Visualizes one or more intervals in a provided via a Dataset object.
      */
-    public function display(Dataset $dataset): void;
+    public function stroke(Dataset $dataset): void;
 }

@@ -65,7 +65,7 @@ final class GanttChart implements Chart
      * D              [---------------)
      * RESULT         [-)   [--)    [-)
      */
-    public function display(Dataset $dataset): void
+    public function stroke(Dataset $dataset): void
     {
         $this->setChartScale($dataset);
         $padding = $this->config->labelAlign();
