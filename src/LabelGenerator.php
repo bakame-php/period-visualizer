@@ -17,6 +17,8 @@ interface LabelGenerator
 {
     /**
      * Returns the labels to associate with all items.
+     *
+     * @return string[]
      */
     public function generate(int $nbLabels): array;
 

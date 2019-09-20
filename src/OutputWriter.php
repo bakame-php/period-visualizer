@@ -29,7 +29,7 @@ interface OutputWriter
         OutputWriter::COLOR_BLACK,
         OutputWriter::COLOR_RED,
         OutputWriter::COLOR_GREEN,
-        OutputWriter::COLOR_YELLOW ,
+        OutputWriter::COLOR_YELLOW,
         OutputWriter::COLOR_BLUE,
         OutputWriter::COLOR_MAGENTA,
         OutputWriter::COLOR_CYAN,

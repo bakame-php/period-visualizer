@@ -2,7 +2,7 @@
 
 All Notable changes to `Period Visualizer` will be documented in this file
 
-## 0.6.0 - 2019-09-13
+## 0.6.0 - 2019-09-20
 
 - The `OutputWriter` is now a property of `GanttChartConfig`
 - Renamed `Graph` to `Chart`

@@ -162,6 +162,9 @@ final class Dataset implements \Countable, \IteratorAggregate, \JsonSerializable
         }
     }
 
+    /**
+     * @var array<int, array{label:string, item:Sequence}>.
+     */
     public function jsonSerialize(): array
     {
         return array_map(function (array $pair) {

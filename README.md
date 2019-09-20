@@ -85,8 +85,8 @@ $dataset = new Dataset([
 results:
 
 ~~~bash
- A [------------------------------------------------------------------------------)
- B                                     [------------------------------------------)
+ A [----------------------------------------------)
+ B                      [-------------------------)
 ~~~
 
 ### Appending items to display
@@ -115,9 +115,9 @@ $dataset->append('GAPS', $sequence->gaps());
 results:
 
 ~~~bash
- A    [---------------------)                                                         
- B                                                 [---------------------------------)
- GAPS                       [----------------------)    
+ A    [-------------)                                                         
+ B                               [----------------)
+ GAPS               [------------)    
 ~~~
 
 The `Dataset` implements the `Countable` and the `IteratorAggregate` interface. It also exposes the following methods:
@@ -172,8 +172,8 @@ $dataset = Dataset::fromSequence(
 results:
 
 ~~~bash
- aa [------------------------------------------------------------------------------)
- ab [-----------------------------------)
+ aa [-----------------------------------)
+ ab [----------)
 ~~~
 
 The `LatinLetter` also exposes the following methods:
@@ -208,8 +208,8 @@ $dataset = Dataset::fromSequence(
 results:
 
 ~~~bash
- 42 [------------------------------------------------------------------------------)
- 43 [-----------------------------------)
+ 42 [-----------------------------------)
+ 43 [----------)
 ~~~
 
 The `DecimalNumber` also exposes the following methods:
@@ -247,8 +247,8 @@ $dataset = Dataset::fromSequence(
 results:
 
 ~~~bash
- v  [------------------------------------------------------------------------------)
- vi [-----------------------------------)
+ v  [-----------------------------------)
+ vi [----------)
 ~~~
 
 The `RomanNumber` also exposes the following methods:
@@ -294,8 +294,8 @@ $dataset = Dataset::fromSequence(
 results:
 
 ~~~bash
- * v .)  [----------------------------------------------------------)
- * vi .) [--------------------------) 
+ * v .)  [-----------------------------------)
+ * vi .) [----------)
 ~~~
 
 The `AffixLabel` also exposes the following methods:
@@ -340,8 +340,8 @@ $dataset = Dataset::fromSequence(
 results:
 
 ~~~bash
- vi. [------------------------------------------------------------------------------)
- v.  [-----------------------------------)
+ vi. [-----------------------------------)
+ v.  [----------)
 ~~~
 
 ### Custom LabelGenerator
@@ -381,15 +381,15 @@ $dataset = Dataset::fromSequence(
 results:
 
 ~~~bash
- foobar. [------------------------------------------------------------------------------)
  foobar. [-----------------------------------)
+ foobar. [----------)
 ~~~
 
 ## Displaying the Dataset
 
 The `GanttChart` class is responsible for generating the graph from the `Dataset` by implementing the `Graph` interface for the console.
 
-The `GanttChart::display` methods expects a `Dataset` object as its unique argument.
+The `GanttChart::stroke` methods expects a `Dataset` object as its unique argument.
 
 If you wish to present the graph on another medium like a web browser or an image, you will need to implement the interface for your implementation.
 
@@ -410,24 +410,23 @@ $graph->stroke(new Dataset([
 results:
 
 ~~~bash
- first [----------------------------------------------------)
- last                            [----------------------------------------------------)
+ first [---------------------------)
+ last            [------------------------------)
 ~~~
 
 ### Customized the graph looks
 
-The `GanttChart` class can be customized by:
- 
-- providing a `GanttChartConfig` which defines:
-    - the graph settings (How the intervals will be created)
-        - sets single characters to represent the boundary types
-        - sets single characters to represent the body and space
-    - the console output settings. (How the intervals will be displayed)
-        - sets the graph width
-        - sets the graph colors
-        - sets the gap between the labels and the rows
-        - sets the label alignment
-    - the console output via a `OutputWriter` implementing class.
+The `GanttChart` class can be customized by providing a `GanttChartConfig` which defines:
+
+- the output medium via a `OutputWriter` implementing class.
+- the graph settings. (How the intervals will be stroked)
+    - sets the graph width
+    - sets the graph colors
+    - sets the gap between the labels and the rows
+    - sets the label alignment
+- the output settings (How the intervals will be created)
+    - sets single characters to represent the boundary types
+    - sets single characters to represent the body and space
      
 You can easily create a `OutputWriter` implementing class with libraries like `League CLImate` or `Symfony Console` 
 to output the resulting graph. If you don't, the package ships with a minimal `ConsoleOutput` class which is used
@@ -437,6 +436,7 @@ to output the resulting graph. If you don't, the package ships with a minimal `C
 <?php
 
 use Bakame\Period\Visualizer\AffixLabel;
+use Bakame\Period\Visualizer\ConsoleOutput;
 use Bakame\Period\Visualizer\Dataset;
 use Bakame\Period\Visualizer\DecimalNumber;
 use Bakame\Period\Visualizer\GanttChart;
@@ -448,6 +448,7 @@ use League\Period\Period;
 use League\Period\Sequence;
 
 $config = GanttChartConfig::createFromRainbow()
+    ->withOutput(new ConsoleOutput(STDOUT))
     ->withStartExcluded('🍕')
     ->withStartIncluded('🍅')
     ->withEndExcluded('🎾')
