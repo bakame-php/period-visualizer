@@ -2,6 +2,10 @@
 
 All Notable changes to `Period Visualizer` will be documented in this file
 
+## Next - TBD
+
+- Adding `TypeError` on `Dataset::append` method when expected type are not given.
+
 ## 0.6.0 - 2019-09-20
 
 - The `OutputWriter` is now a property of `GanttChartConfig`

@@ -15,8 +15,10 @@ namespace Bakame\Period\Visualizer;
 
 use League\Period\Period;
 use League\Period\Sequence;
+use TypeError;
 use function array_column;
 use function count;
+use function gettype;
 use function is_scalar;
 use function method_exists;
 use function strlen;
@@ -59,14 +61,15 @@ final class Dataset implements \Countable, \IteratorAggregate, \JsonSerializable
     /**
      * Add a new pair to the collection.
      *
-     * @param mixed $label if the label is not stringable it is not added (the null value excluded).
-     * @param mixed $item  if the item is not a League\Period\Period or a League\Period\Sequence instance
-     *                     it is not added.
+     * @param mixed           $label a scalar or a stringable object (implementing __toString method).
+     * @param Period|Sequence $item
+     *
+     * @throws TypeError If the label or the item type are not supported.
      */
     public function append($label, $item): void
     {
         if (!is_scalar($label) && !method_exists($label, '__toString')) {
-            return;
+            throw new TypeError('The label passed to '.__METHOD__.' must be a scalar or an stringable object, '.gettype($label).' given.');
         }
 
         if ($item instanceof Period) {
@@ -74,7 +77,7 @@ final class Dataset implements \Countable, \IteratorAggregate, \JsonSerializable
         }
 
         if (!$item instanceof Sequence) {
-            return;
+            throw new TypeError('The item passed to '.__METHOD__.' must be a '.Period::class.' or a '.Sequence::class.' instance, '.gettype($item).' given.');
         }
 
         $label = (string) $label;

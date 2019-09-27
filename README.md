@@ -497,7 +497,8 @@ The `GanttChartConfig` class exposes the following additional constants and meth
 const GanttChartConfig::ALIGN_LEFT = 1;
 const GanttChartConfig::ALIGN_RIGHT = 0;
 const GanttChartConfig::ALIGN_CENTER = 2;
-public function GanttChartConfig::output(): OutputWriter;  //Returns a the OutputWriter instance associated.
+public function GanttChartConfig::__construct(OutputWriter $output);
+public function GanttChartConfig::output(): OutputWriter;  //Returns the OutputWriter instance.
 public function GanttChartConfig::startExcluded(): string; //Retrieves the excluded start block character.
 public function GanttChartConfig::startIncluded(): string; //Retrieves the included start block character.
 public function GanttChartConfig::endExcluded(): string;   //Retrieves the excluded end block character.

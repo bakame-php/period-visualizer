@@ -21,6 +21,7 @@ use DateTimeImmutable;
 use League\Period\Period;
 use League\Period\Sequence;
 use PHPUnit\Framework\TestCase;
+use TypeError;
 use function iterator_to_array;
 use function json_encode;
 
@@ -104,12 +105,24 @@ final class DatasetTest extends TestCase
     {
         $dataset = new Dataset([
             ['A', new Sequence(new Period('2018-01-01', '2018-01-15'))],
-            ['B', new Sequence(new Period('2018-01-15', '2018-02-01'))],
-            [new DateTimeImmutable(), new Sequence(new Period('2018-01-15', '2018-02-01'))],
-            ['C', 'foo bar'],
+            ['B', new Period('2018-01-15', '2018-02-01')],
         ]);
 
         self::assertCount(2, $dataset);
+    }
+
+    public function testAppendDatasetThrowWithInvalidLabel(): void
+    {
+        self::expectException(TypeError::class);
+
+        new Dataset([[new DateTimeImmutable(), Period::around('2018-01-15', '1 DAY')]]);
+    }
+
+    public function testAppendDatasetThrowWithInvalidItem(): void
+    {
+        self::expectException(TypeError::class);
+
+        new Dataset([['foo', 'bar']]);
     }
 
     public function testLabelizeDataset(): void
