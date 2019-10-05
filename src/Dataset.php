@@ -15,7 +15,6 @@ namespace Bakame\Period\Visualizer;
 
 use League\Period\Period;
 use League\Period\Sequence;
-use TypeError;
 use function array_column;
 use function count;
 use function gettype;
@@ -64,12 +63,12 @@ final class Dataset implements \Countable, \IteratorAggregate, \JsonSerializable
      * @param mixed           $label a scalar or a stringable object (implementing __toString method).
      * @param Period|Sequence $item
      *
-     * @throws TypeError If the label or the item type are not supported.
+     * @throws \TypeError If the label or the item type are not supported.
      */
     public function append($label, $item): void
     {
         if (!is_scalar($label) && !method_exists($label, '__toString')) {
-            throw new TypeError('The label passed to '.__METHOD__.' must be a scalar or an stringable object, '.gettype($label).' given.');
+            throw new \TypeError('The label passed to '.__METHOD__.' must be a scalar or an stringable object, '.gettype($label).' given.');
         }
 
         if ($item instanceof Period) {
@@ -77,7 +76,7 @@ final class Dataset implements \Countable, \IteratorAggregate, \JsonSerializable
         }
 
         if (!$item instanceof Sequence) {
-            throw new TypeError('The item passed to '.__METHOD__.' must be a '.Period::class.' or a '.Sequence::class.' instance, '.gettype($item).' given.');
+            throw new \TypeError('The item passed to '.__METHOD__.' must be a '.Period::class.' or a '.Sequence::class.' instance, '.gettype($item).' given.');
         }
 
         $label = (string) $label;
