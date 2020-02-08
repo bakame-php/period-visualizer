@@ -5,3 +5,4 @@ includes:
 parameters:
     ignoreErrors:
     reportUnmatchedIgnoredErrors: true
+    checkMissingIterableValueType: false

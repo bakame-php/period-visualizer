@@ -169,7 +169,7 @@ final class Dataset implements \Countable, \IteratorAggregate, \JsonSerializable
      */
     public function jsonSerialize(): array
     {
-        return array_map(function (array $pair) {
+        return array_map(function (array $pair): array {
             return ['label' => $pair[0], 'item' => $pair[1]];
         }, $this->pairs);
     }

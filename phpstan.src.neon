@@ -5,3 +5,5 @@ parameters:
         - '#Only numeric types are allowed in post-increment, string given.#'
         - '#Instanceof between League\\Period\\Sequence and League\\Period\\Sequence will always evaluate to true.#'
     reportUnmatchedIgnoredErrors: true
+    checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false

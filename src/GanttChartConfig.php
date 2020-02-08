@@ -430,7 +430,7 @@ final class GanttChartConfig
      */
     public function withColors(string ...$colors): self
     {
-        $filter = static function ($value) {
+        $filter = static function ($value): bool {
             return in_array($value, OutputWriter::COLORS, true);
         };
 
